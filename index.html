@@ -93,21 +93,22 @@ async function load(i){
   if(i >= feed.length){
     showToast('Loading...');
     try {
-      const res = await fetch(`${API_URL}?offset=${feed.length}`);
-      if(!res.ok) throw new Error('HTTP ' + res.status);
-      const newReels = await res.json();
-      if(newReels.length) {
-        feed=[...feed,...newReels];
-      } else {
-        showToast('No more reels');
-        return;
-      }
+      const res = await fetch(`${API_URL}`);
+      const data = await res.json();
+      feed.push({
+        url: data.url,
+        user: '@' + data.author_name,
+        desc: data.title,
+        thumb: data.thumbnail_url
+      });
+      showToast('');
     } catch(e) {
       showToast('Check backend');
-      console.error(e);
       return;
     }
   }
+  // rest of your load code...
+}
   idx = i;
 
   const r=feed[idx];
