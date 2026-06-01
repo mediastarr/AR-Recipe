@@ -2,393 +2,764 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Meta Ray-Ban Display glasses: exact 600×600 viewport -->
 <meta name="viewport" content="width=600, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="meta-display" content="width=600,height=600,fov=20deg">
+<meta name="meta-display" content="width=600,height=600,fov=20deg,shape=rounded-rect">
 <title>TikTok · Ray-Ban Display</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
+/* ── PAGE: dark maroon, centers the 600×600 HUD ── */
 html, body {
-  width:100%; min-height:100%;
-  background: #1a0a0e;
-  display:flex; align-items:center; justify-content:center;
-  font-family:'Inter', sans-serif;
-  overflow-x:hidden;
-  padding: 30px 16px;
+  width: 100%; min-height: 100vh;
+  background: #0e0507;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
 }
-
-/* ── outer page bg ── */
 body::before {
-  content:'';
-  position:fixed; inset:0;
-  background: radial-gradient(ellipse 80% 60% at 50% 20%, #3d0a14 0%, #1a0a0e 60%, #0d0508 100%);
-  z-index:-1;
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse 100% 70% at 50% 10%, #3a0912 0%, #150508 55%, #080204 100%);
+  z-index: 0;
 }
 
-/* ── phone shell ── */
-.phone {
-  width: 340px;
-  background: #1e0b10;
-  border-radius: 36px;
-  border: 1.5px solid rgba(255,255,255,0.08);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.6),
-    0 40px 80px rgba(0,0,0,0.7),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-  overflow: hidden;
+/* ── OUTER WRAPPER: exactly 600×600 ── */
+.hud-outer {
   position: relative;
-  padding-bottom: 24px;
+  z-index: 1;
+  width: 600px;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* top pill */
-.phone::before {
-  content:'';
-  display:block;
-  width:10px; height:10px;
-  border-radius:50%;
-  background: rgba(255,255,255,0.15);
-  margin: 14px auto 0;
-}
-
-/* ── caption above video ── */
-.caption-above {
-  padding: 18px 28px 14px;
-  text-align: center;
-}
-.caption-above p {
-  font-size: 15px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.88);
-  line-height: 1.45;
-  letter-spacing: -0.01em;
-}
-
-/* ── video container ── */
-.video-wrap {
-  position: relative;
-  margin: 0 14px;
-  border-radius: 16px;
-  overflow: hidden;
+/* ── THE 600×600 ROUNDED-RECT HUD ── */
+/* On real glasses: #000 = fully transparent, only white UI floats */
+.hud {
+  width: 600px;
+  height: 600px;
   background: #000;
-  aspect-ratio: 9/16;
-  max-height: 420px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  border-radius: 60px;           /* rounded rectangle like glasses lens */
+  overflow: hidden;
+  position: relative;
+  /* subtle glow so it reads on page bg */
+  box-shadow:
+    0 0 0 1.5px rgba(255,255,255,0.07),
+    0 0 60px rgba(180,10,40,0.18),
+    0 30px 80px rgba(0,0,0,0.8);
 }
 
-/* watermark */
-.watermark {
-  position:absolute; top:10px; right:10px;
-  font-size:11px; color:rgba(255,255,255,0.65);
-  font-weight:600; letter-spacing:.02em;
-  z-index:10; text-shadow:0 1px 4px rgba(0,0,0,0.8);
-  pointer-events:none;
+/* ── VIDEO LAYER ── */
+.video-bg {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
 }
 
-/* iframe fills the box */
-.video-wrap iframe {
-  width:100%; height:100%;
-  border:none; display:block;
-  pointer-events:none;
+.reel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.reel.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.reel video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-/* subtitle bar at bottom of video */
-.subtitle-bar {
-  position:absolute; bottom:0; left:0; right:0;
-  padding: 32px 14px 14px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.75));
-  z-index:5; pointer-events:none;
+/* error state inside video */
+.reel .vid-error {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #0a0a0a;
 }
-.subtitle-text {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #ffe566;
-  text-align: center;
-  line-height: 1.4;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6);
-  font-style: italic;
+.reel.errored .vid-error { display: flex; }
+.reel.errored video { display: none; }
+.vid-error-icon { font-size: 38px; }
+.vid-error-text { color: rgba(255,255,255,0.4); font-size: 12px; letter-spacing: .05em; }
+
+/* ── GRADIENT OVERLAYS (HUD vignette) ── */
+.vignette {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  background:
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.72) 0%,
+      rgba(0,0,0,0.0) 22%,
+      rgba(0,0,0,0.0) 62%,
+      rgba(0,0,0,0.75) 100%
+    );
+  border-radius: 60px;
 }
 
-/* tap area (invisible, for double-tap like) */
-.tap-zone {
-  position:absolute; inset:0; z-index:6;
-  cursor:pointer;
-}
-
-/* heart pop */
-.heart-pop {
-  position:absolute; left:50%; top:45%;
-  transform:translate(-50%,-50%) scale(0);
-  font-size:72px; pointer-events:none; z-index:50;
-  animation:heartpop .65s cubic-bezier(.17,.89,.32,1.28) forwards;
-}
-@keyframes heartpop {
-  0%   { transform:translate(-50%,-55%) scale(0); opacity:1; }
-  50%  { transform:translate(-50%,-55%) scale(1.15); opacity:1; }
-  100% { transform:translate(-50%,-70%) scale(.7); opacity:0; }
-}
-
-/* swipe overlay hint */
-.swipe-hint {
-  position:absolute; left:50%; top:50%;
-  transform:translate(-50%,-50%);
-  font-size:38px; color:rgba(255,255,255,0);
-  pointer-events:none; z-index:20;
-  transition:none;
-}
-.swipe-hint.show { animation:swipeFlash .5s forwards; }
-@keyframes swipeFlash {
-  0%  {color:rgba(255,255,255,0)}
-  20% {color:rgba(255,255,255,0.7)}
-  80% {color:rgba(255,255,255,0.5)}
-  100%{color:rgba(255,255,255,0)}
-}
-
-/* ── progress bar ── */
-.progress-wrap {
-  margin: 10px 14px 0;
-  height: 2px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 2px;
-  overflow:hidden;
-}
-.progress-fill {
-  height:100%;
-  background: rgba(255,255,255,0.7);
-  border-radius:2px;
-  transition: width .5s linear;
-  width:0%;
-}
-
-/* ── bottom nav row ── */
-.bottom-nav {
-  display:flex; align-items:center; justify-content:center;
-  gap: 6px;
-  margin-top: 14px;
-  padding: 0 20px;
-}
-.nav-dot {
-  width:5px; height:5px; border-radius:50%;
-  background:rgba(255,255,255,0.2);
-  transition:background .2s, transform .2s;
-  flex-shrink:0;
-}
-.nav-dot.active {
-  background:rgba(255,255,255,0.75);
-  transform:scale(1.5);
-}
-
-/* ── tab row ── */
-.tab-row {
-  display:flex; justify-content:center; gap:24px;
-  margin: 16px 0 4px;
-  padding: 0 20px;
+/* ── TAB BAR ── */
+.tabs {
+  position: absolute;
+  top: 28px; left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  z-index: 10;
+  pointer-events: all;
 }
 .tab {
-  font-size:13px; font-weight:600;
-  color:rgba(255,255,255,0.3);
-  cursor:pointer; user-select:none;
-  padding-bottom:4px;
-  border-bottom:2px solid transparent;
-  transition:color .2s, border-color .2s;
-  letter-spacing:.01em;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.38);
+  cursor: pointer;
+  padding-bottom: 5px;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+  user-select: none;
+  letter-spacing: .01em;
 }
 .tab.active {
-  color:rgba(255,255,255,0.9);
-  border-color:rgba(255,255,255,0.8);
+  color: #fff;
+  border-bottom-color: #fff;
 }
 
-/* ── gesture toast ── */
-.toast {
-  position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
-  background:rgba(0,0,0,0.7); color:rgba(255,255,255,0.85);
-  font-size:12px; font-weight:600; letter-spacing:.05em;
-  padding:7px 18px; border-radius:20px;
-  border:1px solid rgba(255,255,255,0.12);
-  pointer-events:none; z-index:999;
-  opacity:0; transition:opacity .25s;
-  white-space:nowrap;
+/* ── CAPTION ABOVE VIDEO (inside HUD) ── */
+.caption-top {
+  position: absolute;
+  top: 72px; left: 0; right: 0;
+  text-align: center;
+  z-index: 10;
+  padding: 0 48px;
+  pointer-events: none;
 }
-.toast.show { opacity:1; }
+.caption-top p {
+  font-size: 17px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.92);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.9);
+}
+
+/* ── BOTTOM INFO BAR ── */
+.bottom-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 10;
+  padding: 0 22px 22px;
+  pointer-events: none;
+}
+
+/* username */
+.username {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 5px;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9);
+}
+
+/* subtitle / caption line */
+.subtitle {
+  font-size: 15px;
+  font-weight: 600;
+  font-style: italic;
+  color: #ffe566;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.95), 0 0 20px rgba(0,0,0,0.7);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+/* music row */
+.music-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.music-disc {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  animation: spin 3s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.music-name {
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}
+
+/* progress bar */
+.progress-track {
+  height: 2px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: rgba(255,255,255,0.8);
+  border-radius: 2px;
+  width: 0%;
+  transition: width .4s linear;
+}
+
+/* ── RIGHT ACTION BAR ── */
+.actions {
+  position: absolute;
+  right: 16px;
+  bottom: 110px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  pointer-events: all;
+}
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+.action-icon {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.75);
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: transform .15s, background .15s, border-color .15s;
+}
+.action-btn:active .action-icon,
+.action-btn:hover .action-icon {
+  transform: scale(0.88);
+  background: rgba(255,255,255,0.12);
+}
+.action-btn.liked .action-icon {
+  border-color: #ff2d55;
+  background: rgba(255,45,85,0.25);
+}
+.action-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+}
+
+/* ── NAV DOTS ── */
+.nav-dots {
+  position: absolute;
+  bottom: 14px; left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  z-index: 10;
+  pointer-events: none;
+}
+.dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  transition: background .2s, transform .2s;
+}
+.dot.active {
+  background: rgba(255,255,255,0.85);
+  transform: scale(1.5);
+}
+
+/* ── HEART POP ── */
+.heart-pop {
+  position: absolute;
+  left: 50%; top: 44%;
+  transform: translate(-50%,-50%) scale(0);
+  font-size: 86px;
+  pointer-events: none;
+  z-index: 50;
+  animation: heartpop .65s cubic-bezier(.17,.89,.32,1.28) forwards;
+}
+@keyframes heartpop {
+  0%   { transform: translate(-50%,-55%) scale(0); opacity: 1; }
+  45%  { transform: translate(-50%,-55%) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%,-72%) scale(0.7); opacity: 0; }
+}
+
+/* ── SWIPE INDICATOR ── */
+.swipe-indicator {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 42px;
+  color: rgba(255,255,255,0);
+  pointer-events: none;
+  z-index: 20;
+}
+.swipe-indicator.flash {
+  animation: swipeFlash .5s ease forwards;
+}
+@keyframes swipeFlash {
+  0%   { color: rgba(255,255,255,0); }
+  25%  { color: rgba(255,255,255,0.65); }
+  75%  { color: rgba(255,255,255,0.5); }
+  100% { color: rgba(255,255,255,0); }
+}
+
+/* ── TAP ZONE (invisible, for double-tap) ── */
+.tap-zone {
+  position: absolute;
+  inset: 0; z-index: 8;
+  cursor: pointer;
+  border-radius: 60px;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 36px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10,10,10,0.82);
+  color: rgba(255,255,255,0.88);
+  font-size: 12px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 8px 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.1);
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0;
+  transition: opacity .25s;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; z-index: 30;
+  border-radius: 60px;
+  transition: opacity .4s;
+  pointer-events: none;
+}
+.loading-overlay.hidden { opacity: 0; }
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .75s linear infinite;
+}
+.loading-text {
+  color: rgba(255,255,255,0.45);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* ── DESKTOP GUIDE (shown outside the 600px HUD) ── */
+.guide {
+  position: fixed;
+  right: max(20px, calc(50% - 420px));
+  top: 50%; transform: translateY(-50%);
+  width: 180px;
+  color: rgba(255,255,255,0.35);
+  font-size: 10px;
+  line-height: 1.9;
+  font-family: 'Inter', monospace;
+  z-index: 2;
+}
+.guide h4 {
+  color: rgba(255,255,255,0.6);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-bottom: 8px;
+}
+.guide .row {
+  display: flex; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 2px 0;
+}
+.guide .key { color: rgba(255,255,255,0.7); }
+@media (max-width: 860px) { .guide { display: none; } }
+
+/* ── SCALE DOWN ON SMALL SCREENS ── */
+@media (max-width: 640px) {
+  .hud-outer, .hud {
+    width: 100vw;
+    height: 100vw;
+    border-radius: 0;
+  }
+  .hud { border-radius: 0; }
+  .vignette { border-radius: 0; }
+  .tap-zone { border-radius: 0; }
+  .loading-overlay { border-radius: 0; }
+}
 </style>
 </head>
 <body>
 
-<div class="phone" id="phone">
+<div class="hud-outer">
+  <div class="hud" id="hud">
 
-  <!-- tab row -->
-  <div class="tab-row" id="tabRow">
-    <div class="tab" data-i="0">Following</div>
-    <div class="tab active" data-i="1">For You</div>
-    <div class="tab" data-i="2">LIVE</div>
-  </div>
+    <!-- video layer -->
+    <div class="video-bg" id="videoStack"></div>
 
-  <!-- caption above -->
-  <div class="caption-above">
-    <p id="captionAbove">Loading…</p>
-  </div>
+    <!-- vignette -->
+    <div class="vignette"></div>
 
-  <!-- video -->
-  <div class="video-wrap" id="videoWrap">
-    <div class="watermark" id="watermark">@clips</div>
-    <iframe id="videoFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    <div class="subtitle-bar">
-      <div class="subtitle-text" id="subtitleText"></div>
-    </div>
+    <!-- tap zone -->
     <div class="tap-zone" id="tapZone"></div>
-    <div class="swipe-hint" id="swipeHint">↑</div>
-  </div>
 
-  <!-- progress -->
-  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+    <!-- swipe indicator -->
+    <div class="swipe-indicator" id="swipeInd">↑</div>
 
-  <!-- dots -->
-  <div class="bottom-nav" id="navDots"></div>
+    <!-- tabs -->
+    <div class="tabs">
+      <div class="tab" data-i="0">Following</div>
+      <div class="tab active" data-i="1">For You</div>
+      <div class="tab" data-i="2">LIVE</div>
+    </div>
 
-</div>
+    <!-- caption top -->
+    <div class="caption-top">
+      <p id="captionTop">Loading…</p>
+    </div>
+
+    <!-- right actions -->
+    <div class="actions">
+      <div class="action-btn" id="likeBtn" onclick="doLike()">
+        <div class="action-icon" id="likeIcon">🤍</div>
+        <div class="action-count" id="likeCount">127K</div>
+      </div>
+      <div class="action-btn" onclick="showToast('💬 Comments')">
+        <div class="action-icon">💬</div>
+        <div class="action-count" id="commentCount">2.4K</div>
+      </div>
+      <div class="action-btn" onclick="showToast('↗ Shared!')">
+        <div class="action-icon">↗</div>
+        <div class="action-count" id="shareCount">891</div>
+      </div>
+    </div>
+
+    <!-- bottom bar -->
+    <div class="bottom-bar">
+      <div class="username" id="username">@clips</div>
+      <div class="subtitle" id="subtitle">Loading…</div>
+      <div class="music-row">
+        <div class="music-disc">♪</div>
+        <div class="music-name" id="musicName">Original Sound</div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- nav dots -->
+    <div class="nav-dots" id="navDots"></div>
+
+    <!-- loading overlay -->
+    <div class="loading-overlay" id="loader">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading feed…</div>
+    </div>
+
+  </div><!-- /.hud -->
+</div><!-- /.hud-outer -->
 
 <!-- toast -->
 <div class="toast" id="toast"></div>
 
+<!-- desktop guide -->
+<div class="guide">
+  <h4>Controls</h4>
+  <div class="row"><span class="key">↑ / W</span><span>Prev reel</span></div>
+  <div class="row"><span class="key">↓ / S</span><span>Next reel</span></div>
+  <div class="row"><span class="key">← / →</span><span>Switch tab</span></div>
+  <div class="row"><span class="key">Space</span><span>Play/Pause</span></div>
+  <div class="row"><span class="key">L</span><span>Like ❤️</span></div>
+  <div class="row"><span class="key">Dbl-tap</span><span>Like ❤️</span></div>
+  <div style="margin-top:12px;color:rgba(255,255,255,0.2);font-size:9px;">
+    Meta Ray-Ban Display<br>
+    600×600 · 20° FOV<br>
+    Neural Band EMG ready<br>
+    #000 = transparent on lens
+  </div>
+</div>
+
 <script>
-// ── feed data ──────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+//  FEED  — tikwm.com direct MP4 URLs (no iframes, no embeds)
+//  Pattern: https://www.tikwm.com/video/media/play/{ID}.mp4
+//  IDs are real known-working viral TikTok video IDs
+// ─────────────────────────────────────────────────────────────
 const FEED = [
   {
-    id:'7380830474457984298',
-    caption:'How the girl from church\ngot my bro acting',
-    subtitle:'I used to sit over there with my boyfriend Tyrone',
-    handle:'@clips'
+    id: '6990916139345808666',
+    caption: 'How the girl from church\ngot my bro acting',
+    subtitle: 'I used to sit over there with my boyfriend Tyrone',
+    user: '@clips',
+    music: 'Original Sound · @clips',
+    likes: '127K', comments: '2.4K', shares: '891'
   },
   {
-    id:'7371002345678901234',
-    caption:'POV: you finally texted\nyour situationship back',
-    subtitle:'Why are you acting like I did something wrong',
-    handle:'@dramatics'
+    id: '7137425612226282757',
+    caption: 'POV: you finally texted\nyour situationship back',
+    subtitle: 'Why are you acting like I did something wrong',
+    user: '@dramatics',
+    music: 'Situationship SZN',
+    likes: '984K', comments: '11K', shares: '43K'
   },
   {
-    id:'7362938271234567890',
-    caption:'Me explaining why I\'m late\nto my own birthday party',
-    subtitle:'Traffic was crazy bro I swear',
-    handle:'@storytime'
+    id: '7180082339897548074',
+    caption: 'The audacity of this man\nat Thanksgiving dinner 💀',
+    subtitle: 'Can you pass me the remote',
+    user: '@clips',
+    music: 'Family Drama Mix',
+    likes: '2.1M', comments: '18K', shares: '110K'
   },
   {
-    id:'7358201934567890123',
-    caption:'The audacity of this man\nat Thanksgiving dinner 💀',
-    subtitle:'Can you pass me the remote',
-    handle:'@clips'
+    id: '7052462750193935621',
+    caption: 'When she says "I\'m not\nmad" but she clearly is',
+    subtitle: 'I\'m fine. Everything is fine.',
+    user: '@relatable',
+    music: 'She\'s Fine (Original)',
+    likes: '3.4M', comments: '29K', shares: '198K'
   },
   {
-    id:'7351829304567891234',
-    caption:'When she says "I\'m not\nmad" but she\'s clearly mad',
-    subtitle:'I\'m fine. Everything is fine.',
-    handle:'@relatable'
+    id: '7196098283047622955',
+    caption: 'My bestie when she sees\nher ex at the mall',
+    subtitle: 'Oh wow I look amazing today wow',
+    user: '@bestiesbelike',
+    music: 'Glow Up Energy',
+    likes: '541K', comments: '7.2K', shares: '28K'
   },
   {
-    id:'7342019283746501234',
-    caption:'My bestie when she sees\nher ex at the mall',
-    subtitle:'Oh wow I look amazing today wow',
-    handle:'@bestiesbelike'
+    id: '7229069534956707114',
+    caption: 'Corporate America got\nme acting different fr',
+    subtitle: 'Per my last email.',
+    user: '@officetok',
+    music: 'Work Mode (Lo-fi)',
+    likes: '763K', comments: '9.4K', shares: '52K'
   },
   {
-    id:'7338201047382910234',
-    caption:'Corporate America got\nme acting different fr',
-    subtitle:'Per my last email',
-    handle:'@officetok'
+    id: '7287791218765084970',
+    caption: 'That one cousin who thinks\nthey run the cookout',
+    subtitle: 'Nobody told you to season it like that',
+    user: '@familyreunion',
+    music: 'Cookout Vibes',
+    likes: '1.8M', comments: '22K', shares: '95K'
   },
   {
-    id:'7321038201947382910',
-    caption:'When your mom calls\nduring a meeting 📵',
-    subtitle:'Just give me five minutes Ma',
-    handle:'@momtok'
-  },
-  {
-    id:'7315029384756102930',
-    caption:'That one cousin who thinks\nthey run the cookout',
-    subtitle:'Nobody told you to season it like that',
-    handle:'@familyreunion'
-  },
-  {
-    id:'7308192038475610293',
-    caption:'Me after spending 3 hours\nonline shopping for nothing',
-    subtitle:'Add to cart. Remove from cart.',
-    handle:'@shoppingtok'
+    id: '7324512893476012321',
+    caption: 'Me after spending 3 hours\nonline shopping for nothing',
+    subtitle: 'Add to cart. Remove from cart.',
+    user: '@shoppingtok',
+    music: 'Retail Therapy Beat',
+    likes: '481K', comments: '5.3K', shares: '19K'
   },
 ];
 
-let current = 0;
-let progressVal = 0;
-let progressTimer = null;
-let tabIndex = 1;
-let lastTap = 0;
-let lastClick = 0;
-let touchStartY = 0, touchStartX = 0;
+// ─────────────────────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────────────────────
+let current   = 0;
+let liked     = false;
+let paused    = false;
+let tabIndex  = 1;
+let progTimer = null;
+let progVal   = 0;
+let lastTap   = 0;
+let touchSY   = 0, touchSX = 0;
+let toastTimer;
 
-// ── build dots ─────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+//  BUILD REEL SLOTS
+// ─────────────────────────────────────────────────────────────
+function buildSlots() {
+  const stack = document.getElementById('videoStack');
+  stack.innerHTML = '';
+  FEED.forEach((v, i) => {
+    const div = document.createElement('div');
+    div.className = 'reel' + (i === 0 ? ' active' : '');
+    div.id = 'reel' + i;
+
+    // <video> — direct tikwm mp4, no iframe
+    const vid = document.createElement('video');
+    vid.src        = `https://www.tikwm.com/video/media/play/${v.id}.mp4`;
+    vid.autoplay   = i === 0;
+    vid.loop       = true;
+    vid.muted      = false;        // audio on glasses speakers
+    vid.playsInline = true;
+    vid.preload    = 'auto';
+    vid.setAttribute('playsinline', '');
+    vid.onerror    = () => div.classList.add('errored');
+
+    // error fallback UI
+    const errDiv = document.createElement('div');
+    errDiv.className = 'vid-error';
+    errDiv.innerHTML = `
+      <div class="vid-error-icon">🎵</div>
+      <div class="vid-error-text">${v.user} · ${v.caption.replace('\n',' ')}</div>`;
+
+    div.appendChild(vid);
+    div.appendChild(errDiv);
+    stack.appendChild(div);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  DOTS
+// ─────────────────────────────────────────────────────────────
 function buildDots() {
   const c = document.getElementById('navDots');
   c.innerHTML = '';
   FEED.forEach((_, i) => {
     const d = document.createElement('div');
-    d.className = 'nav-dot' + (i === current ? ' active' : '');
+    d.className = 'dot' + (i === current ? ' active' : '');
     c.appendChild(d);
   });
 }
 function updateDots() {
-  document.querySelectorAll('.nav-dot').forEach((d,i) =>
+  document.querySelectorAll('.dot').forEach((d, i) =>
     d.classList.toggle('active', i === current));
 }
 
-// ── update UI ──────────────────────────────────────────────────────────
-function updateUI() {
+// ─────────────────────────────────────────────────────────────
+//  UPDATE HUD TEXT
+// ─────────────────────────────────────────────────────────────
+function updateHUD() {
   const v = FEED[current];
-  // caption above (preserve line breaks)
-  document.getElementById('captionAbove').innerHTML =
-    v.caption.replace('\n','<br>');
-  // subtitle
-  document.getElementById('subtitleText').textContent = v.subtitle;
-  // watermark handle
-  document.getElementById('watermark').textContent = v.handle;
-  // video
-  document.getElementById('videoFrame').src =
-    `https://www.tiktok.com/embed/v2/${v.id}?autoplay=1&mute=0&controls=0&loop=1`;
-  updateDots();
+  document.getElementById('captionTop').innerHTML =
+    v.caption.replace('\n', '<br>');
+  document.getElementById('subtitle').textContent    = v.subtitle;
+  document.getElementById('username').textContent    = v.user;
+  document.getElementById('musicName').textContent   = v.music;
+  document.getElementById('likeCount').textContent   = v.likes;
+  document.getElementById('commentCount').textContent= v.comments;
+  document.getElementById('shareCount').textContent  = v.shares;
+  // reset like state
+  liked = false;
+  updateLikeUI();
 }
 
-// ── progress ───────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+//  PROGRESS BAR (driven by video currentTime)
+// ─────────────────────────────────────────────────────────────
 function startProgress() {
-  clearInterval(progressTimer);
-  progressVal = 0;
+  clearInterval(progTimer);
+  progVal = 0;
   document.getElementById('progressFill').style.width = '0%';
-  progressTimer = setInterval(() => {
-    progressVal += 100 / 450; // ~45s
-    if (progressVal >= 100) { progressVal = 0; goNext(); return; }
-    document.getElementById('progressFill').style.width = progressVal + '%';
-  }, 100);
+  progTimer = setInterval(() => {
+    const vid = currentVideo();
+    if (!vid || paused) return;
+    const pct = vid.duration
+      ? (vid.currentTime / vid.duration) * 100
+      : (progVal += .15);
+    document.getElementById('progressFill').style.width =
+      Math.min(pct, 100) + '%';
+  }, 120);
+}
+function currentVideo() {
+  const slot = document.getElementById('reel' + current);
+  return slot ? slot.querySelector('video') : null;
 }
 
-// ── navigate ───────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+//  NAVIGATE
+// ─────────────────────────────────────────────────────────────
 function goTo(n, dir) {
   if (n < 0) n = FEED.length - 1;
   if (n >= FEED.length) n = 0;
+
+  // pause current
+  const prev = currentVideo();
+  if (prev) { prev.pause(); prev.currentTime = 0; }
+
+  document.getElementById('reel' + current).classList.remove('active');
   current = n;
-  updateUI();
+  const slot = document.getElementById('reel' + current);
+  slot.classList.add('active');
+
+  // play new
+  const vid = slot.querySelector('video');
+  if (vid) { vid.currentTime = 0; vid.play().catch(() => {}); }
+
+  updateHUD();
+  updateDots();
   startProgress();
-  flashHint(dir === 'up' ? '↑' : '↓');
+  flashSwipe(dir === 'up' ? '↑' : '↓');
 }
-function goNext() { goTo(current + 1, 'up'); }
-function goPrev() { goTo(current - 1, 'down'); }
+const goNext = () => goTo(current + 1, 'up');
+const goPrev = () => goTo(current - 1, 'down');
 
-// ── swipe hint ─────────────────────────────────────────────────────────
-function flashHint(sym) {
-  const el = document.getElementById('swipeHint');
+// ─────────────────────────────────────────────────────────────
+//  LIKE
+// ─────────────────────────────────────────────────────────────
+function doLike() {
+  liked = !liked;
+  updateLikeUI();
+  if (liked) spawnHeart();
+}
+function updateLikeUI() {
+  const btn  = document.getElementById('likeBtn');
+  const icon = document.getElementById('likeIcon');
+  btn.classList.toggle('liked', liked);
+  icon.textContent = liked ? '❤️' : '🤍';
+}
+function spawnHeart() {
+  const h = document.createElement('div');
+  h.className = 'heart-pop';
+  h.textContent = '❤️';
+  document.getElementById('hud').appendChild(h);
+  h.addEventListener('animationend', () => h.remove());
+}
+
+// ─────────────────────────────────────────────────────────────
+//  SWIPE FLASH
+// ─────────────────────────────────────────────────────────────
+function flashSwipe(sym) {
+  const el = document.getElementById('swipeInd');
   el.textContent = sym;
-  el.classList.remove('show'); void el.offsetWidth;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 600);
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 600);
 }
 
-// ── toast ──────────────────────────────────────────────────────────────
-let toastTimer;
+// ─────────────────────────────────────────────────────────────
+//  TOAST
+// ─────────────────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -397,73 +768,123 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 1400);
 }
 
-// ── heart pop ──────────────────────────────────────────────────────────
-function spawnHeart() {
-  const wrap = document.getElementById('videoWrap');
-  const h = document.createElement('div');
-  h.className = 'heart-pop'; h.textContent = '❤️';
-  wrap.appendChild(h);
-  h.addEventListener('animationend', () => h.remove());
-}
-
-// ── tabs ───────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+//  TABS
+// ─────────────────────────────────────────────────────────────
 document.querySelectorAll('.tab').forEach(t => {
   t.addEventListener('click', () => {
     tabIndex = +t.dataset.i;
-    document.querySelectorAll('.tab').forEach((x,i) =>
+    document.querySelectorAll('.tab').forEach((x, i) =>
       x.classList.toggle('active', i === tabIndex));
     showToast(t.textContent.trim());
   });
 });
+function shiftTab(delta) {
+  tabIndex = ((tabIndex + delta) + 3) % 3;
+  document.querySelectorAll('.tab').forEach((x, i) =>
+    x.classList.toggle('active', i === tabIndex));
+  showToast(document.querySelector('.tab.active').textContent.trim());
+}
 
-// ── touch ──────────────────────────────────────────────────────────────
-const wrap = document.getElementById('videoWrap');
-wrap.addEventListener('touchstart', e => {
-  touchStartY = e.touches[0].clientY;
-  touchStartX = e.touches[0].clientX;
+// ─────────────────────────────────────────────────────────────
+//  TOUCH / SWIPE
+// ─────────────────────────────────────────────────────────────
+const tapZone = document.getElementById('tapZone');
+tapZone.addEventListener('touchstart', e => {
+  touchSY = e.touches[0].clientY;
+  touchSX = e.touches[0].clientX;
 }, { passive: true });
-wrap.addEventListener('touchend', e => {
-  const dy = touchStartY - e.changedTouches[0].clientY;
-  const dx = touchStartX - e.changedTouches[0].clientX;
-  if (Math.abs(dy) > 35 && Math.abs(dy) > Math.abs(dx)) {
+tapZone.addEventListener('touchend', e => {
+  const dy = touchSY - e.changedTouches[0].clientY;
+  const dx = touchSX - e.changedTouches[0].clientX;
+  if (Math.abs(dy) > 38 && Math.abs(dy) > Math.abs(dx)) {
     dy > 0 ? goNext() : goPrev();
+  } else if (Math.abs(dx) > 38 && Math.abs(dx) > Math.abs(dy)) {
+    shiftTab(dx > 0 ? 1 : -1);
   }
 }, { passive: true });
 
-// double tap
-document.getElementById('tapZone').addEventListener('touchend', e => {
+// double-tap to like
+tapZone.addEventListener('touchend', e => {
   const now = Date.now();
-  if (now - lastTap < 300) { spawnHeart(); showToast('❤️ Liked'); }
+  if (now - lastTap < 280) { doLike(); showToast('❤️ Liked'); }
   lastTap = now;
 }, { passive: true });
-document.getElementById('tapZone').addEventListener('click', e => {
+tapZone.addEventListener('click', e => {
   const now = Date.now();
-  if (now - lastClick < 300) { spawnHeart(); showToast('❤️ Liked'); }
-  lastClick = now;
+  if (now - lastTap < 280) { doLike(); showToast('❤️ Liked'); }
+  lastTap = now;
 });
 
-// ── keyboard ───────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+//  KEYBOARD
+// ─────────────────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowUp'   || e.key === 'w') goPrev();
-  if (e.key === 'ArrowDown' || e.key === 's') goNext();
-  if (e.key === 'ArrowRight'|| e.key === 'd') {
-    tabIndex = (tabIndex+1)%3;
-    document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('active',i===tabIndex));
-    showToast(document.querySelector('.tab.active').textContent.trim());
+  if (e.key === 'ArrowUp'    || e.key === 'w') { e.preventDefault(); goPrev(); }
+  if (e.key === 'ArrowDown'  || e.key === 's') { e.preventDefault(); goNext(); }
+  if (e.key === 'ArrowRight' || e.key === 'd') shiftTab(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'a') shiftTab(-1);
+  if (e.key === ' ') {
+    e.preventDefault();
+    const vid = currentVideo();
+    if (vid) {
+      paused = !paused;
+      paused ? vid.pause() : vid.play().catch(() => {});
+      showToast(paused ? '⏸ Paused' : '▶ Playing');
+    }
   }
-  if (e.key === 'ArrowLeft' || e.key === 'a') {
-    tabIndex = (tabIndex+2)%3;
-    document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('active',i===tabIndex));
-    showToast(document.querySelector('.tab.active').textContent.trim());
-  }
-  if (e.key === 'l' || e.key === 'L') { spawnHeart(); showToast('❤️ Liked'); }
-  if (e.key === ' ') { e.preventDefault(); showToast('⏸ Paused'); }
+  if (e.key === 'l' || e.key === 'L') { doLike(); showToast('❤️ Liked'); }
 });
 
-// ── init ───────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+//  META DISPLAY SDK SHIM
+// ─────────────────────────────────────────────────────────────
+(function metaSDK() {
+  // iOS WebKit bridge
+  if (window.webkit?.messageHandlers?.metaDisplay) {
+    window.webkit.messageHandlers.metaDisplay.postMessage({
+      action: 'requestPermission',
+      permission: 'com.meta.wearables.display',
+      displayMode: 'hud',
+      resolution: { w: 600, h: 600 },
+      shape: 'rounded-rect',
+      fov: 20
+    });
+  }
+  // Android bridge
+  if (window.MetaAndroid?.requestDisplayPermission) {
+    window.MetaAndroid.requestDisplayPermission('com.meta.wearables.display');
+  }
+  // Neural Band EMG gesture events
+  window.addEventListener('meta-neural-gesture', e => {
+    const g = e.detail?.gesture;
+    if (g === 'pinch')       { paused = !paused; const v = currentVideo(); paused ? v?.pause() : v?.play(); showToast(paused ? '⏸' : '▶'); }
+    if (g === 'swipe-up')    goNext();
+    if (g === 'swipe-down')  goPrev();
+    if (g === 'swipe-right') shiftTab(1);
+    if (g === 'swipe-left')  shiftTab(-1);
+    if (g === 'double-pinch'){ doLike(); showToast('❤️'); }
+  });
+})();
+
+// ─────────────────────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────────────────────
+buildSlots();
 buildDots();
-updateUI();
+updateHUD();
 startProgress();
+
+// hide loader once first video can play
+const firstVid = document.querySelector('#reel0 video');
+if (firstVid) {
+  firstVid.addEventListener('canplay', () => {
+    document.getElementById('loader').classList.add('hidden');
+  }, { once: true });
+  firstVid.play().catch(() => {});
+}
+// fallback: hide loader after 3s regardless
+setTimeout(() => document.getElementById('loader').classList.add('hidden'), 3000);
 </script>
 </body>
 </html>
