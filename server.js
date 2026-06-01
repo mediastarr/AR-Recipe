@@ -4,14 +4,14 @@ const fetch = require('node-fetch');
 
 const app = express();
 app.use(cors());
-app.use(express.static('.'));  // <-- this line serves index.html
+app.use(express.static('.'));
 
-app.get('/api/latest-tiktoks', async (req, res) => {
-  // your tiktok code
-});
+const TIKTOK_DB = [
+  'https://www.tiktok.com/@zackdfilms92/video/7642701134880181517',
+  'https://www.tiktok.com/@animelogic101/video/7638725919116414239',
+  'https://www.tiktok.com/@king.of.the.jungle450/video/7631534693640391943'
+];
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running: http://localhost:${PORT}`));
 app.get('/api/latest-tiktoks', async (req, res) => {
   try {
     const randomUrl = TIKTOK_DB[Math.floor(Math.random() * TIKTOK_DB.length)];
@@ -20,8 +20,6 @@ app.get('/api/latest-tiktoks', async (req, res) => {
     const response = await fetch(oembedUrl);
     const data = await response.json();
 
-    // TikTok's oembed doesn't return the video URL directly
-    // So we send back the original URL and let frontend handle embed
     res.json({
       url: randomUrl,
       title: data.title,
@@ -29,7 +27,9 @@ app.get('/api/latest-tiktoks', async (req, res) => {
       thumbnail_url: data.thumbnail_url
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: 'Failed to fetch TikTok' });
   }
 });
+
+const PORT = 3000;
+app.listen(PORT, () => console.log(`Server running: http://localhost:${PORT}`));
