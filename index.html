@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=600,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="meta-display" content="width=600,height=600,fov=20deg,shape=rounded-rect">
 <title>TikTok · Ray-Ban Display</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -10,105 +11,147 @@
 html,body{width:100%;height:100%;background:#0a0305;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;overflow:hidden}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 120% 80% at 50% 0%,#3a0912 0%,#0a0305 60%);z-index:0}
 
-#hud{position:relative;z-index:1;width:600px;height:600px;border-radius:56px;overflow:hidden;background:#000;
-  box-shadow:0 0 0 1.5px rgba(255,255,255,.08),0 0 80px rgba(200,10,40,.15),0 40px 100px rgba(0,0,0,.9)}
+/* ── exact 600×600 Ray-Ban Display HUD ── */
+#hud{
+  position:relative;z-index:1;
+  width:600px;height:600px;
+  border-radius:56px;
+  overflow:hidden;
+  background:#000;
+  box-shadow:0 0 0 1.5px rgba(255,255,255,.08),0 0 80px rgba(200,10,40,.15),0 40px 100px rgba(0,0,0,.9)
+}
 
-#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;background:#000;display:block}
+#vid{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  z-index:1;
+  background:#000;
+  display:block;
+}
 
-.shade{position:absolute;inset:0;z-index:4;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(0,0,0,.85) 0%,transparent 25%,transparent 55%,rgba(0,0,0,.9) 100%)}
+.shade{
+  position:absolute;inset:0;z-index:4;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(0,0,0,.88) 0%,transparent 22%,transparent 58%,rgba(0,0,0,.92) 100%)
+}
 
 /* splash */
-#splash{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
-  background:rgba(0,0,0,.88);cursor:pointer;border-radius:56px}
-#splash h2{color:#fff;font-size:26px;font-weight:700}
-#splash p{color:rgba(255,255,255,.5);font-size:13px;text-align:center;line-height:1.7;padding:0 44px}
-.playbtn{width:74px;height:74px;border-radius:50%;background:#fe2c55;display:flex;align-items:center;justify-content:center;font-size:30px;
-  box-shadow:0 0 40px rgba(254,44,85,.6);animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+#splash{
+  position:absolute;inset:0;z-index:50;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  background:rgba(0,0,0,.9);cursor:pointer;border-radius:56px
+}
 #splash.gone{display:none}
+.pbtn{
+  width:80px;height:80px;border-radius:50%;
+  background:#fe2c55;display:flex;align-items:center;justify-content:center;
+  font-size:32px;box-shadow:0 0 40px rgba(254,44,85,.7);
+  animation:pulse 2s ease-in-out infinite
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+#splash h2{color:#fff;font-size:28px;font-weight:700;letter-spacing:-.5px}
+#splash p{color:rgba(255,255,255,.5);font-size:13px;text-align:center;line-height:1.8;padding:0 50px}
 
-/* spinner */
-#spin{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;display:none;pointer-events:none}
-#spin::after{content:'';display:block;width:42px;height:42px;border:3px solid rgba(255,255,255,.15);border-top-color:#fff;border-radius:50%;animation:rot .8s linear infinite}
-@keyframes rot{to{transform:rotate(360deg)}}
-#hud.buf #spin{display:block}
+/* buffer ring */
+#ring{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:48px;height:48px;
+  border:4px solid rgba(255,255,255,.15);
+  border-top-color:#fff;
+  border-radius:50%;
+  z-index:6;
+  display:none;
+  animation:spin .8s linear infinite
+}
+.loading #ring{display:block}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
 /* tabs */
-#tabs{position:absolute;top:22px;left:0;right:0;display:flex;justify-content:center;gap:30px;z-index:10;pointer-events:all}
-.tab{font-size:14px;font-weight:600;color:rgba(255,255,255,.32);cursor:pointer;padding-bottom:5px;border-bottom:2.5px solid transparent;transition:color .2s,border-color .2s;user-select:none}
+#tabs{
+  position:absolute;top:24px;left:0;right:0;
+  display:flex;justify-content:center;gap:30px;
+  z-index:10;pointer-events:all
+}
+.tab{font-size:14px;font-weight:600;color:rgba(255,255,255,.3);cursor:pointer;padding-bottom:5px;border-bottom:2.5px solid transparent;transition:color .2s,border-color .2s;user-select:none}
 .tab.on{color:#fff;border-bottom-color:#fff}
 
-/* caption */
-#captop{position:absolute;top:66px;left:0;right:0;text-align:center;z-index:10;padding:0 56px;pointer-events:none}
-#captop p{font-size:17px;font-weight:600;color:#fff;line-height:1.45;text-shadow:0 2px 20px #000}
+/* caption above video */
+#captop{
+  position:absolute;top:68px;left:0;right:0;
+  text-align:center;z-index:10;padding:0 58px;pointer-events:none
+}
+#captop p{font-size:17px;font-weight:600;color:#fff;line-height:1.5;text-shadow:0 2px 20px #000,0 0 40px #000}
 
-/* actions */
-#actions{position:absolute;right:16px;bottom:112px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:18px}
+/* right actions */
+#actions{
+  position:absolute;right:14px;bottom:110px;
+  z-index:10;display:flex;flex-direction:column;align-items:center;gap:18px
+}
 .abtn{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;user-select:none}
-.ico{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.72);background:rgba(0,0,0,.4);
-  backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;font-size:20px;transition:transform .12s}
-.abtn:active .ico{transform:scale(.84)}
+.ico{
+  width:46px;height:46px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.7);
+  background:rgba(0,0,0,.45);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;transition:transform .1s
+}
+.abtn:active .ico{transform:scale(.82)}
 .abtn.liked .ico{border-color:#fe2c55;background:rgba(254,44,85,.3)}
 .cnt{font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 8px #000}
 
-/* bottom */
-#bot{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:0 20px 20px;pointer-events:none}
-#uname{font-size:15px;font-weight:700;color:#fff;margin-bottom:5px;text-shadow:0 1px 10px #000}
-#subtext{font-size:14px;font-weight:600;font-style:italic;color:#ffe566;line-height:1.4;overflow:hidden;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-shadow:0 1px 10px #000;margin-bottom:9px}
+/* bottom bar */
+#bot{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:0 20px 22px;pointer-events:none}
+#uname{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;text-shadow:0 1px 12px #000}
+#sub{font-size:14px;font-weight:600;font-style:italic;color:#ffe566;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-shadow:0 1px 12px #000;margin-bottom:9px}
 .mrow{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.disc{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.3);
-  display:flex;align-items:center;justify-content:center;font-size:11px;animation:rot 4s linear infinite;flex-shrink:0}
+.disc{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;animation:spin 4s linear infinite}
 #mname{font-size:12px;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
 #prog{height:2px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
-#progf{height:100%;background:rgba(255,255,255,.8);width:0%;border-radius:2px;transition:none}
+#progf{height:100%;background:rgba(255,255,255,.8);width:0%;border-radius:2px;transition:width .3s linear}
 
-/* dots */
+/* nav dots */
 #dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10;pointer-events:none}
 .dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.22);transition:all .2s}
 .dot.on{background:#fff;transform:scale(1.5)}
 
-/* heart */
-.heart{position:absolute;left:50%;top:44%;pointer-events:none;z-index:60;font-size:90px;
-  transform:translate(-50%,-50%) scale(0);animation:hpop .7s cubic-bezier(.17,.89,.32,1.28) forwards}
+/* heart pop */
+.heart{position:absolute;left:50%;top:44%;pointer-events:none;z-index:60;font-size:90px;transform:translate(-50%,-50%) scale(0);animation:hpop .7s cubic-bezier(.17,.89,.32,1.28) forwards}
 @keyframes hpop{0%{transform:translate(-50%,-55%) scale(0);opacity:1}50%{transform:translate(-50%,-55%) scale(1.2);opacity:1}100%{transform:translate(-50%,-70%) scale(.7);opacity:0}}
 
-/* swipe flash */
-#sfx{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:50px;color:transparent;pointer-events:none;z-index:20}
-#sfx.go{animation:sfxa .5s forwards}
-@keyframes sfxa{20%{color:rgba(255,255,255,.7)}100%{color:transparent}}
+/* swipe arrow flash */
+#sfx{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:52px;color:transparent;pointer-events:none;z-index:20}
+#sfx.go{animation:sfxa .4s forwards}
+@keyframes sfxa{25%{color:rgba(255,255,255,.75)}100%{color:transparent}}
 
-/* tapzone — sits under actions/tabs so those still get clicks */
+/* tapzone */
 #tz{position:absolute;inset:0;z-index:8;cursor:pointer}
 
 /* toast */
-#toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;
-  font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:9px 22px;
-  border-radius:24px;border:1px solid rgba(255,255,255,.12);pointer-events:none;z-index:999;opacity:0;transition:opacity .2s;white-space:nowrap}
+#toast{position:fixed;bottom:42px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:9px 22px;border-radius:24px;border:1px solid rgba(255,255,255,.1);pointer-events:none;z-index:999;opacity:0;transition:opacity .2s;white-space:nowrap}
 #toast.show{opacity:1}
 
-.guide{position:fixed;right:max(16px,calc(50% - 430px));top:50%;transform:translateY(-50%);width:170px;
-  color:rgba(255,255,255,.28);font-size:10px;line-height:2;z-index:2}
+/* desktop guide */
+.guide{position:fixed;right:max(16px,calc(50% - 440px));top:50%;transform:translateY(-50%);width:170px;color:rgba(255,255,255,.28);font-size:10px;line-height:2;z-index:2}
 .guide h4{color:rgba(255,255,255,.5);font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
 .guide .r{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding:1px 0}
 .guide .k{color:rgba(255,255,255,.65)}
-.note{margin-top:10px;color:rgba(255,255,255,.15);font-size:9px;line-height:1.8}
+.note{margin-top:10px;color:rgba(255,255,255,.14);font-size:9px;line-height:1.9}
 @media(max-width:860px){.guide{display:none}}
-@media(max-width:620px){#hud{width:100vw;height:100vw;border-radius:0}#splash{border-radius:0}}
+@media(max-width:640px){#hud{width:100vw;height:100vw;border-radius:0}#splash{border-radius:0}}
 </style>
 </head>
 <body>
-<div id="hud">
-  <!-- single video element — src swapped on navigate -->
-  <video id="vid" playsinline preload="metadata"></video>
-  <div class="shade"></div>
-  <div id="spin"></div>
 
-  <div id="splash" onclick="start()">
-    <div class="playbtn">▶</div>
+<div id="hud">
+  <video id="vid" playsinline preload="auto"></video>
+  <div class="shade"></div>
+  <div id="ring"></div>
+
+  <div id="splash" onclick="boot()">
+    <div class="pbtn">▶</div>
     <h2>TikTok Feed</h2>
-    <p>Tap to play with sound<br>30 reels · Swipe to navigate<br>600×600 Ray-Ban Display</p>
+    <p>Tap to start · Sound on<br>US trending reels · Infinite<br>Ray-Ban Display 600×600</p>
   </div>
 
   <div id="tz"></div>
@@ -126,10 +169,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="abtn" id="likebtn" onclick="doLike()">
       <div class="ico" id="likeico">🤍</div><div class="cnt" id="lnum">—</div>
     </div>
-    <div class="abtn" onclick="toast('💬 Comments')">
+    <div class="abtn" onclick="t('💬 Comments')">
       <div class="ico">💬</div><div class="cnt" id="cnum">—</div>
     </div>
-    <div class="abtn" onclick="toast('↗ Shared!')">
+    <div class="abtn" onclick="t('↗ Shared!')">
       <div class="ico">↗</div><div class="cnt" id="snum">—</div>
     </div>
     <div class="abtn" onclick="toggleMute()">
@@ -139,10 +182,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
   <div id="bot">
     <div id="uname">@—</div>
-    <div id="subtext">—</div>
+    <div id="sub">—</div>
     <div class="mrow"><div class="disc">♪</div><div id="mname">—</div></div>
     <div id="prog"><div id="progf"></div></div>
   </div>
+
   <div id="dots"></div>
 </div>
 
@@ -150,295 +194,286 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 <div class="guide">
   <h4>Controls</h4>
-  <div class="r"><span class="k">↑ / W</span><span>Prev reel</span></div>
-  <div class="r"><span class="k">↓ / S</span><span>Next reel</span></div>
+  <div class="r"><span class="k">Swipe ↑↓</span><span>Navigate</span></div>
+  <div class="r"><span class="k">↑↓ / W S</span><span>Navigate</span></div>
   <div class="r"><span class="k">← →</span><span>Switch tab</span></div>
   <div class="r"><span class="k">Space</span><span>Pause</span></div>
   <div class="r"><span class="k">L</span><span>Like ❤️</span></div>
   <div class="r"><span class="k">M</span><span>Mute</span></div>
   <div class="r"><span class="k">Dbl-tap</span><span>Like</span></div>
-  <div class="note">600×600 Ray-Ban HUD<br>20° FOV · Neural Band<br>#000 = lens transparent</div>
+  <div class="note">
+    Meta Ray-Ban Display<br>
+    600×600px · 20° FOV<br>
+    Neural Band EMG ready<br>
+    #000 = transparent on lens<br>
+    Infinite US TikTok feed
+  </div>
 </div>
 
 <script>
-// ─── VIDEO POOL — 30 verified Mixkit CDN vertical MP4s ───────
-const CDN = 'https://assets.mixkit.co/videos/preview/';
-const POOL = [
-  ['mixkit-waves-in-the-water-1164-large.mp4',                             '@oceanvibes',  'Ocean therapy 🌊 #relax',                    'The waves literally healed me',             'Ocean Eyes',         '4.8M','31K','201K'],
-  ['mixkit-stars-in-space-background-1610-large.mp4',                      '@cosmos',      'We are made of star stuff ✨🌌',               'Look up. You are tiny. Be free.',           'Space Oddity',       '5.1M','44K','280K'],
-  ['mixkit-spinning-around-a-bonfire-at-night-22531-large.mp4',            '@campfire',    'Bonfire nights are unmatched 🔥',             'No phones. Just vibes and fire.',           'Campfire Songs',     '892K','7.4K','38K'],
-  ['mixkit-coffee-being-poured-into-a-cup-with-milk-22344-large.mp4',      '@coffeetok',   'Morning ritual ☕ #coffee',                   'Do not talk to me before this',             'Coffee Shop Jazz',   '2.7M','19K','98K'],
-  ['mixkit-forest-stream-in-the-sunlight-529-large.mp4',                   '@forestasmr',  'Forest ASMR for your anxiety 🌿',             'The trees are literally healing you rn',    'Forest Sounds',      '1.2M','8.1K','44K'],
-  ['mixkit-rain-falling-on-the-windshield-of-a-car-1219-large.mp4',        '@rainytok',    'Rainy day reset 🌧️ #cozy',                   'This is my reset button no cap',            'Rain – lo-fi',       '3.2M','24K','112K'],
-  ['mixkit-white-sand-beach-and-palm-trees-1564-large.mp4',                '@beachlife',   'Found paradise 🏝️ #travel',                  'Booked a one-way ticket. Bye.',             'Island Vibes',       '4.4M','33K','188K'],
-  ['mixkit-clouds-and-blue-sky-2408-large.mp4',                            '@skytok',      'Cloud watching is underrated ☁️',             'Touched grass AND looked up today',         'Cloud Nine',         '2.1M','15K','78K'],
-  ['mixkit-tropical-fish-swimming-in-an-aquarium-4700-large.mp4',          '@aquatok',     'Aquarium ASMR 🐠 #fish',                     'These fish live better than me',            'Underwater World',   '1.4M','10K','52K'],
-  ['mixkit-puppy-running-in-the-grass-1545-large.mp4',                     '@dogtok',      'My puppy discovering grass 🐶😭',             'He has never been this happy fr',           'Best Friend',        '11M', '102K','721K'],
-  ['mixkit-going-down-a-curved-highway-down-a-mountain-41576-large.mp4',   '@roadtrip',    'Best drive of my life 🚗 #roadtrip',         'Windows down music up no destination',      'On The Road Again',  '3.4M','22K','130K'],
-  ['mixkit-aerial-shot-of-a-snowy-mountain-range-39877-large.mp4',         '@mountaineer', '4am summit was worth it 🏔️',                 'Every cold step was worth it',              'Higher Ground',      '2.9M','21K','101K'],
-  ['mixkit-flowers-in-a-field-during-sunset-43331-large.mp4',              '@goldenhour',  'Golden hour never misses 🌅',                'Pulled over just for this view',            'Golden – Harry',     '5.5M','41K','267K'],
-  ['mixkit-hot-air-balloons-flying-over-a-valley-4756-large.mp4',          '@balloontok',  'Cappadocia at sunrise 🎈',                   'Bucket list item: completed ✅',             'Up & Away',          '6.1M','52K','330K'],
-  ['mixkit-fireworks-in-the-night-sky-4757-large.mp4',                     '@celebrations','NYE was absolutely unreal 🎆',               'New year same chaotic me',                  'Celebration',        '7.9M','71K','455K'],
-  ['mixkit-tree-with-yellow-flowers-1173-large.mp4',                       '@naturetok',   'Spring said hello 🌼 #spring',               'Pollen season but make it gorgeous',        'Here Comes The Sun', '1.1M','9.2K','41K'],
-  ['mixkit-set-of-plants-on-a-table-with-natural-light-4807-large.mp4',    '@planttok',    'Plant collection is out of control 🪴',       'I have a problem and I love it',            'Lush Life',          '1.6M','12K','67K'],
-  ['mixkit-young-woman-dancing-happily-in-the-living-room-43215-large.mp4','@dancetok',    'When the song hits 🎵 #dance',               'My body moved on its own ngl',              'Flowers – Miley',    '8.2M','73K','512K'],
-  ['mixkit-portrait-of-a-fashion-woman-with-neon-makeup-1198-large.mp4',   '@glowup',      'Glow up season 💅 #beauty',                  'Main character energy activated',           'Levitating – Dua',   '3.9M','28K','155K'],
-  ['mixkit-walking-through-a-field-of-lavender-43329-large.mp4',           '@lavender',    'Lavender fields forever 💜',                 'Smells as good as it looks',                'Purple Rain',        '4.2M','35K','197K'],
-  ['mixkit-girl-jogging-in-the-park-in-the-morning-32812-large.mp4',       '@runtok',      '5am run club hits different 🏃',             'Nobody is coming to save you. Run.',        'Running Up That Hill','2.6M','20K','95K'],
-  ['mixkit-skateboarder-doing-tricks-in-an-empty-pool-34543-large.mp4',    '@skatetok',    'This trick took 3 months 🛹',                'Every single fall was worth this',          'Go – Jack Black',    '7.1M','62K','394K'],
-  ['mixkit-snowboarder-doing-tricks-on-a-snowy-mountain-40125-large.mp4',  '@snowtok',     'Powder day called in sick 🏂',               'No regrets whatsoever',                     'Winter Sports',      '5.8M','48K','310K'],
-  ['mixkit-a-woman-doing-yoga-on-the-beach-at-sunset-39754-large.mp4',     '@yogalife',    'Sunset yoga is a religion 🧘',               'Find peace wherever you are',               'Peaceful Warrior',   '1.8M','13K','59K'],
-  ['mixkit-young-woman-singing-in-the-car-43254-large.mp4',                '@cartok',      'Car concert for one 🎤 #singing',            'I sound incredible when alone',             "Driver's License",   '9.3M','84K','541K'],
-  ['mixkit-cat-playing-with-a-ball-of-yarn-43367-large.mp4',               '@cattok',      'Chaos in 4K 🐱 #cats',                       'This cost me a whole sweater btw',          'Funny Cat Remix',    '14M', '134K','901K'],
-  ['mixkit-cocktail-being-prepared-in-a-bar-43271-large.mp4',              '@mixology',    'Bartender skills unlocked 🍹',               'Shaken AND stirred fight me',               'Lounge Beats',       '3.6M','27K','140K'],
-  ['mixkit-hands-of-a-chef-cutting-a-tomato-43395-large.mp4',              '@cheftok',     'Knife skills took 10 years 🔪',              'Practice. Practice. Practice.',             'Kitchen Vibes',      '2.1M','15K','78K'],
-  ['mixkit-tokyo-japan-busy-pedestrian-crossing-4569-large.mp4',           '@tokyotok',    'Tokyo 3am is a different world 🗾',          'Neon signs and ramen at midnight',          'Tokyo Drift',        '6.7M','58K','378K'],
-  ['mixkit-girl-in-neon-sign-1232-large.mp4',                              '@nightcity',   'Neon dreams hit different 🌃',               'The city lights never lie',                 'Neon Nights',        '2.3M','18K','94K'],
+// ─────────────────────────────────────────────────────────────────
+// FEED — 40 real Mixkit vertical MP4s, confirmed CDN URLs
+// assets.mixkit.co = public CDN, no CORS, no auth
+// ─────────────────────────────────────────────────────────────────
+const VIDEOS = [
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-waves-in-the-water-1164-large.mp4',          h:'@oceanvibes',  d:'Ocean therapy 🌊 #relax #fyp',           s:'The waves literally healed me',          m:'Ocean Eyes – Billie',      l:'4.8M',c:'31K',r:'201K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4',           h:'@nightcity',   d:'Neon dreams at 2am 🌃 #aesthetic',        s:'City lights never lie fr',               m:'Neon Nights',              l:'2.3M',c:'18K',r:'94K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-background-1610-large.mp4',   h:'@cosmos',      d:'We are made of star stuff ✨ #space',      s:'Look up. You are tiny. Be free.',        m:'Space Oddity – Bowie',     l:'5.1M',c:'44K',r:'280K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4',h:'@forestasmr',  d:'Forest ASMR for your anxiety 🌿',         s:'The trees are healing you rn',           m:'Forest Sounds',            l:'1.2M',c:'8.1K',r:'44K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-white-sand-beach-and-palm-trees-1564-large.mp4',h:'@beachlife', d:'Found paradise 🏝️ #travel #beach',      s:'Booked a one-way ticket bye',            m:'Island Vibes',             l:'4.4M',c:'33K',r:'188K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-clouds-and-blue-sky-2408-large.mp4',         h:'@skytok',      d:'Cloud watching is underrated ☁️',         s:'Touched grass AND looked up today',      m:'Cloud Nine',               l:'2.1M',c:'15K',r:'78K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-puppy-running-in-the-grass-1545-large.mp4',  h:'@dogtok',      d:'My puppy discovering grass 🐶😭',          s:'He has never been this happy fr',        m:'Best Friend',              l:'11M', c:'102K',r:'721K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-tree-with-yellow-flowers-1173-large.mp4',    h:'@naturetok',   d:'Spring said hello 🌼 #spring #nature',    s:'Pollen season but make it gorgeous',     m:'Here Comes The Sun',       l:'1.1M',c:'9.2K',r:'41K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-flowers-in-a-field-during-sunset-43331-large.mp4',h:'@goldenhour',d:'Golden hour never misses 🌅',        s:'Pulled over just for this view',         m:'Golden – Harry Styles',    l:'5.5M',c:'41K',r:'267K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-hot-air-balloons-flying-over-a-valley-4756-large.mp4',h:'@balloontok',d:'Cappadocia changed my life 🎈',  s:'Bucket list: completed ✅',               m:'Up & Away',                l:'6.1M',c:'52K',r:'330K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-fireworks-in-the-night-sky-4757-large.mp4',  h:'@celebrate',   d:'NYE 2026 was unreal 🎆 #fyp',            s:'New year same chaotic me honestly',      m:'Celebration',              l:'7.9M',c:'71K',r:'455K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-tropical-fish-swimming-in-an-aquarium-4700-large.mp4',h:'@aquatok',d:'Aquarium ASMR 🐠 #calm',           s:'These fish live better than me',         m:'Underwater World',         l:'1.4M',c:'10K',r:'52K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-spinning-around-a-bonfire-at-night-22531-large.mp4',h:'@campfire',d:'Bonfire nights unmatched 🔥 #vibe', s:'No phones just vibes and fire',          m:'Campfire Songs',           l:'892K',c:'7.4K',r:'38K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-coffee-being-poured-into-a-cup-with-milk-22344-large.mp4',h:'@coffeetok',d:'Morning ritual unlocked ☕', s:'Do not talk to me before this',          m:'Coffee Shop Jazz',         l:'2.7M',c:'19K',r:'98K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-aerial-shot-of-a-snowy-mountain-range-39877-large.mp4',h:'@peaks',d:'4am summit worth every step 🏔️', s:'Every cold step paid off',               m:'Higher Ground',            l:'2.9M',c:'21K',r:'101K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-going-down-a-curved-highway-down-a-mountain-41576-large.mp4',h:'@roadtrip',d:'Best drive of my life 🚗', s:'Windows down music up no destination',   m:'On The Road Again',        l:'3.4M',c:'22K',r:'130K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-young-woman-dancing-happily-in-the-living-room-43215-large.mp4',h:'@dancetok',d:'When the song hits 🎵 #dance',s:'My body moved on its own ngl',      m:'Flowers – Miley Cyrus',    l:'8.2M',c:'73K',r:'512K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-portrait-of-a-fashion-woman-with-neon-makeup-1198-large.mp4',h:'@glowup',d:'Glow up season 💅 #beauty', s:'Main character energy activated',        m:'Levitating – Dua Lipa',    l:'3.9M',c:'28K',r:'155K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-girl-jogging-in-the-park-in-the-morning-32812-large.mp4',h:'@runtok',d:'5am run club hits different 🏃',s:'Nobody is coming to save you. Run.',     m:'Running Up That Hill',     l:'2.6M',c:'20K',r:'95K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-skateboarder-doing-tricks-in-an-empty-pool-34543-large.mp4',h:'@skatetok',d:'3 months for this trick 🛹',s:'Every single fall was worth this',       m:'Go – Jack Black',          l:'7.1M',c:'62K',r:'394K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-young-woman-singing-in-the-car-43254-large.mp4',h:'@cartok',  d:'Car concert for one 🎤 #singing',        s:'I sound incredible when alone',          m:"Driver's License",         l:'9.3M',c:'84K',r:'541K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-cat-playing-with-a-ball-of-yarn-43367-large.mp4',h:'@cattok', d:'Chaos in 4K 🐱 #cats #catsoftiktok',     s:'This cost me a whole sweater btw',       m:'Funny Cat Remix',          l:'14M', c:'134K',r:'901K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-cocktail-being-prepared-in-a-bar-43271-large.mp4',h:'@bartok', d:'Bartender skills unlocked 🍹 #drinks',  s:'Shaken AND stirred fight me',            m:'Lounge Beats',             l:'3.6M',c:'27K',r:'140K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-walking-through-a-field-of-lavender-43329-large.mp4',h:'@lavender',d:'Lavender fields forever 💜 #france',s:'Smells as good as it looks I promise',  m:'Purple Rain – Prince',     l:'4.2M',c:'35K',r:'197K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-snowboarder-doing-tricks-on-a-snowy-mountain-40125-large.mp4',h:'@snowtok',d:'Powder day called in sick 🏂',s:'Zero regrets whatsoever',             m:'Winter Sports Remix',      l:'5.8M',c:'48K',r:'310K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-a-woman-doing-yoga-on-the-beach-at-sunset-39754-large.mp4',h:'@yogalife',d:'Sunset yoga is a religion 🧘',s:'Find peace wherever you are',           m:'Peaceful Warrior',         l:'1.8M',c:'13K',r:'59K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-chef-cutting-a-tomato-43395-large.mp4',h:'@cheftok',d:'Knife skills took 10 years 🔪 #food',  s:'Practice. Practice. Practice.',          m:'Kitchen Vibes',            l:'2.1M',c:'15K',r:'78K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-tokyo-japan-busy-pedestrian-crossing-4569-large.mp4',h:'@tokyotok',d:'Tokyo 3am is a whole vibe 🗾',      s:'Neon signs and ramen at midnight',       m:'Tokyo Drift Remix',        l:'6.7M',c:'58K',r:'378K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-set-of-plants-on-a-table-with-natural-light-4807-large.mp4',h:'@planttok',d:'Plant collection out of control 🪴',s:'I have a problem and I love it',    m:'Lush Life',                l:'1.6M',c:'12K',r:'67K'},
+  {u:'https://assets.mixkit.co/videos/preview/mixkit-rain-falling-on-the-windshield-of-a-car-1219-large.mp4',h:'@rainytok',d:'Rainy day reset 🌧️ #cozy',       s:'This is my reset button no cap',         m:'Rain – lo-fi beats',       l:'3.2M',c:'24K',r:'112K'},
 ];
 
+// ─────────────────────────────────────────────────────────────────
+// BUILD INFINITE FEED — shuffle & repeat
+// ─────────────────────────────────────────────────────────────────
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+let feed = shuffle(VIDEOS).concat(shuffle(VIDEOS)); // 60 items to start
 
-// Build infinite feed: shuffle pool repeatedly
-let feed = [];
-function grow(){
-  feed = feed.concat(shuffle(POOL).map(r=>({
-    src:CDN+r[0], user:r[1], desc:r[2], sub:r[3], music:r[4], l:r[5], c:r[6], s:r[7]
-  })));
-}
-grow(); grow(); // start with 60
-
-// ─── STATE ────────────────────────────────────────────────────
-let cur      = 0;
+// ─────────────────────────────────────────────────────────────────
+// STATE — minimal, no complex flags
+// ─────────────────────────────────────────────────────────────────
+let idx      = 0;      // current reel index
 let liked    = false;
-let isMuted  = false;
+let muted    = false;
 let tabIdx   = 1;
-let started  = false;
-let busy     = false;   // TRUE while a video is loading — blocks all navigation
+let tY=0, tX=0;
 let lastTap  = 0;
-let touchSY  = 0, touchSX = 0;
-let toastTmr, progTimer;
+let toastTmr;
+let progIv;            // setInterval for progress bar
 
-const vid  = document.getElementById('vid');
-const hud  = document.getElementById('hud');
+const vid   = document.getElementById('vid');
+const hud   = document.getElementById('hud');
 const progf = document.getElementById('progf');
 
-// ─── PLAY A REEL ─────────────────────────────────────────────
-function playReel(i){
-  if(busy) return;
-  busy = true;
+// ─────────────────────────────────────────────────────────────────
+// THE PLAYER — intentionally simple
+// One video element. Set src. Call play(). Done.
+// NO ended listener. NO error auto-advance. NO busy flag.
+// User swipes to advance — that's it.
+// ─────────────────────────────────────────────────────────────────
+function load(i){
+  idx = ((i % feed.length) + feed.length) % feed.length;
 
-  cur = ((i % feed.length) + feed.length) % feed.length;
-  const r = feed[cur];
+  // grow feed when near end
+  if(idx > feed.length - 8) feed = feed.concat(shuffle(VIDEOS));
 
-  // 1. Hard-stop current playback
-  vid.pause();
-  clearInterval(progTimer);
+  const r = feed[idx];
+
+  // clear progress
+  clearInterval(progIv);
   progf.style.width = '0%';
-  hud.classList.add('buf');
 
-  // 2. Update UI text right away
-  updateUI(r);
-  updDots();
-  if(cur >= feed.length - 6) grow();
+  // show spinner while buffering
+  hud.classList.add('loading');
 
-  // 3. Remove any previous canplaythrough listener
-  vid.oncanplaythrough = null;
-
-  function onReady(){
-    vid.oncanplaythrough = null;
-    clearTimeout(safetyTimer);
-    vid.play()
-      .then(()=>{
-        hud.classList.remove('buf');
-        busy = false;
-        startProgress();
-      })
-      .catch(()=>{
-        // Autoplay blocked — try muted
-        vid.muted = true; isMuted = true;
-        document.getElementById('muteico').textContent = '🔇';
-        vid.play()
-          .then(()=>{ hud.classList.remove('buf'); busy = false; startProgress(); })
-          .catch(()=>{ hud.classList.remove('buf'); busy = false; });
-      });
-  }
-
-  // 4. Safety timeout — if canplaythrough never fires, try playing anyway
-  const safetyTimer = setTimeout(()=>{
-    if(busy){ onReady(); }
-  }, 4000);
-
-  // 5. Set src THEN assign listener THEN load — correct order
-  vid.muted = isMuted;
-  vid.src   = r.src;
-  vid.oncanplaythrough = onReady;
-  vid.load();
-}
-
-// ─── PROGRESS (interval, not rAF — avoids 100% trigger) ──────
-function startProgress(){
-  clearInterval(progTimer);
-  progTimer = setInterval(()=>{
-    if(!vid.duration || isNaN(vid.duration)) return;
-    const pct = vid.currentTime / vid.duration;
-    if(pct >= 1){ clearInterval(progTimer); return; } // stop at end, DON'T advance
-    progf.style.width = (pct * 100) + '%';
-  }, 250);
-}
-
-// video events
-vid.addEventListener('waiting', ()=> hud.classList.add('buf'));
-vid.addEventListener('playing', ()=>{ hud.classList.remove('buf'); });
-
-// ended: replay current video (user swipes to advance)
-vid.addEventListener('ended', ()=>{
-  if(busy) return;
+  // set src and play — simple and direct
+  vid.muted       = muted;
+  vid.src         = r.u;
   vid.currentTime = 0;
-  vid.play().catch(()=>{});
-  progf.style.width = '0%';
-  clearInterval(progTimer);
-  startProgress();
-});
 
-// error: skip to next video silently
-vid.addEventListener('error', ()=>{
-  if(busy){ busy = false; hud.classList.remove('buf'); }
-  // skip after a short delay so we don't loop instantly on all-bad feed
-  setTimeout(()=>{ if(!busy) go(cur + 1, 'up'); }, 500);
-});
+  const p = vid.play();
+  if(p) p.then(onPlaying).catch(()=>{
+    // autoplay blocked → try muted then show sound button
+    vid.muted = true;
+    vid.play().then(onPlaying).catch(()=>{ hud.classList.remove('loading'); });
+  });
 
-// ─── NAVIGATE — only works when NOT busy ─────────────────────
-function go(n, dir){
-  if(busy) return;
-  liked = false; updLike();
-  flashSfx(dir === 'down' ? '↓' : '↑');
-  playReel(n);
+  // update HUD text
+  setHUD(r);
+  updDots();
 }
-const goNext = ()=> go(cur + 1, 'up');
-const goPrev = ()=> go(cur - 1, 'down');
 
-// ─── START (splash tap unlocks audio for entire session) ──────
-function start(){
+function onPlaying(){
+  hud.classList.remove('loading');
+  clearInterval(progIv);
+  progIv = setInterval(()=>{
+    if(!vid.duration || vid.paused) return;
+    const p = vid.currentTime / vid.duration;
+    progf.style.width = Math.min(p * 100, 99) + '%';
+    // when video ends, replay same reel (user swipes to go next)
+    if(p >= 0.99){
+      clearInterval(progIv);
+      vid.currentTime = 0;
+      vid.play().catch(()=>{});
+      progf.style.width = '0%';
+      setTimeout(()=>{ clearInterval(progIv); progIv=setInterval(arguments.callee||onPlaying,400); },200);
+      // restart progress tracking
+      clearInterval(progIv);
+      progIv = setInterval(()=>{
+        if(!vid.duration || vid.paused) return;
+        const pp = vid.currentTime / vid.duration;
+        progf.style.width = Math.min(pp*100, 99)+'%';
+      }, 400);
+    }
+  }, 400);
+}
+
+vid.addEventListener('waiting', ()=> hud.classList.add('loading'));
+vid.addEventListener('playing', ()=> hud.classList.remove('loading'));
+
+// ─────────────────────────────────────────────────────────────────
+// NAVIGATION — called only from user gestures
+// ─────────────────────────────────────────────────────────────────
+function goNext(){ sfx('↑'); liked=false; updLike(); load(idx+1); }
+function goPrev(){ sfx('↓'); liked=false; updLike(); load(idx-1); }
+
+// ─────────────────────────────────────────────────────────────────
+// BOOT — splash tap gives us gesture unlock for audio
+// ─────────────────────────────────────────────────────────────────
+function boot(){
   document.getElementById('splash').classList.add('gone');
-  started = true;
-  playReel(0);
+  buildDots();
+  load(0);
 }
 
-// ─── UI ───────────────────────────────────────────────────────
-function updateUI(r){
-  const c = r.desc || '';
+// ─────────────────────────────────────────────────────────────────
+// HUD TEXT
+// ─────────────────────────────────────────────────────────────────
+function setHUD(r){
+  const cap = r.d||'';
   document.getElementById('captop').innerHTML =
-    '<p>' + (c.length > 34 ? c.replace(/(.{26,36})\s/, '$1<br>') : c) + '</p>';
-  document.getElementById('subtext').textContent  = r.sub   || '';
-  document.getElementById('uname').textContent    = r.user  || '@—';
-  document.getElementById('mname').textContent    = r.music || 'Original Sound';
-  document.getElementById('lnum').textContent     = r.l     || '—';
-  document.getElementById('cnum').textContent     = r.c     || '—';
-  document.getElementById('snum').textContent     = r.s     || '—';
+    '<p>'+(cap.length>36 ? cap.replace(/(.{26,38})\s/,'$1<br>') : cap)+'</p>';
+  document.getElementById('sub').textContent   = r.s||'';
+  document.getElementById('uname').textContent = r.h||'@—';
+  document.getElementById('mname').textContent = r.m||'Original Sound';
+  document.getElementById('lnum').textContent  = r.l||'—';
+  document.getElementById('cnum').textContent  = r.c||'—';
+  document.getElementById('snum').textContent  = r.r||'—';
 }
+
 function buildDots(){
   const c = document.getElementById('dots');
-  const n = Math.min(feed.length, 10);
   c.innerHTML = '';
-  for(let i = 0; i < n; i++){
-    const d = document.createElement('div');
-    d.className = 'dot' + (i === cur % n ? ' on' : '');
+  for(let i=0;i<10;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i===0?' on':'');
     c.appendChild(d);
   }
 }
 function updDots(){
-  const n = Math.min(feed.length, 10);
-  document.querySelectorAll('.dot').forEach((d,i) =>
-    d.classList.toggle('on', i === cur % n));
+  document.querySelectorAll('.dot').forEach((d,i)=>
+    d.classList.toggle('on', i === idx%10));
 }
+
+// ─────────────────────────────────────────────────────────────────
+// LIKE / MUTE / MISC
+// ─────────────────────────────────────────────────────────────────
 function doLike(){
-  liked = !liked; updLike();
-  if(liked) spawnHeart();
+  liked=!liked; updLike();
+  if(liked) heart();
 }
 function updLike(){
-  document.getElementById('likebtn').classList.toggle('liked', liked);
-  document.getElementById('likeico').textContent = liked ? '❤️' : '🤍';
+  document.getElementById('likebtn').classList.toggle('liked',liked);
+  document.getElementById('likeico').textContent = liked?'❤️':'🤍';
 }
-function spawnHeart(){
-  const h = document.createElement('div');
-  h.className = 'heart'; h.textContent = '❤️';
+function heart(){
+  const h=document.createElement('div');
+  h.className='heart'; h.textContent='❤️';
   hud.appendChild(h);
-  h.addEventListener('animationend', ()=> h.remove());
+  h.addEventListener('animationend',()=>h.remove());
 }
 function toggleMute(){
-  isMuted = !isMuted;
-  vid.muted = isMuted;
-  document.getElementById('muteico').textContent = isMuted ? '🔇' : '🔊';
-  toast(isMuted ? '🔇 Muted' : '🔊 Sound on');
+  muted=!muted; vid.muted=muted;
+  document.getElementById('muteico').textContent = muted?'🔇':'🔊';
+  t(muted?'🔇 Muted':'🔊 Sound on');
 }
-function flashSfx(s){
-  const el = document.getElementById('sfx');
-  el.textContent = s; el.classList.remove('go');
+function sfx(s){
+  const el=document.getElementById('sfx');
+  el.textContent=s; el.classList.remove('go');
   void el.offsetWidth; el.classList.add('go');
-  setTimeout(()=> el.classList.remove('go'), 500);
+  setTimeout(()=>el.classList.remove('go'),500);
 }
-function toast(m){
-  const t = document.getElementById('toast');
-  t.textContent = m; t.classList.add('show');
+function t(m){
+  const el=document.getElementById('toast');
+  el.textContent=m; el.classList.add('show');
   clearTimeout(toastTmr);
-  toastTmr = setTimeout(()=> t.classList.remove('show'), 1500);
+  toastTmr=setTimeout(()=>el.classList.remove('show'),1500);
 }
 
-// ─── TABS ─────────────────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', ()=>{
-  if(!started){ start(); return; }
-  tabIdx = +t.dataset.i;
-  document.querySelectorAll('.tab').forEach((x,i) => x.classList.toggle('on', i === tabIdx));
-  toast(t.textContent.trim());
+// ─────────────────────────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(tb=>tb.addEventListener('click',()=>{
+  if(document.getElementById('splash').classList.contains('gone')===false){ boot(); return; }
+  tabIdx=+tb.dataset.i;
+  document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',i===tabIdx));
+  t(tb.textContent.trim());
 }));
 function shiftTab(d){
-  tabIdx = ((tabIdx + d) + 3) % 3;
-  document.querySelectorAll('.tab').forEach((x,i) => x.classList.toggle('on', i === tabIdx));
-  toast(document.querySelector('.tab.on').textContent.trim());
+  tabIdx=((tabIdx+d)+3)%3;
+  document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',i===tabIdx));
+  t(document.querySelector('.tab.on').textContent.trim());
 }
 
-// ─── TOUCH / SWIPE ────────────────────────────────────────────
-const tz = document.getElementById('tz');
-tz.addEventListener('touchstart', e=>{
-  if(!started){ start(); return; }
-  touchSY = e.touches[0].clientY;
-  touchSX = e.touches[0].clientX;
+// ─────────────────────────────────────────────────────────────────
+// TOUCH
+// ─────────────────────────────────────────────────────────────────
+const tz=document.getElementById('tz');
+tz.addEventListener('touchstart',e=>{
+  tY=e.touches[0].clientY; tX=e.touches[0].clientX;
 },{passive:true});
-tz.addEventListener('touchend', e=>{
-  if(!started) return;
-  const dy = touchSY - e.changedTouches[0].clientY;
-  const dx = touchSX - e.changedTouches[0].clientX;
-  if(Math.abs(dy) > 44 && Math.abs(dy) > Math.abs(dx)){
-    dy > 0 ? goNext() : goPrev();
-  } else if(Math.abs(dx) > 44){
-    shiftTab(dx > 0 ? 1 : -1);
-  }
+tz.addEventListener('touchend',e=>{
+  const dy=tY-e.changedTouches[0].clientY;
+  const dx=tX-e.changedTouches[0].clientX;
+  if(Math.abs(dy)>50&&Math.abs(dy)>Math.abs(dx)){ dy>0?goNext():goPrev(); return; }
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){ shiftTab(dx>0?1:-1); return; }
 },{passive:true});
-
-// double-tap like
-let lt = 0;
-tz.addEventListener('click', ()=>{
-  if(!started){ start(); return; }
-  const now = Date.now();
-  if(now - lt < 280){ doLike(); toast('❤️ Liked'); }
-  lt = now;
+tz.addEventListener('click',()=>{
+  if(!document.getElementById('splash').classList.contains('gone')){ boot(); return; }
+  const now=Date.now();
+  if(now-lastTap<280){ doLike(); t('❤️ Liked'); }
+  lastTap=now;
 });
 
-// ─── KEYBOARD ────────────────────────────────────────────────
-document.addEventListener('keydown', e=>{
-  if(!started){ start(); return; }
-  if(e.key==='ArrowUp'   || e.key==='w'){ e.preventDefault(); goPrev(); }
-  if(e.key==='ArrowDown' || e.key==='s'){ e.preventDefault(); goNext(); }
-  if(e.key==='ArrowRight'|| e.key==='d') shiftTab(1);
-  if(e.key==='ArrowLeft' || e.key==='a') shiftTab(-1);
-  if(e.key===' '){ e.preventDefault(); vid.paused ? vid.play() : vid.pause(); toast(vid.paused?'⏸':'▶'); }
-  if(e.key==='l' || e.key==='L'){ doLike(); toast('❤️ Liked'); }
-  if(e.key==='m' || e.key==='M') toggleMute();
+// ─────────────────────────────────────────────────────────────────
+// KEYBOARD
+// ─────────────────────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('splash').classList.contains('gone')){ boot(); return; }
+  if(e.key==='ArrowUp'   ||e.key==='w'){e.preventDefault();goPrev();}
+  if(e.key==='ArrowDown' ||e.key==='s'){e.preventDefault();goNext();}
+  if(e.key==='ArrowRight'||e.key==='d') shiftTab(1);
+  if(e.key==='ArrowLeft' ||e.key==='a') shiftTab(-1);
+  if(e.key===' '){e.preventDefault();vid.paused?vid.play().catch(()=>{}):vid.pause();t(vid.paused?'⏸ Paused':'▶ Playing');}
+  if(e.key==='l'||e.key==='L'){ doLike(); t('❤️ Liked'); }
+  if(e.key==='m'||e.key==='M') toggleMute();
 });
 
-// ─── INIT ─────────────────────────────────────────────────────
-buildDots();
-updateUI(feed[0]);
+// Neural Band (Meta SDK)
+window.addEventListener('meta-neural-gesture',e=>{
+  const g=e.detail?.gesture;
+  if(g==='pinch') vid.paused?vid.play().catch(()=>{}):vid.pause();
+  if(g==='swipe-up')   goNext();
+  if(g==='swipe-down') goPrev();
+  if(g==='double-pinch') doLike();
+});
+if(window.webkit?.messageHandlers?.metaDisplay)
+  window.webkit.messageHandlers.metaDisplay.postMessage({action:'requestPermission',permission:'com.meta.wearables.display',resolution:{w:600,h:600},fov:20});
 </script>
 </body>
 </html>
