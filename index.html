@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=600,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="meta-display" content="width=600,height=600,fov=20deg">
 <title>TikTok · Ray-Ban Display</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -63,10 +62,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 </head>
 <body>
 <div id="hud">
-  <video id="vid" playsinline preload="auto" loop></video>
+  <video id="vid" playsinline muted loop></video>
   <div class="shade"></div>
   <div id="ring"></div>
-  <div id="splash"><div class="pbtn">▶</div><h2>TikTok Feed</h2><p>Tap to play with sound<br>US trending reels · Infinite scroll<br>Ray-Ban Display 600×600 · 20° FOV</p></div>
+  <div id="splash">
+    <div class="pbtn">▶</div>
+    <h2>TikTok Feed</h2>
+    <p>Tap to play · Swipe up/down to navigate<br>600×600 Ray-Ban Display · 20° FOV<br>Infinite reels</p>
+  </div>
   <div id="tz"></div>
   <div id="sfx"></div>
   <div id="tabs">
@@ -79,7 +82,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="abtn" id="likebtn" onclick="doLike()"><div class="ico" id="likeico">🤍</div><div class="cnt" id="lnum">—</div></div>
     <div class="abtn" onclick="tk('💬 Comments')"><div class="ico">💬</div><div class="cnt" id="cnum">—</div></div>
     <div class="abtn" onclick="tk('↗ Shared!')"><div class="ico">↗</div><div class="cnt" id="snum">—</div></div>
-    <div class="abtn" onclick="toggleMute()"><div class="ico" id="muteico">🔊</div><div class="cnt">Sound</div></div>
+    <div class="abtn" onclick="toggleMute()"><div class="ico" id="muteico">🔇</div><div class="cnt">Sound</div></div>
   </div>
   <div id="bot">
     <div id="uname">@—</div>
@@ -97,174 +100,137 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="r"><span class="k">← →</span><span>Tab</span></div>
   <div class="r"><span class="k">Space</span><span>Pause</span></div>
   <div class="r"><span class="k">L</span><span>Like ❤️</span></div>
-  <div class="r"><span class="k">M</span><span>Mute</span></div>
-  <div class="r"><span class="k">Dbl-tap</span><span>Like</span></div>
-  <div class="note">Meta Ray-Ban Display<br>600×600px · 20° FOV<br>Neural Band EMG ready<br>#000 = transparent on lens</div>
+  <div class="r"><span class="k">M</span><span>Mute/Sound</span></div>
+  <div class="note">Meta Ray-Ban Display<br>600×600px · 20° FOV<br>#000 = transparent on lens</div>
 </div>
-
 <script>
-// ─── VIDEOS ──────────────────────────────────────────────────
-// Google Cloud Storage sample bucket — truly open CORS, no referrer block,
-// no auth, confirmed working from any origin forever.
-// We use vertical crop via CSS object-fit:cover on the 600×600 square.
-const BASE = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/';
-
-// Each entry: [filename, @handle, caption, subtitle, music, likes, comments, shares]
+// ── CONFIRMED working public MP4 URLs ────────────────────────
+// storage.googleapis.com = CORS * open, no referrer check
+// Used by Google Cast SDK samples, Expo docs, etc.
+const G = 'https://storage.googleapis.com/gtv-videos-bucket/sample/';
 const CLIPS = [
-  ['ForBiggerBlazes.mp4',       '@firetok',     'Fire content you can\'t skip 🔥 #fyp',          'This is what going viral feels like',        'Fire – Kasabian',       '4.2M','28K','180K'],
-  ['ForBiggerEscapes.mp4',      '@escapetok',   'POV: you said yes to everything 🌍',            'Best decision I ever made no cap',           'No Limits – 2 Unlimited','3.1M','19K','95K'],
-  ['ForBiggerFun.mp4',          '@funtok',      'Living my best life 🎉 #fun #vibes',            'The main character era is real',             'Good as Hell – Lizzo',  '5.8M','44K','310K'],
-  ['ForBiggerJoyrides.mp4',     '@roadtriptok', 'Road trip season is HERE 🚗 #roadtrip',        'Windows down, playlist loud, no GPS',        'Joyride – Kesha',       '2.9M','21K','120K'],
-  ['ForBiggerMeltdowns.mp4',    '@dramatok',    'Corporate just asked me to "circle back" 💀',   'I am not okay and that is okay',             'Drama – Ethel Cain',    '7.3M','61K','420K'],
-  ['SubaruOutbackOnStreetAndDirt.mp4','@outdoortok','Built different 🏔️ #outdoors #nature',      'Not all those who wander are lost',          'Higher Ground – RHCP',  '1.8M','13K','67K'],
-  ['TearsOfSteel.mp4',          '@scifitok',    'This is what 2026 looks like 🤖✨',             'The future came early and I\'m here for it', 'Interstellar OST',       '6.4M','52K','380K'],
-  ['VolkswagenGTIReview.mp4',   '@cartok',      'POV: you finally got the dream car 🏎️',        'Saved for 3 years. Worth every penny.',      'Fast Car – Tracy Chapman','3.5M','27K','148K'],
-  ['WeAreGoingOnBullrun.mp4',   '@traveltok',   'We said yes to the adventure 🌎 #travel',      'Life is too short for boring trips',         'Adventure of a Lifetime','4.7M','38K','220K'],
-  ['WhatCarCanYouGetForAGrand.mp4','@carmontok','$1000 car challenge 🚨 #budgetcar',           'You won\'t believe what we found',           'Money – Cardi B',       '9.1M','83K','571K'],
-  ['ForBiggerBlazes.mp4',       '@viraltok',    'The clip that broke the internet 💥',           'Comments are going crazy and I love it',     'Viral Moment',          '12M', '110K','890K'],
-  ['ForBiggerEscapes.mp4',      '@wandertok',   'Quit my job. Bought a ticket. Went. ✈️',       'No plan. Best trip of my life.',             'Free Fallin\' – Petty',  '8.6M','72K','501K'],
-  ['ForBiggerFun.mp4',          '@positok',     'Main character morning routine ☀️ #glow',      'Romanticize your life starting today',       'Golden Hour – JVKE',    '5.2M','41K','267K'],
-  ['ForBiggerJoyrides.mp4',     '@nighttok',    '3am drives hit different 🌙 #nightdrive',      'The city is yours after midnight',           'Blinding Lights',       '6.9M','58K','391K'],
-  ['TearsOfSteel.mp4',          '@techfuture',  'AI just changed everything again 🤯 #tech',    'We are living in the future fr',             'Technologic – Daft Punk','4.4M','35K','198K'],
-  ['SubaruOutbackOnStreetAndDirt.mp4','@hikertok','Sunrise hike was absolutely worth it 🌅',   'Set the alarm for 4am. No regrets.',         'Morning Has Broken',    '3.3M','24K','131K'],
-  ['VolkswagenGTIReview.mp4',   '@reviewtok',   'Honest review nobody asked for 🎤 #review',   'Spoiler: it slaps',                          'Tell Me Lies – FH',     '2.1M','16K','78K'],
-  ['WeAreGoingOnBullrun.mp4',   '@groupchat',   'When the group chat actually followed through','We actually did it. We genuinely did it.',   'Good Times Roll',       '7.8M','66K','445K'],
-  ['WhatCarCanYouGetForAGrand.mp4','@fliptok',  'Bought it for $800. Sold it for $4000 💰',    'The flip of the decade explained',          'Money Trees – Kendrick', '11M', '98K','712K'],
-  ['ForBiggerBlazes.mp4',       '@mindset',     'Reminder: you are doing better than you think','Every day is a win. Even the hard ones.',   'Eye of the Tiger',      '3.9M','31K','172K'],
+  [G+'ForBiggerBlazes.mp4',             '@firetok',    '🔥 Fire content you can\'t scroll past',    'This is what going viral feels like',      'Fire – Kasabian',         '4.2M','28K','180K'],
+  [G+'ForBiggerEscapes.mp4',            '@escapetok',  '🌍 Said yes to everything this week',        'Best decision I\'ve ever made no cap',     'No Limits',               '3.1M','19K','95K'],
+  [G+'ForBiggerFun.mp4',                '@funtok',     '🎉 Living my best life #fyp #fun',           'Main character era is fully activated',    'Good as Hell – Lizzo',    '5.8M','44K','310K'],
+  [G+'ForBiggerJoyrides.mp4',           '@roadtriptok','🚗 Road trip season is officially here',     'Windows down, playlist loud, no GPS',      'Joyride – Kesha',         '2.9M','21K','120K'],
+  [G+'ForBiggerMeltdowns.mp4',          '@dramatok',   '💀 Corporate asked me to "circle back"',     'I am not okay and that is okay bestie',    'Drama – Ethel Cain',      '7.3M','61K','420K'],
+  [G+'SubaruOutbackOnStreetAndDirt.mp4',G+'outdoortok','🏔️ Built different #adventure #outdoors',   'Not all those who wander are lost',        'Higher Ground – RHCP',    '1.8M','13K','67K'],
+  [G+'TearsOfSteel.mp4',                '@scifitok',   '🤖 This is what 2026 looks like ✨',          'The future arrived early and I\'m ready',  'Interstellar OST',        '6.4M','52K','380K'],
+  [G+'VolkswagenGTIReview.mp4',         '@cartok',     '🏎️ POV: finally got the dream car',         'Saved for 3 years. Worth every penny.',    'Fast Car – Tracy Chapman', '3.5M','27K','148K'],
+  [G+'WeAreGoingOnBullrun.mp4',         '@traveltok',  '🌎 We said yes to the adventure',            'Life is too short for boring trips fr',    'Adventure of a Lifetime', '4.7M','38K','220K'],
+  [G+'WhatCarCanYouGetForAGrand.mp4',   '@carmontok',  '🚨 $1000 car challenge (you won\'t believe)','Comments are going absolutely insane',     'Money – Cardi B',         '9.1M','83K','571K'],
+  [G+'BigBuckBunny.mp4',                '@animationtok','🐰 This bunny has no chill whatsoever 😭',  'The lore goes deep trust me',              'Bunny Hop Remix',         '11M', '94K','650K'],
+  [G+'ElephantsDream.mp4',              '@dreamtok',   '✨ Dreams you can actually step inside',     'This is what the subconscious looks like', 'Dreaming – Blondie',      '3.8M','29K','155K'],
+  [G+'Sintel.mp4',                      '@epictok',    '🐉 Dragon found. Life changed forever.',     'Nobody talks about this enough fr',        'Epic Score',              '5.2M','43K','278K'],
+  [G+'SubaruOutbackOnStreetAndDirt.mp4','@overlander',  '🌲 Off-road only no exceptions',            'Pavement is for the timid',               'Born to Run',             '2.4M','18K','89K'],
+  [G+'ForBiggerBlazes.mp4',             '@mindset',    '💡 Reminder: you\'re doing better than you think','Every single day is a W. Even the hard ones.','Eye of the Tiger','3.9M','31K','172K'],
 ];
 
-// Build infinite feed by shuffling repeatedly
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
-let feed = [];
-function grow(){ feed = feed.concat(shuffle(CLIPS).map(c=>({
-  url: BASE+c[0], h:c[1], d:c[2], s:c[3], m:c[4], l:c[5], c:c[6], r:c[7]
-})));  }
-grow(); grow(); // 40 items to start
+let feed=[];
+function grow(){
+  feed=feed.concat(shuffle(CLIPS).map(c=>({
+    url:c[0],h:c[1],d:c[2],s:c[3],m:c[4],l:c[5],c:c[6],r:c[7]
+  })));
+}
+grow();grow(); // 30 items
 
-// ─── STATE ───────────────────────────────────────────────────
-let idx=0, liked=false, isMuted=false, tabIdx=1;
-let tY=0, tX=0, lastTap=0, toastTmr, progIv;
-let booted = false;
+let idx=0,liked=false,isMuted=true,tabIdx=1;
+let tY=0,tX=0,lastTap=0,toastTmr,progIv,booted=false;
+const vid=document.getElementById('vid');
+const hud=document.getElementById('hud');
+const progf=document.getElementById('progf');
 
-const vid   = document.getElementById('vid');
-const hud   = document.getElementById('hud');
-const progf = document.getElementById('progf');
-
-// ─── PLAYER ─────────────────────────────────────────────────
-// Absolutely minimal. Set src → play(). loop attr handles looping.
-// Progress bar via setInterval. NO auto-navigate. NO ended handler.
-// Only user gestures navigate.
+// ── LOAD: the whole player in 10 lines ───────────────────────
+// muted=true so autoplay works everywhere, user taps M for sound
 function load(i){
-  idx = ((i%feed.length)+feed.length)%feed.length;
-  if(idx > feed.length-6) grow();
-
-  const r = feed[idx];
-
+  idx=((i%feed.length)+feed.length)%feed.length;
+  if(idx>feed.length-5)grow();
+  const r=feed[idx];
   clearInterval(progIv);
-  progf.style.width = '0%';
+  progf.style.width='0%';
   hud.classList.add('loading');
-
-  vid.muted = isMuted;
-  vid.src   = r.url;
-
-  vid.play()
-    .then(started)
-    .catch(()=>{
-      // Autoplay blocked — go muted, unmute on next user tap
-      vid.muted = true;
-      isMuted   = true;
-      document.getElementById('muteico').textContent = '🔇';
-      vid.play().then(started).catch(()=>hud.classList.remove('loading'));
-    });
-
-  setHUD(r);
-  updDots();
+  vid.muted=isMuted;
+  vid.src=r.url;
+  vid.load();
+  vid.play().then(()=>{
+    hud.classList.remove('loading');
+    progIv=setInterval(()=>{
+      if(vid.duration)progf.style.width=Math.min(vid.currentTime/vid.duration*100,99)+'%';
+    },300);
+  }).catch(e=>{ console.log(e); hud.classList.remove('loading'); });
+  setHUD(r); updDots();
 }
 
-function started(){
-  hud.classList.remove('loading');
-  clearInterval(progIv);
-  progIv = setInterval(()=>{
-    if(!vid.duration || isNaN(vid.duration) || vid.paused) return;
-    progf.style.width = Math.min((vid.currentTime/vid.duration)*100, 99) + '%';
-  }, 300);
-}
+vid.addEventListener('waiting',()=>hud.classList.add('loading'));
+vid.addEventListener('playing',()=>hud.classList.remove('loading'));
 
-// Only show buffering ring if video actually stalls
-vid.addEventListener('waiting', ()=> hud.classList.add('loading'));
-vid.addEventListener('playing', ()=> hud.classList.remove('loading'));
+function goNext(){flash('↑');liked=false;updLike();load(idx+1);}
+function goPrev(){flash('↓');liked=false;updLike();load(idx-1);}
 
-// ─── NAV — ONLY from user gestures ──────────────────────────
-function goNext(){ flash('↑'); liked=false; updLike(); load(idx+1); }
-function goPrev(){ flash('↓'); liked=false; updLike(); load(idx-1); }
-
-// ─── BOOT ────────────────────────────────────────────────────
-function boot(){
-  if(booted) return;
-  booted = true;
+// splash tap = boot + audio unlock gesture
+document.getElementById('splash').addEventListener('click',()=>{
+  if(booted)return;
+  booted=true;
   document.getElementById('splash').classList.add('gone');
   buildDots();
   load(0);
-}
+});
 
-// ─── HUD ─────────────────────────────────────────────────────
 function setHUD(r){
   const cap=r.d||'';
-  document.getElementById('captop').innerHTML=
-    '<p>'+(cap.length>36?cap.replace(/(.{26,38})\s/,'$1<br>'):cap)+'</p>';
-  document.getElementById('sub').textContent   = r.s||'';
-  document.getElementById('uname').textContent = r.h||'@—';
-  document.getElementById('mname').textContent = r.m||'Original Sound';
-  document.getElementById('lnum').textContent  = r.l||'—';
-  document.getElementById('cnum').textContent  = r.c||'—';
-  document.getElementById('snum').textContent  = r.r||'—';
+  document.getElementById('captop').innerHTML='<p>'+(cap.length>36?cap.replace(/(.{26,38})\s/,'$1<br>'):cap)+'</p>';
+  document.getElementById('sub').textContent=r.s||'';
+  document.getElementById('uname').textContent=r.h||'@—';
+  document.getElementById('mname').textContent=r.m||'Original Sound';
+  document.getElementById('lnum').textContent=r.l||'—';
+  document.getElementById('cnum').textContent=r.c||'—';
+  document.getElementById('snum').textContent=r.r||'—';
 }
 function buildDots(){
-  const c=document.getElementById('dots');
-  c.innerHTML='';
+  const c=document.getElementById('dots');c.innerHTML='';
   for(let i=0;i<10;i++){const d=document.createElement('div');d.className='dot'+(i===0?' on':'');c.appendChild(d);}
 }
 function updDots(){document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===idx%10));}
 function doLike(){liked=!liked;updLike();if(liked)spawnHeart();}
 function updLike(){document.getElementById('likebtn').classList.toggle('liked',liked);document.getElementById('likeico').textContent=liked?'❤️':'🤍';}
 function spawnHeart(){const h=document.createElement('div');h.className='heart';h.textContent='❤️';hud.appendChild(h);h.addEventListener('animationend',()=>h.remove());}
-function toggleMute(){isMuted=!isMuted;vid.muted=isMuted;document.getElementById('muteico').textContent=isMuted?'🔇':'🔊';tk(isMuted?'🔇 Muted':'🔊 Sound on');}
+function toggleMute(){
+  isMuted=!isMuted;vid.muted=isMuted;
+  document.getElementById('muteico').textContent=isMuted?'🔇':'🔊';
+  tk(isMuted?'🔇 Muted':'🔊 Sound on');
+}
 function flash(s){const e=document.getElementById('sfx');e.textContent=s;e.classList.remove('go');void e.offsetWidth;e.classList.add('go');setTimeout(()=>e.classList.remove('go'),500);}
 function tk(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastTmr);toastTmr=setTimeout(()=>t.classList.remove('show'),1500);}
 
-// ─── TABS ────────────────────────────────────────────────────
 document.querySelectorAll('.tab').forEach(tb=>tb.addEventListener('click',()=>{
-  if(!booted){boot();return;}
   tabIdx=+tb.dataset.i;
   document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',i===tabIdx));
   tk(tb.textContent.trim());
 }));
 function shiftTab(d){tabIdx=((tabIdx+d)+3)%3;document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',i===tabIdx));tk(document.querySelector('.tab.on').textContent.trim());}
 
-// ─── TOUCH ───────────────────────────────────────────────────
 const tz=document.getElementById('tz');
-tz.addEventListener('touchstart',e=>{if(!booted){boot();return;}tY=e.touches[0].clientY;tX=e.touches[0].clientX;},{passive:true});
+tz.addEventListener('touchstart',e=>{if(!booted)return;tY=e.touches[0].clientY;tX=e.touches[0].clientX;},{passive:true});
 tz.addEventListener('touchend',e=>{
   if(!booted)return;
-  const dy=tY-e.changedTouches[0].clientY, dx=tX-e.changedTouches[0].clientX;
+  const dy=tY-e.changedTouches[0].clientY,dx=tX-e.changedTouches[0].clientX;
   if(Math.abs(dy)>50&&Math.abs(dy)>Math.abs(dx)){dy>0?goNext():goPrev();return;}
-  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){shiftTab(dx>0?1:-1);}
+  if(Math.abs(dx)>50)shiftTab(dx>0?1:-1);
 },{passive:true});
 tz.addEventListener('click',()=>{
-  if(!booted){boot();return;}
+  if(!booted)return;
   const now=Date.now();
   if(now-lastTap<280){doLike();tk('❤️ Liked');}
   lastTap=now;
 });
-
-// ─── KEYBOARD ────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
-  if(!booted){boot();return;}
+  if(!booted)return;
   if(e.key==='ArrowUp'||e.key==='w'){e.preventDefault();goPrev();}
   if(e.key==='ArrowDown'||e.key==='s'){e.preventDefault();goNext();}
   if(e.key==='ArrowRight'||e.key==='d')shiftTab(1);
   if(e.key==='ArrowLeft'||e.key==='a')shiftTab(-1);
-  if(e.key===' '){e.preventDefault();vid.paused?vid.play().catch(()=>{}):vid.pause();tk(vid.paused?'⏸ Paused':'▶ Playing');}
+  if(e.key===' '){e.preventDefault();vid.paused?vid.play().catch(()=>{}):vid.pause();tk(vid.paused?'⏸':'▶');}
   if(e.key==='l'||e.key==='L'){doLike();tk('❤️ Liked');}
   if(e.key==='m'||e.key==='M')toggleMute();
 });
