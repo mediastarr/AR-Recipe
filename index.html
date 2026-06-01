@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>TikTok · Ray-Ban Display</title>
+<script src="https://www.youtube.com/iframe_api"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;touch-action:none}
@@ -18,7 +19,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-ap
 
 /* tabs */
 #tabs{position:fixed;top:0;left:0;right:0;display:flex;justify-content:center;gap:28px;padding:16px 0 10px;z-index:10}
-.tab{font-size:15px;font-weight:600;color:rgba(255,255,255,.38);padding-bottom:4px;border-bottom:2px solid transparent;cursor:pointer;transition:color .2s,border-color .2s}
+.tab{font-size:15px;font-weight:600;color:rgba(255,255,255,.38);padding-bottom:4px;border-bottom:2px solid transparent;cursor:pointer;transition:color.2s,border-color.2s}
 .tab.on{color:#fff;border-color:#fff}
 
 /* caption top */
@@ -29,7 +30,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-ap
 #actions{position:fixed;right:14px;bottom:130px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:18px}
 .abtn{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
 .ico{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.72);background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;font-size:20px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.abtn.liked .ico{border-color:#fe2c55;background:rgba(254,44,85,.28)}
+.abtn.liked.ico{border-color:#fe2c55;background:rgba(254,44,85,.28)}
 .cnt{font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 6px #000}
 
 /* bottom */
@@ -41,27 +42,27 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-ap
 @keyframes spin{to{transform:rotate(360deg)}}
 #mname{font-size:12px;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
 #prog{height:2px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden}
-#progf{height:100%;background:#fff;width:0%;border-radius:2px;transition:width .4s linear}
+#progf{height:100%;background:#fff;width:0%;border-radius:2px;transition:width.4s linear}
 
 /* mute btn */
 #mutebttn{position:fixed;top:14px;right:14px;z-index:20;background:rgba(0,0,0,.58);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:13px;font-weight:700;padding:7px 14px;border-radius:20px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 
 /* heart */
-.heart{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%) scale(0);font-size:88px;pointer-events:none;z-index:60;animation:hpop .65s cubic-bezier(.17,.89,.32,1.28) forwards}
+.heart{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%) scale(0);font-size:88px;pointer-events:none;z-index:60;animation:hpop.65s cubic-bezier(.17,.89,.32,1.28) forwards}
 @keyframes hpop{0%{transform:translate(-50%,-55%) scale(0);opacity:1}50%{transform:translate(-50%,-55%) scale(1.2);opacity:1}100%{transform:translate(-50%,-70%) scale(.7);opacity:0}}
 
 /* swipe flash */
 #sfx{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font-size:52px;color:transparent;pointer-events:none;z-index:20}
-#sfx.go{animation:sfxa .4s forwards}
+#sfx.go{animation:sfxa.4s forwards}
 @keyframes sfxa{25%{color:rgba(255,255,255,.7)}100%{color:transparent}}
 
 /* toast */
-#toast{position:fixed;bottom:42px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:8px 20px;border-radius:20px;pointer-events:none;z-index:99;opacity:0;transition:opacity .2s;white-space:nowrap}
+#toast{position:fixed;bottom:42px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:8px 20px;border-radius:20px;pointer-events:none;z-index:99;opacity:0;transition:opacity.2s;white-space:nowrap}
 #toast.show{opacity:1}
 
 /* dots */
 #dots{position:fixed;right:6px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:5px;z-index:10;pointer-events:none}
-.dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.22);transition:all .2s}
+.dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.22);transition:all.2s}
 .dot.on{background:#fff;transform:scaleY(2)}
 
 /* tap zone — full screen, under HUD elements */
@@ -70,7 +71,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-ap
 </head>
 <body>
 
-<div id="vidwrap"><iframe id="vframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+<div id="vidwrap"><div id="player"></div></div>
 <div id="topshade"></div>
 <div id="botshade"></div>
 <div id="sfx"></div>
@@ -105,25 +106,25 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-ap
 // ── REAL YOUTUBE SHORTS — verified IDs from search results ──
 const FEED = [
   // Animals / Pets
-  {y:'QcBZq_wMzg8', h:'@dogtok',      d:'🐶 Dog doing the most 😭 #fyp #dogs',          s:'He really said not today hooman',           m:'Original Sound · dogtok',    l:'4.2M',c:'38K',r:'210K'},
-  {y:'EgVEZumHjMU', h:'@animaltok',   d:'😂 Funniest cats and dogs 2025 #animals',      s:'I cannot stop watching this on repeat',      m:'Funny Pets Mix',             l:'6.1M',c:'51K',r:'320K'},
-  {y:'sHPDToeXOyg', h:'@pettok',      d:'🐱 Cats being unhinged as usual #cats #fyp',   s:'Cats live rent free in their own world',     m:'Original Sound · pettok',    l:'3.8M',c:'29K',r:'155K'},
-  {y:'3JiwSNLQJFs', h:'@cutepets',    d:'🐾 POV: your pet owns you not the other way',  s:'Fully surrendered my life to this cat',      m:'Cats Rule Everything',       l:'5.5M',c:'44K',r:'280K'},
-  {y:'PERnl7OSRKo', h:'@thescoop',    d:'😹 Funniest cat videos of 2025 fr #cats',      s:'Cats are built different and I love it',     m:'Cat Mode Activated',         l:'7.2M',c:'63K',r:'401K'},
-  {y:'maspEWt7xog', h:'@rubysworld',  d:'🍗 Ruby\'s most traumatic moment of 2025 😂',   s:'She will never forgive me for this one',     m:'Dramatic Orchestra',         l:'2.9M',c:'22K',r:'118K'},
-  {y:'lOD78hPJvU8', h:'@funnypets',   d:'🐾 Animals being absolutely feral #funny',     s:'Nature is NOT healing and I love that',      m:'Original Audio',             l:'4.7M',c:'38K',r:'220K'},
+  {y:'QcBZq_wMzg8', h:'@dogtok', d:'🐶 Dog doing the most 😭 #fyp #dogs', s:'He really said not today hooman', m:'Original Sound · dogtok', l:'4.2M',c:'38K',r:'210K'},
+  {y:'EgVEZumHjMU', h:'@animaltok', d:'😂 Funniest cats and dogs 2025 #animals', s:'I cannot stop watching this on repeat', m:'Funny Pets Mix', l:'6.1M',c:'51K',r:'320K'},
+  {y:'sHPDToeXOyg', h:'@pettok', d:'🐱 Cats being unhinged as usual #cats #fyp', s:'Cats live rent free in their own world', m:'Original Sound · pettok', l:'3.8M',c:'29K',r:'155K'},
+  {y:'3JiwSNLQJFs', h:'@cutepets', d:'🐾 POV: your pet owns you not the other way', s:'Fully surrendered my life to this cat', m:'Cats Rule Everything', l:'5.5M',c:'44K',r:'280K'},
+  {y:'PERnl7OSRKo', h:'@thescoop', d:'😹 Funniest cat videos of 2025 fr #cats', s:'Cats are built different and I love it', m:'Cat Mode Activated', l:'7.2M',c:'63K',r:'401K'},
+  {y:'maspEWt7xog', h:'@rubysworld', d:'🍗 Ruby\'s most traumatic moment of 2025 😂', s:'She will never forgive me for this one', m:'Dramatic Orchestra', l:'2.9M',c:'22K',r:'118K'},
+  {y:'lOD78hPJvU8', h:'@funnypets', d:'🐾 Animals being absolutely feral #funny', s:'Nature is NOT healing and I love that', m:'Original Audio', l:'4.7M',c:'38K',r:'220K'},
   // Food / ASMR
-  {y:'dm-n5jDq-xg', h:'@foodskills',  d:'😱 Most insane food skills you\'ve seen #food', s:'The helicopter eggs changed my life fr',     m:'Street Food ASMR',           l:'8.3M',c:'71K',r:'490K'},
-  {y:'qEjEM8I2m4U', h:'@asmrcooking', d:'🥩🔥 Beef chops by the lake ASMR #cooking',    s:'This is literally the most relaxing thing',  m:'Nature ASMR Cooking',        l:'3.4M',c:'26K',r:'140K'},
-  {y:'jVHRCwsj_M8', h:'@nycfood',     d:'🗽 I ate viral NYC street food #foodtok',      s:'Worth every single dollar and the wait',     m:'NYC Vibes',                  l:'5.1M',c:'42K',r:'261K'},
-  {y:'0uKXl2zx4f4', h:'@chefrush',    d:'🍜 Lunch time noodles 😤 #chef #noodles',      s:'Chef Rush said eat your food with respect',  m:'Kitchen Fire Beats',         l:'6.8M',c:'55K',r:'370K'},
-  {y:'wwPXku8Yz9Y', h:'@cookingfails', d:'🤣 Epic cooking fails you cannot miss #funny', s:'At least the smoke alarm works fine',        m:'Dramatic Fail Sound',        l:'9.4M',c:'84K',r:'580K'},
-  {y:'6iH72f1ipCk', h:'@henrykitchen', d:'😅 Cooking is like therapy they said #funny', s:'Therapy is expensive so I cook instead',     m:'Henry\'s Kitchen OST',       l:'4.2M',c:'35K',r:'198K'},
+  {y:'dm-n5jDq-xg', h:'@foodskills', d:'😱 Most insane food skills you\'ve seen #food', s:'The helicopter eggs changed my life fr', m:'Street Food ASMR', l:'8.3M',c:'71K',r:'490K'},
+  {y:'qEjEM8I2m4U', h:'@asmrcooking', d:'🥩🔥 Beef chops by the lake ASMR #cooking', s:'This is literally the most relaxing thing', m:'Nature ASMR Cooking', l:'3.4M',c:'26K',r:'140K'},
+  {y:'jVHRCwsj_M8', h:'@nycfood', d:'🗽 I ate viral NYC street food #foodtok', s:'Worth every single dollar and the wait', m:'NYC Vibes', l:'5.1M',c:'42K',r:'261K'},
+  {y:'0uKXl2zx4f4', h:'@chefrush', d:'🍜 Lunch time noodles 😤 #chef #noodles', s:'Chef Rush said eat your food with respect', m:'Kitchen Fire Beats', l:'6.8M',c:'55K',r:'370K'},
+  {y:'wwPXku8Yz9Y', h:'@cookingfails', d:'🤣 Epic cooking fails you cannot miss #funny', s:'At least the smoke alarm works fine', m:'Dramatic Fail Sound', l:'9.4M',c:'84K',r:'580K'},
+  {y:'6iH72f1ipCk', h:'@henrykitchen', d:'😅 Cooking is like therapy they said #funny', s:'Therapy is expensive so I cook instead', m:'Henry\'s Kitchen OST', l:'4.2M',c:'35K',r:'198K'},
   // Satisfying / Nature
-  {y:'wtjbJGsUXh8', h:'@satisfying',  d:'🌊💥 Rocks into water is oddly satisfying',    s:'Cannot explain why I watched this 40 times', m:'Splash ASMR',                l:'5.8M',c:'47K',r:'310K'},
-  {y:'gyQX_c7q0D8', h:'@poppingtok',  d:'🎈 Balloon popping ASMR is everything #asmr',  s:'My stress levels dropped immediately',       m:'Pop ASMR Mix',               l:'3.1M',c:'24K',r:'133K'},
-  {y:'piUo-_7DC_Y', h:'@catfaces',    d:'😸 Funniest cat faces and reactions 2025',     s:'Cats have zero chill and zero shame',        m:'Cat Reaction Compilation',   l:'7.6M',c:'67K',r:'430K'},
-  {y:'AUr56CD0_F8', h:'@tommywinkler', d:'🍽️ Eating my most viral food videos 2025',    s:'Came back to eat my own content literally',  m:'Food Content Era',           l:'2.8M',c:'21K',r:'107K'},
+  {y:'wtjbJGsUXh8', h:'@satisfying', d:'🌊💥 Rocks into water is oddly satisfying', s:'Cannot explain why I watched this 40 times', m:'Splash ASMR', l:'5.8M',c:'47K',r:'310K'},
+  {y:'gyQX_c7q0D8', h:'@poppingtok', d:'🎈 Balloon popping ASMR is everything #asmr', s:'My stress levels dropped immediately', m:'Pop ASMR Mix', l:'3.1M',c:'24K',r:'133K'},
+  {y:'piUo-_7DC_Y', h:'@catfaces', d:'😸 Funniest cat faces and reactions 2025', s:'Cats have zero chill and zero shame', m:'Cat Reaction Compilation', l:'7.6M',c:'67K',r:'430K'},
+  {y:'AUr56CD0_F8', h:'@tommywinkler', d:'🍽️ Eating my most viral food videos 2025', s:'Came back to eat my own content literally', m:'Food Content Era', l:'2.8M',c:'21K',r:'107K'},
 ];
 
 function shuffle(a){return[...a].sort(()=>Math.random()-.5)}
@@ -132,16 +133,35 @@ let feed=[...shuffle(FEED),...shuffle(FEED),...shuffle(FEED)];
 
 let idx=0, liked=false, isMuted=true, tabIdx=1;
 let tY=0,tX=0,lastTap=0,toastTmr,progIv;
+let player;
 
-const frame = document.getElementById('vframe');
 const progf = document.getElementById('progf');
 
-// ── YOUTUBE EMBED URL BUILDER ──────────────────────────────
-// autoplay=1, mute=1 (required for autoplay), loop=1, controls=0
-// playlist= needed for loop to work on single video
-function ytUrl(id){
-  const m = isMuted ? 1 : 0;
-  return `https://www.youtube.com/embed/${id}?autoplay=1&mute=${m}&loop=1&playlist=${id}&controls=0&modestbranding=1&rel=0&playsinline=1&enablejsapi=1`;
+// ── YOUTUBE IFRAME API SETUP ─────────────────────────────
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('player', {
+    height: '100%',
+    width: '100%',
+    videoId: feed[0].y,
+    playerVars: {
+      autoplay: 1,
+      mute: 1,
+      loop: 1,
+      controls: 0,
+      modestbranding: 1,
+      rel: 0,
+      playsinline: 1,
+      playlist: feed[0].y
+    },
+    events: {
+      'onReady': onPlayerReady
+    }
+  });
+}
+
+function onPlayerReady(event) {
+  event.target.playVideo();
+  load(0);
 }
 
 // ── LOAD ──────────────────────────────────────────────────
@@ -153,18 +173,24 @@ function load(i){
   clearInterval(progIv);
   progf.style.width='0%';
 
-  // swap iframe src
-  frame.src = ytUrl(r.y);
+  // Load new video without reloading iframe
+  if(player && player.loadVideoById) {
+    player.loadVideoById({
+      videoId: r.y,
+      startSeconds: 0
+    });
+    if(isMuted) player.mute(); else player.unMute();
+  }
 
   setHUD(r);
   updDots();
   liked=false; updLike();
 
-  // fake progress (YouTube embed doesn't expose currentTime)
+  // fake progress
   let p=0;
   progIv=setInterval(()=>{
-    p+=0.5; // approx 200s total visible progress
-    if(p>=100){ p=0; } // loop
+    p+=0.5;
+    if(p>=100){ p=0; }
     progf.style.width=p+'%';
   },1000);
 }
@@ -176,7 +202,7 @@ function goPrev(){ flash('↓'); load(idx-1); }
 function setHUD(r){
   const c=r.d||'';
   document.getElementById('captxt').innerHTML=c.length>36?c.replace(/(.{24,38})\s/,'$1<br>'):c;
-  document.getElementById('sub').textContent  =r.s||'';
+  document.getElementById('sub').textContent =r.s||'';
   document.getElementById('uname').textContent=r.h||'@—';
   document.getElementById('mname').textContent=r.m||'Original Sound';
   document.getElementById('lnum').textContent =r.l||'—';
@@ -203,9 +229,9 @@ function toggleMute(){
   isMuted=!isMuted;
   document.getElementById('mutebttn').textContent=isMuted?'🔇 Sound':'🔊 Sound';
   showToast(isMuted?'🔇 Muted':'🔊 Sound on');
-  // Reload current with new mute state
-  const r=feed[idx];
-  frame.src=ytUrl(r.y);
+  if(player && player.mute) {
+    if(isMuted) player.mute(); else player.unMute();
+  }
 }
 function flash(s){
   const e=document.getElementById('sfx');
@@ -239,14 +265,13 @@ tz.addEventListener('touchend',e=>{
 // ── KEYBOARD ─────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowDown'||e.key==='s'){e.preventDefault();goNext();}
-  if(e.key==='ArrowUp'  ||e.key==='w'){e.preventDefault();goPrev();}
+  if(e.key==='ArrowUp' ||e.key==='w'){e.preventDefault();goPrev();}
   if(e.key==='m'||e.key==='M') toggleMute();
   if(e.key==='l'||e.key==='L'){doLike();showToast('❤️ Liked');}
 });
 
 // ── BOOT ─────────────────────────────────────────────────
 buildDots();
-load(0);
 </script>
 </body>
 </html>
