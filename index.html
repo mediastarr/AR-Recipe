@@ -225,24 +225,27 @@ html,body{
 <div id="toast"></div>
 
 <script>
-// ── VIDEO POOL (commondatastorage.googleapis.com — streams in browser, no Content-Disposition:attachment) ──
-const G = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/';
+// ── VIDEO POOL ────────────────────────────────────────────────
+// placeholdervideo.dev: Access-Control-Allow-Origin:*, H.264/AAC,
+// works from ANY domain, no auth, no referrer check, confirmed 2025.
+// Using 1080x1920 (TikTok/Reels vertical format).
+const V = 'https://placeholdervideo.dev/';
 const POOL = [
-  {u:G+'ForBiggerBlazes.mp4',        h:'@firetok',     d:'🔥 Fire content you cannot skip #fyp',          s:'This is what going viral feels like',         m:'Fire – Kasabian',          l:'4.2M',c:'28K',r:'180K'},
-  {u:G+'ForBiggerEscapes.mp4',       h:'@escapetok',   d:'🌍 Said yes to everything this week',            s:'Best decision I have ever made no cap',        m:'No Limits',                l:'3.1M',c:'19K',r:'95K'},
-  {u:G+'ForBiggerFun.mp4',           h:'@funtok',      d:'🎉 Living my best life #fyp #vibes',             s:'Main character era fully activated',            m:'Good as Hell – Lizzo',     l:'5.8M',c:'44K',r:'310K'},
-  {u:G+'ForBiggerJoyrides.mp4',      h:'@roadtrip',    d:'🚗 Road trip season is officially here',         s:'Windows down music up no GPS needed',           m:'Joyride – Kesha',          l:'2.9M',c:'21K',r:'120K'},
-  {u:G+'ForBiggerMeltdowns.mp4',     h:'@dramatok',    d:'💀 Corporate asked me to circle back',           s:'I am not okay and that is totally okay',        m:'Drama – Ethel Cain',       l:'7.3M',c:'61K',r:'420K'},
-  {u:G+'SubaruOutbackOnStreetAndDirt.mp4',h:'@outdoor',d:'🏔️ Built different #adventure #outdoors',      s:'Not all those who wander are lost',             m:'Higher Ground – RHCP',     l:'1.8M',c:'13K',r:'67K'},
-  {u:G+'TearsOfSteel.mp4',           h:'@scifitok',    d:'🤖 This is what 2026 looks like ✨',              s:'The future arrived early and I am ready',       m:'Interstellar OST',         l:'6.4M',c:'52K',r:'380K'},
-  {u:G+'VolkswagenGTIReview.mp4',    h:'@cartok',      d:'🏎️ Finally got the dream car POV',              s:'Saved for 3 years. Worth every single penny.',  m:'Fast Car – Tracy Chapman', l:'3.5M',c:'27K',r:'148K'},
-  {u:G+'WeAreGoingOnBullrun.mp4',    h:'@traveltok',   d:'🌎 We said yes to the adventure',                s:'Life is too short for boring trips fr',          m:'Adventure of a Lifetime',  l:'4.7M',c:'38K',r:'220K'},
-  {u:G+'WhatCarCanYouGetForAGrand.mp4',h:'@carmontok', d:'🚨 $1000 car challenge (you wont believe)',      s:'Comments going absolutely insane rn',            m:'Money – Cardi B',          l:'9.1M',c:'83K',r:'571K'},
-  {u:G+'BigBuckBunny.mp4',           h:'@animationtok',d:'🐰 This bunny has absolutely no chill 😭',      s:'The lore goes deep trust me on this',            m:'Bunny Hop Remix',          l:'11M', c:'94K',r:'650K'},
-  {u:G+'ElephantsDream.mp4',         h:'@dreamtok',    d:'✨ Dreams you can actually step inside',         s:'This is what the subconscious looks like',       m:'Dreaming – Blondie',       l:'3.8M',c:'29K',r:'155K'},
-  {u:G+'Sintel.mp4',                 h:'@epictok',     d:'🐉 Found a dragon. Life is different now.',      s:'Nobody talks about this enough fr',              m:'Epic Orchestral Score',    l:'5.2M',c:'43K',r:'278K'},
-  {u:G+'ForBiggerBlazes.mp4',        h:'@mindset',     d:'💡 You are doing better than you think',         s:'Every single day is a W. Even the hard ones.',  m:'Eye of the Tiger',         l:'3.9M',c:'31K',r:'172K'},
-  {u:G+'ForBiggerEscapes.mp4',       h:'@wandertok',   d:'✈️ Quit job. Bought ticket. Went.',              s:'No plan. Best trip of my life. Period.',         m:'Free Fallin – Tom Petty',  l:'8.6M',c:'72K',r:'501K'},
+  {u:V+'1080x1920', h:'@firetok',      d:'🔥 Fire content you cannot skip #fyp',         s:'This is what going viral feels like',         m:'Fire – Kasabian',          l:'4.2M',c:'28K',r:'180K'},
+  {u:V+'1080x1920', h:'@escapetok',    d:'🌍 Said yes to everything this week',           s:'Best decision I have ever made no cap',        m:'No Limits',                l:'3.1M',c:'19K',r:'95K'},
+  {u:V+'1080x1920', h:'@funtok',       d:'🎉 Living my best life #fyp #vibes',            s:'Main character era fully activated',           m:'Good as Hell – Lizzo',     l:'5.8M',c:'44K',r:'310K'},
+  {u:V+'1080x1920', h:'@roadtrip',     d:'🚗 Road trip season is officially here',        s:'Windows down music up no GPS needed',          m:'Joyride – Kesha',          l:'2.9M',c:'21K',r:'120K'},
+  {u:V+'1080x1920', h:'@dramatok',     d:'💀 Corporate asked me to circle back',          s:'I am not okay and that is totally okay',       m:'Drama – Ethel Cain',       l:'7.3M',c:'61K',r:'420K'},
+  {u:V+'1080x1920', h:'@outdoor',      d:'🏔️ Built different #adventure #outdoors',     s:'Not all those who wander are lost',            m:'Higher Ground – RHCP',     l:'1.8M',c:'13K',r:'67K'},
+  {u:V+'1080x1920', h:'@scifitok',     d:'🤖 This is what 2026 looks like ✨',            s:'The future arrived early and I am ready',      m:'Interstellar OST',         l:'6.4M',c:'52K',r:'380K'},
+  {u:V+'1080x1920', h:'@cartok',       d:'🏎️ Finally got the dream car POV',            s:'Saved for 3 years. Worth every penny.',        m:'Fast Car – Tracy Chapman', l:'3.5M',c:'27K',r:'148K'},
+  {u:V+'1080x1920', h:'@traveltok',    d:'🌎 We said yes to the adventure',              s:'Life is too short for boring trips fr',         m:'Adventure of a Lifetime',  l:'4.7M',c:'38K',r:'220K'},
+  {u:V+'1080x1920', h:'@carmontok',    d:'🚨 $1000 car challenge (you wont believe)',    s:'Comments going absolutely insane rn',          m:'Money – Cardi B',          l:'9.1M',c:'83K',r:'571K'},
+  {u:V+'1080x1920', h:'@animationtok', d:'🐰 This bunny has no chill whatsoever 😭',    s:'The lore goes deep trust me on this',          m:'Bunny Hop Remix',          l:'11M', c:'94K',r:'650K'},
+  {u:V+'1080x1920', h:'@dreamtok',     d:'✨ Dreams you can actually step inside',       s:'This is what the subconscious looks like',     m:'Dreaming – Blondie',       l:'3.8M',c:'29K',r:'155K'},
+  {u:V+'1080x1920', h:'@epictok',      d:'🐉 Found a dragon. Life is different now.',   s:'Nobody talks about this enough fr',            m:'Epic Orchestral Score',    l:'5.2M',c:'43K',r:'278K'},
+  {u:V+'1080x1920', h:'@mindset',      d:'💡 You are doing better than you think',      s:'Every single day is a W. Even hard ones.',     m:'Eye of the Tiger',         l:'3.9M',c:'31K',r:'172K'},
+  {u:V+'1080x1920', h:'@wandertok',    d:'✈️ Quit job. Bought ticket. Went.',           s:'No plan. Best trip of my life. Period.',        m:'Free Fallin – Tom Petty',  l:'8.6M',c:'72K',r:'501K'},
 ];
 
 function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
