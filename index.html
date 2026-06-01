@@ -30,7 +30,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-ap
 #mname{font-size:12px;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
 #prog{height:2px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden}
 #progf{height:100%;background:#fff;width:0%;border-radius:2px;transition:width.4s linear}
-#mutebttn{position:fixed;top:14px;right:14px;z-index:20;background:rgba(0,0,0,.58);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:13px;font-weight:700;padding:7px 14px;border-radius:20px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .heart{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%) scale(0);font-size:88px;pointer-events:none;z-index:60;animation:hpop.65s cubic-bezier(.17,.89,.32,1.28) forwards}
 @keyframes hpop{0%{transform:translate(-50%,-55%) scale(0);opacity:1}50%{transform:translate(-50%,-55%) scale(1.2);opacity:1}100%{transform:translate(-50%,-70%) scale(.7);opacity:0}}
 #sfx{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font-size:52px;color:transparent;pointer-events:none;z-index:20}
@@ -58,8 +57,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-ap
   <div class="tab" data-i="2">LIVE</div>
 </div>
 
-<div id="mutebttn" onclick="showToast('Use TikTok controls')">🔇 Sound</div>
-
 <div id="captop"><p id="captxt">Loading…</p></div>
 
 <div id="actions">
@@ -78,7 +75,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-ap
 <div id="toast"></div>
 
 <script>
-const API_URL = 'http://localhost:3000/api/latest-tiktoks'; // change to your domain in prod
+const API_URL = 'http://localhost:3000/api/latest-tiktoks';
 
 let feed=[];
 let idx=0, liked=false, tabIdx=1;
@@ -94,7 +91,7 @@ function tiktokEmbed(url){
 
 async function load(i){
   if(i >= feed.length){
-    showToast('Loading new TikToks...');
+    showToast('Loading...');
     try {
       const res = await fetch(`${API_URL}?offset=${feed.length}`);
       const newReels = await res.json();
@@ -186,7 +183,15 @@ document.addEventListener('keydown',e=>{
   if(e.key==='l'||e.key==='L'){doLike();showToast('❤️ Liked');}
 });
 buildDots();
-load(0);
+// Boot: fetch first batch then load
+fetch(`${API_URL}?offset=0`).then(r=>r.json()).then(data=>{
+  feed = data;
+  if(feed.length) load(0);
+  else showToast('No videos');
+}).catch(e=>{
+  showToast('Backend not running');
+  console.error(e);
+});
 </script>
 </body>
 </html>
