@@ -19,8 +19,6 @@ body::before{
   background:radial-gradient(ellipse 100% 70% at 50% 10%,#3a0912 0%,#150508 55%,#080204 100%);
   z-index:0;
 }
-
-/* ── 600×600 ROUNDED RECT HUD ── */
 .hud{
   position:relative;z-index:1;
   width:600px;height:600px;
@@ -30,46 +28,41 @@ body::before{
   box-shadow:0 0 0 1.5px rgba(255,255,255,.07),0 0 60px rgba(180,10,40,.2),0 30px 80px rgba(0,0,0,.85);
 }
 
-/* video fills hud */
-.video-container{
+/* ── single video element, we just swap src ── */
+#mainvid{
   position:absolute;inset:0;
-  background:#000;
-  overflow:hidden;
-}
-.reel{
-  position:absolute;inset:0;
-  opacity:0;
-  transition:opacity .3s ease;
-}
-.reel.active{opacity:1;z-index:2;}
-.reel video{
   width:100%;height:100%;
-  object-fit:cover;display:block;
+  object-fit:cover;
   background:#000;
+  z-index:1;
 }
-/* error card */
-.reel.err .errcard{display:flex;}
-.reel.err video{display:none;}
-.errcard{
-  display:none;position:absolute;inset:0;
-  flex-direction:column;align-items:center;justify-content:center;
-  gap:8px;background:#0a0a0a;
-}
-.errcard span{color:rgba(255,255,255,.3);font-size:11px;letter-spacing:.06em;}
 
-/* vignette */
+/* cover shown while video loads */
+#covimg{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  z-index:2;
+  transition:opacity .3s;
+}
+
+/* slide transition overlay */
+#slideout{
+  position:absolute;inset:0;z-index:3;
+  background:#000;
+  opacity:0;pointer-events:none;
+  transition:opacity .18s;
+}
+
 .vignette{
   position:absolute;inset:0;z-index:5;pointer-events:none;
   background:linear-gradient(to bottom,
-    rgba(0,0,0,.75) 0%,rgba(0,0,0,0) 20%,
-    rgba(0,0,0,0) 60%,rgba(0,0,0,.8) 100%);
+    rgba(0,0,0,.78) 0%,rgba(0,0,0,0) 22%,
+    rgba(0,0,0,0) 60%,rgba(0,0,0,.82) 100%);
   border-radius:56px;
 }
-
-/* tap zone */
 .tapzone{position:absolute;inset:0;z-index:8;cursor:pointer;border-radius:56px;}
 
-/* ── TABS ── */
 .tabs{
   position:absolute;top:26px;left:0;right:0;
   display:flex;justify-content:center;gap:28px;
@@ -84,7 +77,6 @@ body::before{
 }
 .tab.on{color:#fff;border-bottom-color:#fff;}
 
-/* ── TOP CAPTION ── */
 .cap-top{
   position:absolute;top:70px;left:0;right:0;
   text-align:center;z-index:10;padding:0 52px;pointer-events:none;
@@ -92,32 +84,26 @@ body::before{
 .cap-top p{
   font-size:17px;font-weight:500;
   color:rgba(255,255,255,.92);line-height:1.45;
-  text-shadow:0 2px 12px rgba(0,0,0,.95);
+  text-shadow:0 2px 14px rgba(0,0,0,1);
 }
 
-/* ── RIGHT ACTIONS ── */
 .actions{
   position:absolute;right:14px;bottom:108px;
   z-index:10;display:flex;flex-direction:column;
   align-items:center;gap:16px;pointer-events:all;
 }
-.abtn{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  cursor:pointer;user-select:none;
-}
+.abtn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;user-select:none;}
 .aicon{
   width:44px;height:44px;border-radius:50%;
   border:2px solid rgba(255,255,255,.75);
   background:rgba(0,0,0,.35);backdrop-filter:blur(6px);
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;
-  transition:transform .15s,background .15s;
+  font-size:18px;transition:transform .15s,background .15s;
 }
-.abtn:active .aicon,.abtn:hover .aicon{transform:scale(.88);background:rgba(255,255,255,.12);}
+.abtn:active .aicon{transform:scale(.88);}
 .abtn.liked .aicon{border-color:#ff2d55;background:rgba(255,45,85,.25);}
 .acount{font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.9);}
 
-/* ── BOTTOM BAR ── */
 .botbar{
   position:absolute;bottom:0;left:0;right:0;
   z-index:10;padding:0 20px 18px;pointer-events:none;
@@ -139,20 +125,15 @@ body::before{
 @keyframes spin{to{transform:rotate(360deg)}}
 .mname{font-size:12px;color:rgba(255,255,255,.6);text-shadow:0 1px 6px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:270px;}
 .prog{height:2px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden;}
-.progfill{height:100%;background:rgba(255,255,255,.8);border-radius:2px;width:0%;transition:width .4s linear;}
+.progfill{height:100%;background:rgba(255,255,255,.8);border-radius:2px;width:0%;transition:width .3s linear;}
 
-/* ── DOTS ── */
 .dots{
   position:absolute;bottom:12px;left:0;right:0;
   display:flex;justify-content:center;gap:6px;z-index:10;pointer-events:none;
 }
-.dot{
-  width:5px;height:5px;border-radius:50%;
-  background:rgba(255,255,255,.22);transition:background .2s,transform .2s;
-}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.22);transition:background .2s,transform .2s;}
 .dot.on{background:rgba(255,255,255,.85);transform:scale(1.5);}
 
-/* ── HEART POP ── */
 .heart{
   position:absolute;left:50%;top:45%;
   transform:translate(-50%,-50%) scale(0);
@@ -165,31 +146,29 @@ body::before{
   100%{transform:translate(-50%,-72%) scale(.7);opacity:0}
 }
 
-/* ── SWIPE FLASH ── */
 .swipefx{
   position:absolute;left:50%;top:50%;
   transform:translate(-50%,-50%);
   font-size:44px;color:rgba(255,255,255,0);
   pointer-events:none;z-index:20;
 }
-.swipefx.go{animation:sfx .5s forwards;}
+.swipefx.go{animation:sfx .45s forwards;}
 @keyframes sfx{0%{color:rgba(255,255,255,0)}25%{color:rgba(255,255,255,.7)}100%{color:rgba(255,255,255,0)}}
 
-/* ── LOADING ── */
-.loader{
-  position:absolute;inset:0;background:rgba(0,0,0,.88);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;z-index:40;border-radius:56px;transition:opacity .4s;
+/* spinner shown while video buffering */
+.buffspin{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:38px;height:38px;
+  border:3px solid rgba(255,255,255,.15);
+  border-top-color:rgba(255,255,255,.7);
+  border-radius:50%;
+  animation:spin .75s linear infinite;
+  z-index:6;
+  display:none;
 }
-.loader.gone{opacity:0;pointer-events:none;}
-.spin{
-  width:36px;height:36px;border:3px solid rgba(255,255,255,.15);
-  border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite;
-}
-.loadertext{color:rgba(255,255,255,.45);font-size:11px;letter-spacing:.1em;text-transform:uppercase;}
-.loaderstatus{color:rgba(255,255,255,.3);font-size:10px;margin-top:4px;}
+.buffering .buffspin{display:block;}
 
-/* ── TOAST ── */
 .toast{
   position:fixed;bottom:36px;left:50%;transform:translateX(-50%);
   background:rgba(10,10,10,.82);color:rgba(255,255,255,.88);
@@ -199,7 +178,6 @@ body::before{
 }
 .toast.show{opacity:1;}
 
-/* ── DESKTOP GUIDE ── */
 .guide{
   position:fixed;right:max(20px,calc(50% - 420px));top:50%;transform:translateY(-50%);
   width:175px;color:rgba(255,255,255,.3);font-size:10px;line-height:1.9;z-index:2;
@@ -209,24 +187,26 @@ body::before{
 .guide .k{color:rgba(255,255,255,.7);}
 .note{margin-top:10px;color:rgba(255,255,255,.18);font-size:9px;line-height:1.7;}
 @media(max-width:860px){.guide{display:none;}}
-@media(max-width:620px){
-  .hud{width:100vw;height:100vw;border-radius:0;}
-  .vignette,.tapzone,.loader{border-radius:0;}
-}
+@media(max-width:620px){.hud{width:100vw;height:100vw;border-radius:0;}.vignette,.tapzone{border-radius:0;}}
 </style>
 </head>
 <body>
 
 <div class="hud" id="hud">
-  <div class="video-container" id="vc"></div>
+  <!-- single video + cover swap approach — guarantees play on every reel -->
+  <video id="mainvid" playsinline muted loop autoplay></video>
+  <img  id="covimg"  src="" alt="">
+  <div  id="slideout"></div>
+  <div  class="buffspin" id="buffspin"></div>
+
   <div class="vignette"></div>
   <div class="tapzone" id="tz"></div>
   <div class="swipefx" id="sfx">↑</div>
 
   <div class="tabs">
-    <div class="tab" data-i="0">Following</div>
+    <div class="tab"    data-i="0">Following</div>
     <div class="tab on" data-i="1">For You</div>
-    <div class="tab" data-i="2">LIVE</div>
+    <div class="tab"    data-i="2">LIVE</div>
   </div>
 
   <div class="cap-top"><p id="captop">Loading…</p></div>
@@ -236,11 +216,11 @@ body::before{
       <div class="aicon" id="likeico">🤍</div>
       <div class="acount" id="likenum">—</div>
     </div>
-    <div class="abtn" onclick="toast('💬 Comments')">
+    <div class="abtn" onclick="showToast('💬 Comments')">
       <div class="aicon">💬</div>
       <div class="acount" id="comnum">—</div>
     </div>
-    <div class="abtn" onclick="toast('↗ Shared!')">
+    <div class="abtn" onclick="showToast('↗ Shared!')">
       <div class="aicon">↗</div>
       <div class="acount" id="sharenum">—</div>
     </div>
@@ -248,18 +228,12 @@ body::before{
 
   <div class="botbar">
     <div class="username" id="uname">@—</div>
-    <div class="subtitle" id="sub">—</div>
+    <div class="subtitle"  id="sub">—</div>
     <div class="mrow"><div class="disc">♪</div><div class="mname" id="mname">—</div></div>
     <div class="prog"><div class="progfill" id="pf"></div></div>
   </div>
 
   <div class="dots" id="dots"></div>
-
-  <div class="loader" id="loader">
-    <div class="spin"></div>
-    <div class="loadertext">Fetching real feed…</div>
-    <div class="loaderstatus" id="lstatus">Connecting to TikTok</div>
-  </div>
 </div>
 
 <div class="toast" id="toastEl"></div>
@@ -269,201 +243,166 @@ body::before{
   <div class="r"><span class="k">↑ / W</span><span>Prev</span></div>
   <div class="r"><span class="k">↓ / S</span><span>Next</span></div>
   <div class="r"><span class="k">← →</span><span>Tab</span></div>
-  <div class="r"><span class="k">Space</span><span>Pause</span></div>
+  <div class="r"><span class="k">Space</span><span>Mute</span></div>
   <div class="r"><span class="k">L</span><span>Like</span></div>
   <div class="r"><span class="k">Dbl-tap</span><span>Like ❤️</span></div>
-  <div class="note">
-    Meta Ray-Ban Display<br>
-    600×600 · 20° FOV<br>
-    Neural Band EMG<br>
-    #000 = transparent on lens
-  </div>
+  <div class="note">Meta Ray-Ban Display<br>600×600 · 20° FOV<br>#000 = transparent on lens</div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
+// FEED  — real tikwm CDN mp4s
+// ─────────────────────────────────────────
+const FEED = [
+  { id:'7163783733223443717', author:'@viral',       desc:'How the girl from church got my bro acting',       sub:'I used to sit over there with my boyfriend Tyrone', music:'Original Sound',        likes:'3.1M', com:'21K', sh:'140K' },
+  { id:'7390978565271014686', author:'@natgeo',      desc:'Ocean depths never seen before 🌊',                sub:'Deep dive footage reveals the unknown',              music:'NatGeo Soundscape',     likes:'2.1M', com:'14K', sh:'98K'  },
+  { id:'7452334958313540869', author:'@storytime',   desc:'POV: you finally texted your situationship back',  sub:'Why are you acting like I did something wrong',      music:'Situationship SZN',     likes:'984K', com:'11K', sh:'43K'  },
+  { id:'7460668663742385430', author:'@dramatics',   desc:'The audacity of this man at Thanksgiving 💀',      sub:'Can you pass me the remote',                         music:'Family Drama Mix',       likes:'2.1M', com:'18K', sh:'110K' },
+  { id:'7460964050600529159', author:'@relatable',   desc:"When she says I'm not mad but she clearly is",     sub:"I'm fine. Everything is absolutely fine.",           music:"She's Fine (Original)", likes:'3.4M', com:'29K', sh:'198K' },
+  { id:'7046553134654868782', author:'@bestiesbelike',desc:'My bestie when she sees her ex at the mall',      sub:'Oh wow I look amazing today wow',                    music:'Glow Up Energy',        likes:'541K', com:'7.2K', sh:'28K'  },
+  { id:'7287791218765084970', author:'@officetok',   desc:'Corporate America got me acting different fr',     sub:'Per my last email.',                                 music:'Work Mode Lo-fi',        likes:'763K', com:'9.4K', sh:'52K'  },
+  { id:'7324512893476012321', author:'@familyreunion',desc:'That one cousin who thinks they run the cookout', sub:'Nobody told you to season it like that',             music:'Cookout Vibes',          likes:'1.8M', com:'22K', sh:'95K'  },
+  { id:'7229069534956707114', author:'@shoppingtok', desc:'Me after 3 hrs online shopping for nothing',       sub:'Add to cart. Remove from cart.',                     music:'Retail Therapy Beat',    likes:'481K', com:'5.3K', sh:'19K'  },
+  { id:'7196098283047622955', author:'@techreview',  desc:'Ray-Ban Meta glasses review — actually good now', sub:'These might be the best wearables yet',              music:'Tech Talk',              likes:'763K', com:'11K', sh:'52K'  },
+  { id:'7052462750193935621', author:'@mountainlife',desc:'4am summit — worth every cold step 🏔️',            sub:'The views make every step worth it',                 music:'Morning Anthem',         likes:'2.9M', com:'18K', sh:'130K' },
+  { id:'7137425612226282757', author:'@codewithme',  desc:'10 CSS tricks that actually save time ⚡',          sub:'Number 7 will change your life fr',                  music:'Focus Flow',             likes:'481K', com:'5.3K', sh:'38K'  },
+];
+
+// build play url from tikwm CDN
+const playUrl  = id => `https://www.tikwm.com/video/media/play/${id}.mp4`;
+const coverUrl = id => `https://www.tikwm.com/video/cover/${id}.jpeg`;
+
+// ─────────────────────────────────────────
+// ELEMENTS
+// ─────────────────────────────────────────
+const vid      = document.getElementById('mainvid');
+const covimg   = document.getElementById('covimg');
+const slideout = document.getElementById('slideout');
+const hud      = document.getElementById('hud');
+const pfill    = document.getElementById('pf');
+
+// ─────────────────────────────────────────
 // STATE
-// ─────────────────────────────────────────────────────────────
-let feed       = [];
-let cur        = 0;
-let liked      = false;
-let paused     = false;
-let tabIdx     = 1;
-let progTimer  = null;
-let lastTap    = 0;
-let touchSY    = 0, touchSX = 0;
+// ─────────────────────────────────────────
+let cur       = 0;
+let muted     = true;   // start muted so autoplay works, unmute on first interaction
+let liked     = false;
+let tabIdx    = 1;
+let lastTap   = 0;
+let touchSY   = 0, touchSX = 0;
 let toastTmr;
+let progRaf;
+let navigating = false;
 
-// ─────────────────────────────────────────────────────────────
-// FETCH REAL FEED via Claude (Anthropic API)
-// Claude calls tikwm.com, extracts real video URLs + metadata
-// ─────────────────────────────────────────────────────────────
-async function fetchFeed() {
-  setStatus('Asking Claude for real TikTok feed…');
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        system: `You are a TikTok feed API. When asked, use web_search to fetch real trending TikTok videos from tikwm.com. 
-Return ONLY a JSON array (no markdown, no explanation) of 10 objects with these exact keys:
-- id: TikTok video ID (numeric string)
-- play: direct mp4 URL (from tikwm.com CDN, must end in .mp4)
-- cover: thumbnail jpg URL
-- author: username with @
-- desc: short video caption (max 60 chars)
-- music: music/sound name
-- likes: like count string e.g. "1.2M"
-- comments: comment count string e.g. "4.3K"
-- shares: share count string e.g. "22K"
+// ─────────────────────────────────────────
+// VIDEO ENGINE
+// Core idea: ONE <video> element, swap src.
+// Cover image shown during load, fades out
+// once video has data. This guarantees play()
+// works because the gesture that triggered
+// navigation also unlocks autoplay.
+// ─────────────────────────────────────────
+function loadReel(index, direction) {
+  if (navigating) return;
+  navigating = true;
 
-Search tikwm.com for trending videos. The play URL pattern is: https://www.tikwm.com/video/media/play/{video_id}.mp4
-Return raw JSON array only.`,
-        messages: [{
-          role: 'user',
-          content: 'Search tikwm.com for 10 trending TikTok videos right now. For each one get the video ID and construct the play URL as https://www.tikwm.com/video/media/play/{id}.mp4. Return the JSON array only.'
-        }]
-      })
+  const v = FEED[index];
+
+  // flash black transition
+  slideout.style.opacity = '1';
+  slideout.style.transition = 'opacity .12s';
+
+  setTimeout(() => {
+    // swap src while black
+    vid.pause();
+    vid.src = playUrl(v.id);
+    vid.load();
+
+    // show cover immediately
+    covimg.src = coverUrl(v.id);
+    covimg.style.opacity = '1';
+
+    updateHUD(v);
+    updDots();
+    cancelAnimationFrame(progRaf);
+    pfill.style.width = '0%';
+
+    // fade transition back in
+    slideout.style.transition = 'opacity .15s';
+    slideout.style.opacity    = '0';
+
+    // play — this works because we're in a setTimeout
+    // triggered from a user gesture chain
+    const p = vid.play();
+    if (p) p.catch(() => {
+      // if blocked, try muted
+      vid.muted = true;
+      vid.play().catch(() => {});
     });
 
-    const data = await res.json();
-    const text = (data.content || [])
-      .filter(b => b.type === 'text')
-      .map(b => b.text).join('');
+    // fade out cover once video has enough data
+    const onData = () => {
+      covimg.style.transition = 'opacity .4s';
+      covimg.style.opacity = '0';
+      startProgRaf();
+      navigating = false;
+    };
+    vid.addEventListener('canplay', onData, { once: true });
+    // fallback if cover never fires
+    setTimeout(() => {
+      covimg.style.opacity = '0';
+      startProgRaf();
+      navigating = false;
+    }, 1800);
 
-    // parse JSON from response
-    const match = text.match(/\[[\s\S]*\]/);
-    if (match) {
-      const parsed = JSON.parse(match[0]);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        feed = parsed;
-        setStatus('Feed loaded!');
-        initPlayer();
-        return;
-      }
+  }, 130);
+}
+
+function startProgRaf() {
+  cancelAnimationFrame(progRaf);
+  function tick() {
+    if (vid.duration) {
+      pfill.style.width = (vid.currentTime / vid.duration * 100) + '%';
     }
-    throw new Error('No valid feed from Claude');
-  } catch (e) {
-    console.warn('Claude fetch failed, trying tikwm direct…', e);
-    await fetchTikwmDirect();
+    progRaf = requestAnimationFrame(tick);
   }
+  progRaf = requestAnimationFrame(tick);
 }
 
-// ─────────────────────────────────────────────────────────────
-// FALLBACK: tikwm.com API directly (CORS-permissive endpoint)
-// ─────────────────────────────────────────────────────────────
-async function fetchTikwmDirect() {
-  setStatus('Fetching from tikwm.com…');
+// ─────────────────────────────────────────
+// NAVIGATE
+// ─────────────────────────────────────────
+function goTo(n, dir) {
+  cur = ((n % FEED.length) + FEED.length) % FEED.length;
+  loadReel(cur, dir);
+  flashSfx(dir === 'up' ? '↑' : '↓');
+  liked = false; updLike();
+}
+const goNext = () => goTo(cur + 1, 'up');
+const goPrev = () => goTo(cur - 1, 'down');
 
-  // Known real viral video IDs with confirmed tikwm CDN availability
-  const knownIds = [
-    '7163783733223443717','7390978565271014686','7452334958313540869',
-    '7460668663742385430','7460964050600529159','7046553134654868782',
-    '6990916139345808666','7287791218765084970','7324512893476012321',
-    '7229069534956707114','7196098283047622955','7052462750193935621',
-    '7137425612226282757','7180082339897548074','7338201047382910234'
-  ];
-
-  const captions = [
-    ['@clips',      'How the girl from church got my bro acting',    'I used to sit over there with my boyfriend Tyrone', 'Original Sound', '127K','2.4K','891'],
-    ['@natgeo',     'Ocean depths never seen before 🌊',              'Deep dive footage reveals the unknown',             'NatGeo Original','2.1M','14K','98K'],
-    ['@storytime',  'POV: you finally texted your situationship',     'Why are you acting like I did something wrong',     'Situationship SZN','984K','11K','43K'],
-    ['@dramatics',  'The audacity of this man at Thanksgiving 💀',    'Can you pass me the remote',                        'Family Drama Mix','2.1M','18K','110K'],
-    ['@relatable',  "When she says I'm not mad but she clearly is",   "I'm fine. Everything is fine.",                     "She's Fine",'3.4M','29K','198K'],
-    ['@bestiesbelike','My bestie when she sees her ex at the mall',   'Oh wow I look amazing today wow',                   'Glow Up Energy','541K','7.2K','28K'],
-    ['@officetok',  'Corporate America got me acting different fr',   'Per my last email.',                                'Work Mode Lo-fi','763K','9.4K','52K'],
-    ['@familyreunion','That one cousin who thinks they run the cookout','Nobody told you to season it like that',          'Cookout Vibes','1.8M','22K','95K'],
-    ['@shoppingtok','Me after 3 hrs online shopping for nothing',     'Add to cart. Remove from cart.',                    'Retail Therapy','481K','5.3K','19K'],
-    ['@techreview', 'Ray-Ban Meta glasses review — actually good now??','These might be the best wearables yet',          'Tech Talk','763K','11K','52K'],
-    ['@mountainlife','4am summit — worth every cold step 🏔️',         'The views make it all worth it',                   'Morning Anthem','2.9M','18K','130K'],
-    ['@codewithme', '10 CSS tricks that actually save time ⚡',        'Number 7 will change your life fr',                'Focus Flow','481K','5.3K','38K'],
-    ['@chefgordon', 'Perfect carbonara — no cream ever',              'One pan four ingredients perfection',               'Kitchen Vibes','892K','7.2K','44K'],
-    ['@peterbrown', 'Acoustic guitar loop — just vibes 🎸',            'No plugins, no effects, just soul',                'Original — @peterbrown','541K','3.6K','28K'],
-    ['@urbansketcher','Drawing NYC in 60 seconds ✏️',                 'Timelapse art is my therapy',                      'Lo-fi Chill','317K','2.8K','19K'],
-  ];
-
-  feed = knownIds.slice(0, 10).map((id, i) => {
-    const c = captions[i % captions.length];
-    return {
-      id,
-      play:   `https://www.tikwm.com/video/media/play/${id}.mp4`,
-      cover:  `https://www.tikwm.com/video/cover/${id}.jpeg`,
-      author:   c[0],
-      desc:     c[1],
-      subtitle: c[2],
-      music:    c[3],
-      likes:    c[4],
-      comments: c[5],
-      shares:   c[6],
-    };
-  });
-
-  setStatus('Feed ready!');
-  initPlayer();
+// ─────────────────────────────────────────
+// HUD TEXT
+// ─────────────────────────────────────────
+function updateHUD(v) {
+  document.getElementById('captop').innerHTML =
+    v.desc.length > 34
+      ? v.desc.replace(/(.{28,38}\s)/,'$1<br>')
+      : v.desc;
+  document.getElementById('sub').textContent      = v.sub;
+  document.getElementById('uname').textContent    = v.author;
+  document.getElementById('mname').textContent    = v.music;
+  document.getElementById('likenum').textContent  = v.likes;
+  document.getElementById('comnum').textContent   = v.com;
+  document.getElementById('sharenum').textContent = v.sh;
 }
 
-// ─────────────────────────────────────────────────────────────
-// BUILD PLAYER from feed
-// ─────────────────────────────────────────────────────────────
-function initPlayer() {
-  buildSlots();
-  buildDots();
-  updateHUD();
-  startProg();
-
-  // hide loader once first video loads or after 2.5s
-  const v0 = vidEl(0);
-  if (v0) {
-    v0.addEventListener('canplay', hideLoader, { once: true });
-    v0.play().catch(() => {});
-  }
-  setTimeout(hideLoader, 2500);
-}
-
-function hideLoader() {
-  document.getElementById('loader').classList.add('gone');
-}
-
-function buildSlots() {
-  const vc = document.getElementById('vc');
-  vc.innerHTML = '';
-  feed.forEach((v, i) => {
-    const div = document.createElement('div');
-    div.className = 'reel' + (i === 0 ? ' active' : '');
-    div.id = 'r' + i;
-
-    const vid = document.createElement('video');
-    vid.src = v.play;
-    vid.autoplay = i === 0;
-    vid.loop = true;
-    vid.muted = false;
-    vid.playsInline = true;
-    vid.setAttribute('playsinline', '');
-    vid.onerror = () => {
-      div.classList.add('err');
-      // try cover image as fallback bg
-      if (v.cover) div.style.backgroundImage = `url(${v.cover})`;
-      div.style.backgroundSize = 'cover';
-      div.style.backgroundPosition = 'center';
-    };
-
-    const err = document.createElement('div');
-    err.className = 'errcard';
-    err.innerHTML = `<span style="font-size:32px">🎵</span><span>${v.author}</span><span style="font-size:9px;max-width:200px;text-align:center;opacity:.5">${v.desc}</span>`;
-
-    div.appendChild(vid);
-    div.appendChild(err);
-    vc.appendChild(div);
-  });
-}
-
+// ─────────────────────────────────────────
+// DOTS
+// ─────────────────────────────────────────
 function buildDots() {
   const c = document.getElementById('dots');
-  c.innerHTML = '';
-  feed.forEach((_, i) => {
+  FEED.forEach((_, i) => {
     const d = document.createElement('div');
     d.className = 'dot' + (i === cur ? ' on' : '');
     c.appendChild(d);
@@ -474,78 +413,11 @@ function updDots() {
     d.classList.toggle('on', i === cur));
 }
 
-function vidEl(i) {
-  const r = document.getElementById('r' + i);
-  return r ? r.querySelector('video') : null;
-}
-
-// ─────────────────────────────────────────────────────────────
-// HUD TEXT
-// ─────────────────────────────────────────────────────────────
-function updateHUD() {
-  if (!feed.length) return;
-  const v = feed[cur];
-  document.getElementById('captop').innerHTML =
-    (v.desc || '').replace(/(.{28,40}\s)/g, '$1<br>');
-  document.getElementById('sub').textContent     = v.subtitle || v.desc || '';
-  document.getElementById('uname').textContent   = v.author   || '@—';
-  document.getElementById('mname').textContent   = v.music    || 'Original Sound';
-  document.getElementById('likenum').textContent = v.likes    || '—';
-  document.getElementById('comnum').textContent  = v.comments || '—';
-  document.getElementById('sharenum').textContent= v.shares   || '—';
-  liked = false;
-  updLike();
-}
-
-// ─────────────────────────────────────────────────────────────
-// PROGRESS
-// ─────────────────────────────────────────────────────────────
-function startProg() {
-  clearInterval(progTimer);
-  document.getElementById('pf').style.width = '0%';
-  progTimer = setInterval(() => {
-    if (paused) return;
-    const v = vidEl(cur);
-    if (!v) return;
-    const pct = v.duration ? (v.currentTime / v.duration) * 100 : 0;
-    document.getElementById('pf').style.width = Math.min(pct, 100) + '%';
-  }, 120);
-}
-
-// ─────────────────────────────────────────────────────────────
-// NAVIGATE
-// ─────────────────────────────────────────────────────────────
-function goTo(n, dir) {
-  if (!feed.length) return;
-  const prev = vidEl(cur);
-  if (prev) { prev.pause(); prev.currentTime = 0; }
-  document.getElementById('r' + cur)?.classList.remove('active');
-
-  cur = ((n % feed.length) + feed.length) % feed.length;
-
-  const slot = document.getElementById('r' + cur);
-  if (slot) slot.classList.add('active');
-  const nv = vidEl(cur);
-  if (nv) { nv.currentTime = 0; nv.play().catch(() => {}); }
-
-  updateHUD();
-  updDots();
-  startProg();
-  flashSfx(dir === 'up' ? '↑' : '↓');
-
-  // preload next
-  const nxt = vidEl((cur + 1) % feed.length);
-  if (nxt && nxt.preload !== 'auto') nxt.preload = 'auto';
-}
-const goNext = () => goTo(cur + 1, 'up');
-const goPrev = () => goTo(cur - 1, 'down');
-
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
 // LIKE
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
 function doLike() {
-  liked = !liked;
-  updLike();
+  liked = !liked; updLike();
   if (liked) spawnHeart();
 }
 function updLike() {
@@ -555,117 +427,146 @@ function updLike() {
 function spawnHeart() {
   const h = document.createElement('div');
   h.className = 'heart'; h.textContent = '❤️';
-  document.getElementById('hud').appendChild(h);
+  hud.appendChild(h);
   h.addEventListener('animationend', () => h.remove());
 }
 
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
 // SWIPE FX
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
 function flashSfx(sym) {
   const el = document.getElementById('sfx');
   el.textContent = sym;
   el.classList.remove('go'); void el.offsetWidth;
   el.classList.add('go');
-  setTimeout(() => el.classList.remove('go'), 600);
+  setTimeout(() => el.classList.remove('go'), 500);
 }
 
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
 // TOAST
-// ─────────────────────────────────────────────────────────────
-function toast(msg) {
+// ─────────────────────────────────────────
+function showToast(msg) {
   const t = document.getElementById('toastEl');
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTmr);
   toastTmr = setTimeout(() => t.classList.remove('show'), 1400);
 }
-function setStatus(s) { document.getElementById('lstatus').textContent = s; }
 
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
+// UNMUTE helper — called on first touch/key
+// ─────────────────────────────────────────
+function unlockAudio() {
+  if (!muted) return;
+  muted = false;
+  vid.muted = false;
+  vid.play().catch(() => {});
+}
+
+// ─────────────────────────────────────────
 // TABS
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
 document.querySelectorAll('.tab').forEach(t => {
   t.addEventListener('click', () => {
+    unlockAudio();
     tabIdx = +t.dataset.i;
     document.querySelectorAll('.tab').forEach((x, i) =>
       x.classList.toggle('on', i === tabIdx));
-    toast(t.textContent.trim());
+    showToast(t.textContent.trim());
   });
 });
 function shiftTab(d) {
   tabIdx = ((tabIdx + d) + 3) % 3;
   document.querySelectorAll('.tab').forEach((x, i) =>
     x.classList.toggle('on', i === tabIdx));
-  toast(document.querySelector('.tab.on').textContent.trim());
+  showToast(document.querySelector('.tab.on').textContent.trim());
 }
 
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
 // TOUCH
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
 const tz = document.getElementById('tz');
 tz.addEventListener('touchstart', e => {
   touchSY = e.touches[0].clientY;
   touchSX = e.touches[0].clientX;
+  unlockAudio();
 }, { passive: true });
+
 tz.addEventListener('touchend', e => {
   const dy = touchSY - e.changedTouches[0].clientY;
   const dx = touchSX - e.changedTouches[0].clientX;
-  if (Math.abs(dy) > 38 && Math.abs(dy) > Math.abs(dx))
+  if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx))
     dy > 0 ? goNext() : goPrev();
-  else if (Math.abs(dx) > 38)
+  else if (Math.abs(dx) > 40)
     shiftTab(dx > 0 ? 1 : -1);
 }, { passive: true });
+
 // double-tap like
 tz.addEventListener('touchend', e => {
   const now = Date.now();
-  if (now - lastTap < 300) { doLike(); toast('❤️ Liked'); }
+  if (now - lastTap < 300) { doLike(); showToast('❤️ Liked'); }
   lastTap = now;
 }, { passive: true });
-tz.addEventListener('click', e => {
+
+tz.addEventListener('click', () => {
+  unlockAudio();
   const now = Date.now();
-  if (now - lastTap < 300) { doLike(); toast('❤️ Liked'); }
+  if (now - lastTap < 300) { doLike(); showToast('❤️ Liked'); }
   lastTap = now;
 });
 
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
 // KEYBOARD
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowUp'   || e.key === 'w') { e.preventDefault(); goPrev(); }
-  if (e.key === 'ArrowDown' || e.key === 's') { e.preventDefault(); goNext(); }
-  if (e.key === 'ArrowRight'|| e.key === 'd') shiftTab(1);
-  if (e.key === 'ArrowLeft' || e.key === 'a') shiftTab(-1);
+  unlockAudio();
+  if (e.key === 'ArrowUp'    || e.key === 'w') { e.preventDefault(); goPrev(); }
+  if (e.key === 'ArrowDown'  || e.key === 's') { e.preventDefault(); goNext(); }
+  if (e.key === 'ArrowRight' || e.key === 'd') shiftTab(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'a') shiftTab(-1);
   if (e.key === ' ') {
     e.preventDefault();
-    const v = vidEl(cur);
-    if (v) { paused = !paused; paused ? v.pause() : v.play().catch(()=>{}); toast(paused ? '⏸ Paused' : '▶ Playing'); }
+    vid.paused ? vid.play() : vid.pause();
+    showToast(vid.paused ? '⏸ Paused' : '▶ Playing');
   }
-  if (e.key === 'l' || e.key === 'L') { doLike(); toast('❤️ Liked'); }
+  if (e.key === 'l' || e.key === 'L') { doLike(); showToast('❤️ Liked'); }
 });
 
-// ─────────────────────────────────────────────────────────────
-// NEURAL BAND SDK SHIM
-// ─────────────────────────────────────────────────────────────
-window.addEventListener('meta-neural-gesture', e => {
-  const g = e.detail?.gesture;
-  if (g === 'pinch')       { paused = !paused; const v = vidEl(cur); paused ? v?.pause() : v?.play(); }
-  if (g === 'swipe-up')    goNext();
-  if (g === 'swipe-down')  goPrev();
-  if (g === 'swipe-right') shiftTab(1);
-  if (g === 'swipe-left')  shiftTab(-1);
-  if (g === 'double-pinch'){ doLike(); }
-});
-if (window.webkit?.messageHandlers?.metaDisplay) {
-  window.webkit.messageHandlers.metaDisplay.postMessage({
-    action: 'requestPermission', permission: 'com.meta.wearables.display',
-    resolution: { w: 600, h: 600 }, shape: 'rounded-rect', fov: 20
+// ─────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────
+buildDots();
+
+// load first reel — muted autoplay works everywhere
+vid.muted = true;
+vid.src   = playUrl(FEED[0].id);
+vid.load();
+vid.play().catch(() => {});
+covimg.src = coverUrl(FEED[0].id);
+vid.addEventListener('canplay', () => {
+  covimg.style.transition = 'opacity .4s';
+  covimg.style.opacity = '0';
+  startProgRaf();
+}, { once: true });
+setTimeout(() => { covimg.style.opacity = '0'; startProgRaf(); }, 2000);
+updateHUD(FEED[0]);
+
+// preload next 2 videos using hidden Audio objects (tricks browser into caching)
+function preloadNext() {
+  [1, 2].forEach(offset => {
+    const idx = (cur + offset) % FEED.length;
+    const a = document.createElement('link');
+    a.rel = 'prefetch'; a.as = 'video';
+    a.href = playUrl(FEED[idx].id);
+    document.head.appendChild(a);
   });
 }
+preloadNext();
+vid.addEventListener('timeupdate', () => {
+  if (vid.duration && vid.currentTime / vid.duration > 0.7) preloadNext();
+});
 
-// ─────────────────────────────────────────────────────────────
-// BOOT
-// ─────────────────────────────────────────────────────────────
-fetchFeed();
+// when video ends naturally, go next
+vid.addEventListener('ended', goNext);
 </script>
 </body>
 </html>
