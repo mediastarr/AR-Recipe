@@ -101,7 +101,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <body>
 
 <div id="hud">
-  <video id="vid" playsinline loop preload="auto"></video>
+  <video id="vid" playsinline preload="auto"></video>
   <div class="shade"></div>
   <div id="spinner">
     <svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4"/><path d="M22 4 a18 18 0 0 1 18 18" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>
@@ -207,6 +207,8 @@ function makeBatch(){
 let feed = [...makeBatch(),...makeBatch()]; // start with 60 items
 let cur=0, liked=false, muted=false, tabIdx=1;
 let lastTap=0, touchSY=0, touchSX=0, toastTmr, progRaf, started=false;
+let lastNav=0;           // debounce guard for auto-advance
+const NAV_COOL=1500;     // ms minimum between any navigations
 
 const vid    = document.getElementById('vid');
 const hud    = document.getElementById('hud');
@@ -228,17 +230,20 @@ function maybeLoadMore(){
 // We use ONE <video> element and swap src each time.
 // This is the only reliable cross-browser approach.
 function playReel(i){
+  lastNav = Date.now();
   cur = ((i % feed.length)+feed.length) % feed.length;
   const r = feed[cur];
 
   // stop + reset progress
   vid.pause();
   cancelAnimationFrame(progRaf);
+  progRaf = null;
   progf.style.width = '0%';
 
-  // set new source
-  vid.src   = r.src;
+  // set new source — no loop attr, we manually advance on ended
+  vid.src = r.src;
   vid.muted = muted;
+  vid.loop = false;
   vid.currentTime = 0;
 
   // play — must be called from user gesture chain or after splash
@@ -261,18 +266,28 @@ function playReel(i){
 function tickProgress(){
   cancelAnimationFrame(progRaf);
   function step(){
-    if(vid.duration && !isNaN(vid.duration))
-      progf.style.width = (vid.currentTime/vid.duration*100)+'%';
+    if(vid.duration && !isNaN(vid.duration)){
+      const pct = (vid.currentTime / vid.duration) * 100;
+      progf.style.width = Math.min(pct, 99.5) + '%'; // clamp: never trigger at 100%
+    }
     progRaf = requestAnimationFrame(step);
   }
   progRaf = requestAnimationFrame(step);
 }
 
-// auto-advance
-vid.addEventListener('ended', ()=>{ flashSfx('↑'); goTo(cur+1); });
+// auto-advance ONLY on ended, with cooldown so it can't rapid-fire
+vid.addEventListener('ended', ()=>{
+  const now = Date.now();
+  if(now - lastNav < NAV_COOL) return; // ignore if we just navigated
+  flashSfx('↑'); goTo(cur+1);
+});
 vid.addEventListener('waiting', ()=>hud.classList.add('buffering'));
 vid.addEventListener('playing',  ()=>hud.classList.remove('buffering'));
-vid.addEventListener('error',    ()=>goTo(cur+1)); // skip bad video
+vid.addEventListener('error',    ()=>{
+  const now = Date.now();
+  if(now - lastNav < 800) return; // skip bad video, but not too fast
+  goTo(cur+1);
+});
 
 // ── Navigation ────────────────────────────────────────────────
 function goTo(n, dir='up'){
