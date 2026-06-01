@@ -225,8 +225,8 @@ html,body{
 <div id="toast"></div>
 
 <script>
-// ── VIDEO POOL (storage.googleapis.com — open CORS, confirmed working) ──
-const G = 'https://storage.googleapis.com/gtv-videos-bucket/sample/';
+// ── VIDEO POOL (commondatastorage.googleapis.com — streams in browser, no Content-Disposition:attachment) ──
+const G = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/';
 const POOL = [
   {u:G+'ForBiggerBlazes.mp4',        h:'@firetok',     d:'🔥 Fire content you cannot skip #fyp',          s:'This is what going viral feels like',         m:'Fire – Kasabian',          l:'4.2M',c:'28K',r:'180K'},
   {u:G+'ForBiggerEscapes.mp4',       h:'@escapetok',   d:'🌍 Said yes to everything this week',            s:'Best decision I have ever made no cap',        m:'No Limits',                l:'3.1M',c:'19K',r:'95K'},
@@ -272,7 +272,6 @@ function load(i){
   // swap src — simplest possible approach
   vid.muted  = true; // always start muted (iOS requirement)
   vid.src    = r.u;
-  vid.load();
 
   const p = vid.play();
   if(p) p.then(onPlay).catch(()=>{
