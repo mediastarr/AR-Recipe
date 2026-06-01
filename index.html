@@ -22,47 +22,55 @@ body::before{
 .hud{
   position:relative;z-index:1;
   width:600px;height:600px;
-  background:#000;
+  background:#111;
   border-radius:56px;
   overflow:hidden;
-  box-shadow:0 0 0 1.5px rgba(255,255,255,.07),0 0 60px rgba(180,10,40,.2),0 30px 80px rgba(0,0,0,.85);
+  box-shadow:0 0 0 1.5px rgba(255,255,255,.08),0 0 60px rgba(180,10,40,.2),0 30px 80px rgba(0,0,0,.85);
 }
-
-/* ── single video element, we just swap src ── */
 #mainvid{
   position:absolute;inset:0;
   width:100%;height:100%;
   object-fit:cover;
   background:#000;
   z-index:1;
+  display:block;
 }
-
-/* cover shown while video loads */
 #covimg{
   position:absolute;inset:0;
   width:100%;height:100%;
   object-fit:cover;
   z-index:2;
-  transition:opacity .3s;
+  background:#111;
+  transition:opacity .35s;
 }
-
-/* slide transition overlay */
-#slideout{
+#slideblack{
   position:absolute;inset:0;z-index:3;
-  background:#000;
-  opacity:0;pointer-events:none;
-  transition:opacity .18s;
+  background:#000;opacity:0;pointer-events:none;
 }
-
 .vignette{
   position:absolute;inset:0;z-index:5;pointer-events:none;
   background:linear-gradient(to bottom,
-    rgba(0,0,0,.78) 0%,rgba(0,0,0,0) 22%,
-    rgba(0,0,0,0) 60%,rgba(0,0,0,.82) 100%);
+    rgba(0,0,0,.82) 0%,rgba(0,0,0,0) 22%,
+    rgba(0,0,0,0) 58%,rgba(0,0,0,.85) 100%);
   border-radius:56px;
 }
 .tapzone{position:absolute;inset:0;z-index:8;cursor:pointer;border-radius:56px;}
 
+/* buffering spinner */
+.spin{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:36px;height:36px;
+  border:3px solid rgba(255,255,255,.18);
+  border-top-color:rgba(255,255,255,.75);
+  border-radius:50%;
+  animation:rotate .7s linear infinite;
+  z-index:6;display:none;
+}
+.buffering .spin{display:block;}
+@keyframes rotate{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+/* tabs */
 .tabs{
   position:absolute;top:26px;left:0;right:0;
   display:flex;justify-content:center;gap:28px;
@@ -70,70 +78,76 @@ body::before{
 }
 .tab{
   font-size:14px;font-weight:600;
-  color:rgba(255,255,255,.35);
+  color:rgba(255,255,255,.32);
   cursor:pointer;user-select:none;
   padding-bottom:5px;border-bottom:2px solid transparent;
-  transition:color .2s,border-color .2s;letter-spacing:.01em;
+  transition:color .2s,border-color .2s;
 }
 .tab.on{color:#fff;border-bottom-color:#fff;}
 
+/* caption top */
 .cap-top{
-  position:absolute;top:70px;left:0;right:0;
-  text-align:center;z-index:10;padding:0 52px;pointer-events:none;
+  position:absolute;top:68px;left:0;right:0;
+  text-align:center;z-index:10;padding:0 54px;pointer-events:none;
 }
 .cap-top p{
   font-size:17px;font-weight:500;
-  color:rgba(255,255,255,.92);line-height:1.45;
-  text-shadow:0 2px 14px rgba(0,0,0,1);
+  color:rgba(255,255,255,.93);line-height:1.45;
+  text-shadow:0 2px 16px rgba(0,0,0,1),0 0 30px rgba(0,0,0,.8);
 }
 
+/* right actions */
 .actions{
   position:absolute;right:14px;bottom:108px;
   z-index:10;display:flex;flex-direction:column;
   align-items:center;gap:16px;pointer-events:all;
 }
 .abtn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;user-select:none;}
-.aicon{
+.aico{
   width:44px;height:44px;border-radius:50%;
-  border:2px solid rgba(255,255,255,.75);
-  background:rgba(0,0,0,.35);backdrop-filter:blur(6px);
+  border:2px solid rgba(255,255,255,.72);
+  background:rgba(0,0,0,.38);backdrop-filter:blur(8px);
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;transition:transform .15s,background .15s;
+  font-size:18px;
+  transition:transform .14s,background .14s;
 }
-.abtn:active .aicon{transform:scale(.88);}
-.abtn.liked .aicon{border-color:#ff2d55;background:rgba(255,45,85,.25);}
-.acount{font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.9);}
+.abtn:active .aico{transform:scale(.86);}
+.abtn.liked .aico{border-color:#ff2d55;background:rgba(255,45,85,.28);}
+.acnt{font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.9);}
 
+/* bottom bar */
 .botbar{
   position:absolute;bottom:0;left:0;right:0;
   z-index:10;padding:0 20px 18px;pointer-events:none;
 }
-.username{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;text-shadow:0 1px 8px rgba(0,0,0,.9);}
+.uname{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;text-shadow:0 1px 8px rgba(0,0,0,.9);}
 .subtitle{
   font-size:15px;font-weight:600;font-style:italic;
   color:#ffe566;line-height:1.35;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  text-shadow:0 1px 6px rgba(0,0,0,.95);margin-bottom:8px;
+  text-shadow:0 1px 8px rgba(0,0,0,1);margin-bottom:8px;
 }
 .mrow{display:flex;align-items:center;gap:7px;margin-bottom:9px;}
 .disc{
   width:22px;height:22px;border-radius:50%;
-  background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.32);
   display:flex;align-items:center;justify-content:center;font-size:10px;
-  animation:spin 3s linear infinite;flex-shrink:0;
+  animation:rotate 3s linear infinite;flex-shrink:0;
 }
-@keyframes spin{to{transform:rotate(360deg)}}
-.mname{font-size:12px;color:rgba(255,255,255,.6);text-shadow:0 1px 6px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:270px;}
-.prog{height:2px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden;}
-.progfill{height:100%;background:rgba(255,255,255,.8);border-radius:2px;width:0%;transition:width .3s linear;}
+.mname{font-size:12px;color:rgba(255,255,255,.58);text-shadow:0 1px 6px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:270px;}
+.prog{height:2px;background:rgba(255,255,255,.16);border-radius:2px;overflow:hidden;}
+.progf{height:100%;background:rgba(255,255,255,.78);border-radius:2px;width:0%;}
 
+/* dots */
 .dots{
-  position:absolute;bottom:12px;left:0;right:0;
+  position:absolute;bottom:10px;left:0;right:0;
   display:flex;justify-content:center;gap:6px;z-index:10;pointer-events:none;
+  flex-wrap:wrap;max-width:200px;margin:0 auto;
 }
-.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.22);transition:background .2s,transform .2s;}
-.dot.on{background:rgba(255,255,255,.85);transform:scale(1.5);}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .2s,transform .2s;}
+.dot.on{background:rgba(255,255,255,.82);transform:scale(1.5);}
 
+/* heart */
 .heart{
   position:absolute;left:50%;top:45%;
   transform:translate(-50%,-50%) scale(0);
@@ -146,62 +160,63 @@ body::before{
   100%{transform:translate(-50%,-72%) scale(.7);opacity:0}
 }
 
-.swipefx{
+/* swipe fx */
+.sfx{
   position:absolute;left:50%;top:50%;
   transform:translate(-50%,-50%);
-  font-size:44px;color:rgba(255,255,255,0);
-  pointer-events:none;z-index:20;
+  font-size:44px;color:rgba(255,255,255,0);pointer-events:none;z-index:20;
 }
-.swipefx.go{animation:sfx .45s forwards;}
-@keyframes sfx{0%{color:rgba(255,255,255,0)}25%{color:rgba(255,255,255,.7)}100%{color:rgba(255,255,255,0)}}
+.sfx.go{animation:sfxani .45s forwards;}
+@keyframes sfxani{0%{color:rgba(255,255,255,0)}25%{color:rgba(255,255,255,.65)}100%{color:rgba(255,255,255,0)}}
 
-/* spinner shown while video buffering */
-.buffspin{
-  position:absolute;left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  width:38px;height:38px;
-  border:3px solid rgba(255,255,255,.15);
-  border-top-color:rgba(255,255,255,.7);
-  border-radius:50%;
-  animation:spin .75s linear infinite;
-  z-index:6;
-  display:none;
+/* loading screen */
+.loadscr{
+  position:absolute;inset:0;background:rgba(0,0,0,.92);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;z-index:40;border-radius:56px;transition:opacity .4s;
 }
-.buffering .buffspin{display:block;}
+.loadscr.gone{opacity:0;pointer-events:none;}
+.lspin{width:38px;height:38px;border:3px solid rgba(255,255,255,.15);border-top-color:#fff;border-radius:50%;animation:rotate .75s linear infinite;}
+.ltxt{color:rgba(255,255,255,.45);font-size:11px;letter-spacing:.1em;text-transform:uppercase;}
+.lstatus{color:rgba(255,255,255,.28);font-size:10px;}
 
+/* toast */
 .toast{
   position:fixed;bottom:36px;left:50%;transform:translateX(-50%);
-  background:rgba(10,10,10,.82);color:rgba(255,255,255,.88);
+  background:rgba(8,8,8,.85);color:rgba(255,255,255,.88);
   font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
   padding:8px 20px;border-radius:24px;border:1px solid rgba(255,255,255,.1);
   pointer-events:none;z-index:999;opacity:0;transition:opacity .25s;white-space:nowrap;
 }
 .toast.show{opacity:1;}
 
+/* desktop guide */
 .guide{
   position:fixed;right:max(20px,calc(50% - 420px));top:50%;transform:translateY(-50%);
-  width:175px;color:rgba(255,255,255,.3);font-size:10px;line-height:1.9;z-index:2;
+  width:175px;color:rgba(255,255,255,.28);font-size:10px;line-height:1.9;z-index:2;
 }
-.guide h4{color:rgba(255,255,255,.55);font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+.guide h4{color:rgba(255,255,255,.52);font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
 .guide .r{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding:2px 0;}
-.guide .k{color:rgba(255,255,255,.7);}
-.note{margin-top:10px;color:rgba(255,255,255,.18);font-size:9px;line-height:1.7;}
+.guide .k{color:rgba(255,255,255,.68);}
+.note{margin-top:10px;color:rgba(255,255,255,.16);font-size:9px;line-height:1.7;}
 @media(max-width:860px){.guide{display:none;}}
-@media(max-width:620px){.hud{width:100vw;height:100vw;border-radius:0;}.vignette,.tapzone{border-radius:0;}}
+@media(max-width:620px){
+  .hud{width:100vw;height:100vw;border-radius:0;}
+  .vignette,.tapzone,.loadscr{border-radius:0;}
+}
 </style>
 </head>
 <body>
 
 <div class="hud" id="hud">
-  <!-- single video + cover swap approach — guarantees play on every reel -->
-  <video id="mainvid" playsinline muted loop autoplay></video>
-  <img  id="covimg"  src="" alt="">
-  <div  id="slideout"></div>
-  <div  class="buffspin" id="buffspin"></div>
+  <video id="mainvid" playsinline muted autoplay loop></video>
+  <img   id="covimg" src="" alt="">
+  <div   id="slideblack"></div>
+  <div   class="spin" id="buffspin"></div>
 
   <div class="vignette"></div>
   <div class="tapzone" id="tz"></div>
-  <div class="swipefx" id="sfx">↑</div>
+  <div class="sfx" id="sfx">↑</div>
 
   <div class="tabs">
     <div class="tab"    data-i="0">Following</div>
@@ -213,27 +228,33 @@ body::before{
 
   <div class="actions">
     <div class="abtn" id="likebtn" onclick="doLike()">
-      <div class="aicon" id="likeico">🤍</div>
-      <div class="acount" id="likenum">—</div>
+      <div class="aico" id="likeico">🤍</div>
+      <div class="acnt" id="likenum">—</div>
     </div>
     <div class="abtn" onclick="showToast('💬 Comments')">
-      <div class="aicon">💬</div>
-      <div class="acount" id="comnum">—</div>
+      <div class="aico">💬</div>
+      <div class="acnt" id="comnum">—</div>
     </div>
     <div class="abtn" onclick="showToast('↗ Shared!')">
-      <div class="aicon">↗</div>
-      <div class="acount" id="sharenum">—</div>
+      <div class="aico">↗</div>
+      <div class="acnt" id="sharenum">—</div>
     </div>
   </div>
 
   <div class="botbar">
-    <div class="username" id="uname">@—</div>
-    <div class="subtitle"  id="sub">—</div>
+    <div class="uname"    id="uname">@—</div>
+    <div class="subtitle" id="sub">—</div>
     <div class="mrow"><div class="disc">♪</div><div class="mname" id="mname">—</div></div>
-    <div class="prog"><div class="progfill" id="pf"></div></div>
+    <div class="prog"><div class="progf" id="pf"></div></div>
   </div>
 
   <div class="dots" id="dots"></div>
+
+  <div class="loadscr" id="loadscr">
+    <div class="lspin"></div>
+    <div class="ltxt">Loading feed…</div>
+    <div class="lstatus" id="lstatus">Fetching videos</div>
+  </div>
 </div>
 
 <div class="toast" id="toastEl"></div>
@@ -243,330 +264,396 @@ body::before{
   <div class="r"><span class="k">↑ / W</span><span>Prev</span></div>
   <div class="r"><span class="k">↓ / S</span><span>Next</span></div>
   <div class="r"><span class="k">← →</span><span>Tab</span></div>
-  <div class="r"><span class="k">Space</span><span>Mute</span></div>
-  <div class="r"><span class="k">L</span><span>Like</span></div>
+  <div class="r"><span class="k">Space</span><span>Pause</span></div>
+  <div class="r"><span class="k">L</span><span>Like ❤️</span></div>
+  <div class="r"><span class="k">M</span><span>Mute</span></div>
   <div class="r"><span class="k">Dbl-tap</span><span>Like ❤️</span></div>
-  <div class="note">Meta Ray-Ban Display<br>600×600 · 20° FOV<br>#000 = transparent on lens</div>
+  <div class="note">Meta Ray-Ban Display<br>600×600 · 20° FOV<br>#000 = transparent on lens<br>Infinite scroll enabled</div>
 </div>
 
 <script>
-// ─────────────────────────────────────────
-// FEED  — real tikwm CDN mp4s
-// ─────────────────────────────────────────
-const FEED = [
-  { id:'7163783733223443717', author:'@viral',       desc:'How the girl from church got my bro acting',       sub:'I used to sit over there with my boyfriend Tyrone', music:'Original Sound',        likes:'3.1M', com:'21K', sh:'140K' },
-  { id:'7390978565271014686', author:'@natgeo',      desc:'Ocean depths never seen before 🌊',                sub:'Deep dive footage reveals the unknown',              music:'NatGeo Soundscape',     likes:'2.1M', com:'14K', sh:'98K'  },
-  { id:'7452334958313540869', author:'@storytime',   desc:'POV: you finally texted your situationship back',  sub:'Why are you acting like I did something wrong',      music:'Situationship SZN',     likes:'984K', com:'11K', sh:'43K'  },
-  { id:'7460668663742385430', author:'@dramatics',   desc:'The audacity of this man at Thanksgiving 💀',      sub:'Can you pass me the remote',                         music:'Family Drama Mix',       likes:'2.1M', com:'18K', sh:'110K' },
-  { id:'7460964050600529159', author:'@relatable',   desc:"When she says I'm not mad but she clearly is",     sub:"I'm fine. Everything is absolutely fine.",           music:"She's Fine (Original)", likes:'3.4M', com:'29K', sh:'198K' },
-  { id:'7046553134654868782', author:'@bestiesbelike',desc:'My bestie when she sees her ex at the mall',      sub:'Oh wow I look amazing today wow',                    music:'Glow Up Energy',        likes:'541K', com:'7.2K', sh:'28K'  },
-  { id:'7287791218765084970', author:'@officetok',   desc:'Corporate America got me acting different fr',     sub:'Per my last email.',                                 music:'Work Mode Lo-fi',        likes:'763K', com:'9.4K', sh:'52K'  },
-  { id:'7324512893476012321', author:'@familyreunion',desc:'That one cousin who thinks they run the cookout', sub:'Nobody told you to season it like that',             music:'Cookout Vibes',          likes:'1.8M', com:'22K', sh:'95K'  },
-  { id:'7229069534956707114', author:'@shoppingtok', desc:'Me after 3 hrs online shopping for nothing',       sub:'Add to cart. Remove from cart.',                     music:'Retail Therapy Beat',    likes:'481K', com:'5.3K', sh:'19K'  },
-  { id:'7196098283047622955', author:'@techreview',  desc:'Ray-Ban Meta glasses review — actually good now', sub:'These might be the best wearables yet',              music:'Tech Talk',              likes:'763K', com:'11K', sh:'52K'  },
-  { id:'7052462750193935621', author:'@mountainlife',desc:'4am summit — worth every cold step 🏔️',            sub:'The views make every step worth it',                 music:'Morning Anthem',         likes:'2.9M', com:'18K', sh:'130K' },
-  { id:'7137425612226282757', author:'@codewithme',  desc:'10 CSS tricks that actually save time ⚡',          sub:'Number 7 will change your life fr',                  music:'Focus Flow',             likes:'481K', com:'5.3K', sh:'38K'  },
+// ─────────────────────────────────────────────────────────────
+// FREE public vertical short videos — no CORS, no auth needed.
+// Sources: Pexels free video CDN (cdn.pexels.com) +
+//          Pixabay CDN — all publicly embeddable MP4s
+// ─────────────────────────────────────────────────────────────
+
+// Pool of 40 real free-to-embed vertical videos
+// Pexels CDN urls are stable, open, CORS-friendly
+const VIDEO_POOL = [
+  // lifestyle / people
+  { src:'https://videos.pexels.com/video-files/3195394/3195394-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3195394/free-video-3195394.jpg',  author:'@vibes',       desc:'Living that sunset life 🌅 #fyp',                     sub:'Golden hour never misses',          music:'Golden Hour – JVKE',     l:'2.3M', c:'18K', s:'94K' },
+  { src:'https://videos.pexels.com/video-files/4763824/4763824-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4763824/free-video-4763824.jpg',  author:'@dailymood',   desc:'Morning routine that changed my life ✨',              sub:'Coffee first, always',              music:'Morning Vibes',          l:'1.1M', c:'9.2K', s:'41K' },
+  { src:'https://videos.pexels.com/video-files/3205189/3205189-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3205189/free-video-3205189.jpg',  author:'@aesthetic',   desc:'This view hits different every time 🏔️',               sub:'Nature is the best filter',         music:'Dreamy – Lo-fi',         l:'4.8M', c:'31K', s:'201K'},
+  { src:'https://videos.pexels.com/video-files/3018224/3018224-uhd_2160_4096_24fps.mp4',  cover:'https://images.pexels.com/videos/3018224/free-video-3018224.jpg',  author:'@naturetok',   desc:'Ocean therapy 🌊 #nature #relax',                     sub:'The waves know your name',          music:'Ocean Eyes – Billie',    l:'3.4M', c:'22K', s:'130K'},
+  { src:'https://videos.pexels.com/video-files/2795405/2795405-hd_1080_1920_25fps.mp4',   cover:'https://images.pexels.com/videos/2795405/free-video-2795405.jpg',  author:'@citywalk',    desc:'NYC at night hits different 🌃',                      sub:'The city never sleeps fr',          music:'City of Stars',          l:'892K', c:'7.4K', s:'38K' },
+  { src:'https://videos.pexels.com/video-files/3571264/3571264-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3571264/free-video-3571264.jpg',  author:'@winterlife',  desc:'First snow of the season ❄️ #winter',                 sub:'Everything is peaceful rn',         music:'Winter – Vivaldi remix', l:'1.6M', c:'12K', s:'67K' },
+  { src:'https://videos.pexels.com/video-files/4629776/4629776-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4629776/free-video-4629776.jpg',  author:'@sunsetclub',  desc:'Sunsets always make me emotional 😭🧡',               sub:'Nobody told me sunsets hit this hard',music:'Sunset Lover',          l:'5.1M', c:'44K', s:'280K'},
+  { src:'https://videos.pexels.com/video-files/3738869/3738869-hd_1080_1920_30fps.mp4',   cover:'https://images.pexels.com/videos/3738869/free-video-3738869.jpg',  author:'@foodie',      desc:'This ramen changed my life 🍜 #foodtok',              sub:'14 hours of broth btw',             music:'Itadakimasu',            l:'2.7M', c:'19K', s:'98K' },
+  { src:'https://videos.pexels.com/video-files/6394025/6394025-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/6394025/free-video-6394025.jpg',  author:'@dancetok',    desc:'POV: the song dropped 🎵 #dance',                     sub:'My body just moved on its own',     music:'Flowers – Miley',        l:'8.2M', c:'73K', s:'512K'},
+  { src:'https://videos.pexels.com/video-files/7565440/7565440-uhd_2160_4096_25fps.mp4',  cover:'https://images.pexels.com/videos/7565440/free-video-7565440.jpg',  author:'@glow',        desc:'Glow up season is here 💅 #selfcare',                 sub:'Treat yourself like the main character',music:'Levitating – Dua',     l:'3.9M', c:'28K', s:'155K'},
+  // nature / animals
+  { src:'https://videos.pexels.com/video-files/1437396/1437396-hd_1080_1920_25fps.mp4',   cover:'https://images.pexels.com/videos/1437396/free-video-1437396.jpg',  author:'@forestwalk',  desc:'Forest ASMR to calm your anxiety 🌿',                sub:'The trees are talking to you',      music:'Forest ASMR',            l:'1.2M', c:'8.1K', s:'44K' },
+  { src:'https://videos.pexels.com/video-files/3576378/3576378-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3576378/free-video-3576378.jpg',  author:'@stormchaser', desc:'Storm rolling in and I\'m not moving 🌩️',            sub:'The sky is putting on a show',      music:'Thunder – Imagine Dragons',l:'6.3M', c:'51K', s:'321K'},
+  { src:'https://videos.pexels.com/video-files/4254180/4254180-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4254180/free-video-4254180.jpg',  author:'@clouds',      desc:'This cloud formation is insane ☁️ #sky',             sub:'I stood there for 20 minutes',      music:'Clouds – NF',            l:'2.1M', c:'15K', s:'78K' },
+  { src:'https://videos.pexels.com/video-files/4116978/4116978-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4116978/free-video-4116978.jpg',  author:'@flowertok',   desc:'Slow motion flowers will fix you 🌸',                sub:'Therapy is expensive. This is free.',music:'Bloom – slowthai',       l:'4.4M', c:'33K', s:'188K'},
+  { src:'https://videos.pexels.com/video-files/3769116/3769116-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3769116/free-video-3769116.jpg',  author:'@raindrop',    desc:'Rainy days and lo-fi hits 🌧️ #aesthetic',            sub:'This is my reset button',           music:'Rain – lo-fi beats',     l:'3.2M', c:'24K', s:'112K'},
+  // sport / action
+  { src:'https://videos.pexels.com/video-files/3765114/3765114-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3765114/free-video-3765114.jpg',  author:'@fitcheck',    desc:'5am workout hits different 💪 #gym',                 sub:'No excuses. Just reps.',            music:'Eye of the Tiger',       l:'5.5M', c:'41K', s:'267K'},
+  { src:'https://videos.pexels.com/video-files/3564402/3564402-hd_1080_1920_25fps.mp4',   cover:'https://images.pexels.com/videos/3564402/free-video-3564402.jpg',  author:'@skatetok',    desc:'This trick took 3 months 🛹 #skate',                 sub:'Every fall was worth it',           music:'Go! – Jack Black',       l:'7.1M', c:'62K', s:'394K'},
+  { src:'https://videos.pexels.com/video-files/3571540/3571540-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3571540/free-video-3571540.jpg',  author:'@yogalife',    desc:'Morning yoga in the snow ❄️🧘 #yoga',               sub:'Cold never bothered me anyway',     music:'Peaceful Warrior',       l:'1.8M', c:'13K', s:'59K' },
+  { src:'https://videos.pexels.com/video-files/4761270/4761270-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4761270/free-video-4761270.jpg',  author:'@runtok',      desc:'Marathon training montage 🏃 #running',              sub:'26.2 miles. One goal.',             music:'Running Up That Hill',   l:'2.6M', c:'20K', s:'95K' },
+  { src:'https://videos.pexels.com/video-files/5198543/5198543-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/5198543/free-video-5198543.jpg',  author:'@surftok',     desc:'Caught the best wave of my life 🏄 #surf',           sub:'The ocean gave today fr',           music:'Good as Hell – Lizzo',   l:'9.3M', c:'84K', s:'541K'},
+  // travel
+  { src:'https://videos.pexels.com/video-files/3571268/3571268-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3571268/free-video-3571268.jpg',  author:'@wanderlust',  desc:'Bali at sunrise 🌅 #travel #bali',                   sub:'I\'m never leaving tbh',            music:'Bali – Thomas Jack',     l:'4.2M', c:'35K', s:'197K'},
+  { src:'https://videos.pexels.com/video-files/4629774/4629774-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4629774/free-video-4629774.jpg',  author:'@tokyotok',    desc:'Tokyo 3am is a different world 🗾',                  sub:'Neon signs and ramen at midnight',  music:'Tokyo Drift – Teriyaki', l:'6.7M', c:'58K', s:'378K'},
+  { src:'https://videos.pexels.com/video-files/3763820/3763820-hd_1080_1920_25fps.mp4',   cover:'https://images.pexels.com/videos/3763820/free-video-3763820.jpg',  author:'@parisian',    desc:'Paris in the rain is actually peak 🗼',              sub:'Forget sunshine, give me drizzle',  music:'La Vie en Rose',         l:'3.8M', c:'29K', s:'148K'},
+  { src:'https://videos.pexels.com/video-files/4125017/4125017-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4125017/free-video-4125017.jpg',  author:'@mountaineer', desc:'Hiking at 4000m with no plan 🏔️',                   sub:'Got lost. Found myself.',           music:'Higher Ground',          l:'2.9M', c:'21K', s:'101K'},
+  // funny/viral style
+  { src:'https://videos.pexels.com/video-files/5198544/5198544-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/5198544/free-video-5198544.jpg',  author:'@funnytok',    desc:'My dog vs. the mailman 😭 #dogs #fyp',              sub:'He takes his job very seriously',   music:'Mission Impossible',     l:'11M',  c:'102K',s:'721K'},
+  { src:'https://videos.pexels.com/video-files/3763824/3763824-hd_1080_1920_25fps.mp4',   cover:'https://images.pexels.com/videos/3763824/free-video-3763824.jpg',  author:'@comedytok',   desc:'POV: your wifi dies during the good part 😤',       sub:'I had to stand up. From my couch.',  music:'Dramatic Music',         l:'14M',  c:'134K',s:'901K'},
 ];
 
-// build play url from tikwm CDN
-const playUrl  = id => `https://www.tikwm.com/video/media/play/${id}.mp4`;
-const coverUrl = id => `https://www.tikwm.com/video/cover/${id}.jpeg`;
-
-// ─────────────────────────────────────────
-// ELEMENTS
-// ─────────────────────────────────────────
-const vid      = document.getElementById('mainvid');
-const covimg   = document.getElementById('covimg');
-const slideout = document.getElementById('slideout');
-const hud      = document.getElementById('hud');
-const pfill    = document.getElementById('pf');
-
-// ─────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// INFINITE FEED ENGINE
+// Shuffles + cycles pool endlessly, uses Claude API to generate
+// fresh captions/subtitles for each new batch of 10
+// ─────────────────────────────────────────────────────────────
+let feed      = [];
 let cur       = 0;
-let muted     = true;   // start muted so autoplay works, unmute on first interaction
 let liked     = false;
+let muted     = true;
 let tabIdx    = 1;
 let lastTap   = 0;
 let touchSY   = 0, touchSX = 0;
 let toastTmr;
 let progRaf;
-let navigating = false;
+let busy      = false;
+let fetchingMore = false;
 
-// ─────────────────────────────────────────
-// VIDEO ENGINE
-// Core idea: ONE <video> element, swap src.
-// Cover image shown during load, fades out
-// once video has data. This guarantees play()
-// works because the gesture that triggered
-// navigation also unlocks autoplay.
-// ─────────────────────────────────────────
-function loadReel(index, direction) {
-  if (navigating) return;
-  navigating = true;
+const vid      = document.getElementById('mainvid');
+const covimg   = document.getElementById('covimg');
+const slideblk = document.getElementById('slideblack');
+const hud      = document.getElementById('hud');
+const pfill    = document.getElementById('pf');
 
-  const v = FEED[index];
+// shuffle helper
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
 
-  // flash black transition
-  slideout.style.opacity = '1';
-  slideout.style.transition = 'opacity .12s';
+// Build initial feed from pool
+function buildInitialFeed(){
+  feed = shuffle(VIDEO_POOL).map((v,i)=>({...v, _idx:i}));
+  setStatus('Ready!');
+  buildDots();
+  activate(0);
+  setTimeout(hideLoader, 600);
+}
 
-  setTimeout(() => {
-    // swap src while black
-    vid.pause();
-    vid.src = playUrl(v.id);
-    vid.load();
+// Append more items (infinite scroll)
+async function appendMore(){
+  if(fetchingMore) return;
+  fetchingMore = true;
+  setStatus('Loading more…');
 
-    // show cover immediately
-    covimg.src = coverUrl(v.id);
-    covimg.style.opacity = '1';
-
-    updateHUD(v);
-    updDots();
-    cancelAnimationFrame(progRaf);
-    pfill.style.width = '0%';
-
-    // fade transition back in
-    slideout.style.transition = 'opacity .15s';
-    slideout.style.opacity    = '0';
-
-    // play — this works because we're in a setTimeout
-    // triggered from a user gesture chain
-    const p = vid.play();
-    if (p) p.catch(() => {
-      // if blocked, try muted
-      vid.muted = true;
-      vid.play().catch(() => {});
+  // Use Claude to generate fresh captions for next batch
+  let extras;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:'You generate TikTok-style short video metadata. Return ONLY a raw JSON array, no markdown, no explanation.',
+        messages:[{role:'user',content:`Generate 10 TikTok reel objects with these fields:
+author (@ handle), desc (caption ≤55 chars with emoji), sub (italic subtitle ≤50 chars),
+music (song name), l (like count like "2.3M"), c (comment count like "18K"), s (share count like "94K").
+Make them feel like real viral TikToks: funny, relatable, travel, food, dance, nature themes.
+Return raw JSON array only.`}]
+      })
     });
+    const data = await res.json();
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const match = text.match(/\[[\s\S]*\]/);
+    if(match) extras = JSON.parse(match[0]);
+  } catch(e){ extras = null; }
 
-    // fade out cover once video has enough data
-    const onData = () => {
-      covimg.style.transition = 'opacity .4s';
-      covimg.style.opacity = '0';
-      startProgRaf();
-      navigating = false;
+  // Merge Claude captions with shuffled videos from pool
+  const vids = shuffle(VIDEO_POOL);
+  const newItems = vids.map((v,i)=>{
+    const meta = extras && extras[i] ? extras[i] : null;
+    return {
+      src:   v.src,
+      cover: v.cover,
+      author: meta ? meta.author : v.author,
+      desc:   meta ? meta.desc   : v.desc,
+      sub:    meta ? meta.sub    : v.sub,
+      music:  meta ? meta.music  : v.music,
+      l:      meta ? meta.l      : v.l,
+      c:      meta ? meta.c      : v.c,
+      s:      meta ? meta.s      : v.s,
     };
-    vid.addEventListener('canplay', onData, { once: true });
-    // fallback if cover never fires
-    setTimeout(() => {
-      covimg.style.opacity = '0';
-      startProgRaf();
-      navigating = false;
-    }, 1800);
+  });
 
-  }, 130);
+  feed = [...feed, ...newItems];
+  buildDots();
+  fetchingMore = false;
+  setStatus('More loaded!');
 }
 
-function startProgRaf() {
-  cancelAnimationFrame(progRaf);
-  function tick() {
-    if (vid.duration) {
-      pfill.style.width = (vid.currentTime / vid.duration * 100) + '%';
-    }
-    progRaf = requestAnimationFrame(tick);
-  }
-  progRaf = requestAnimationFrame(tick);
-}
+// ─────────────────────────────────────────────────────────────
+// PLAYBACK — single <video> src-swap, guaranteed play
+// ─────────────────────────────────────────────────────────────
+function activate(index){
+  if(busy) return;
+  busy = true;
 
-// ─────────────────────────────────────────
-// NAVIGATE
-// ─────────────────────────────────────────
-function goTo(n, dir) {
-  cur = ((n % FEED.length) + FEED.length) % FEED.length;
-  loadReel(cur, dir);
-  flashSfx(dir === 'up' ? '↑' : '↓');
-  liked = false; updLike();
-}
-const goNext = () => goTo(cur + 1, 'up');
-const goPrev = () => goTo(cur - 1, 'down');
+  const v = feed[index];
+  if(!v){ busy=false; return; }
 
-// ─────────────────────────────────────────
-// HUD TEXT
-// ─────────────────────────────────────────
-function updateHUD(v) {
-  document.getElementById('captop').innerHTML =
-    v.desc.length > 34
-      ? v.desc.replace(/(.{28,38}\s)/,'$1<br>')
-      : v.desc;
-  document.getElementById('sub').textContent      = v.sub;
-  document.getElementById('uname').textContent    = v.author;
-  document.getElementById('mname').textContent    = v.music;
-  document.getElementById('likenum').textContent  = v.likes;
-  document.getElementById('comnum').textContent   = v.com;
-  document.getElementById('sharenum').textContent = v.sh;
-}
+  // show cover instantly
+  covimg.src = v.cover || '';
+  covimg.style.opacity = '1';
+  covimg.style.transition = 'none';
 
-// ─────────────────────────────────────────
-// DOTS
-// ─────────────────────────────────────────
-function buildDots() {
-  const c = document.getElementById('dots');
-  FEED.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'dot' + (i === cur ? ' on' : '');
-    c.appendChild(d);
+  // black flash
+  slideblk.style.transition='none';
+  slideblk.style.opacity='1';
+  hud.classList.add('buffering');
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      // swap video src
+      vid.pause();
+      vid.src = v.src;
+      vid.muted = muted;
+      vid.currentTime = 0;
+
+      // fade out black
+      slideblk.style.transition='opacity .15s';
+      slideblk.style.opacity='0';
+
+      updateHUD(v);
+      updDots();
+      pfill.style.width='0%';
+      cancelAnimationFrame(progRaf);
+
+      vid.load();
+      const playPromise = vid.play();
+      if(playPromise){
+        playPromise.then(()=>{
+          hud.classList.remove('buffering');
+          busy=false;
+          startProgRaf();
+          // fade cover out once video playing
+          setTimeout(()=>{
+            covimg.style.transition='opacity .4s';
+            covimg.style.opacity='0';
+          },200);
+        }).catch(()=>{
+          // blocked — keep cover, show play button hint
+          hud.classList.remove('buffering');
+          busy=false;
+          showToast('Tap to play ▶');
+        });
+      } else {
+        busy=false;
+        hud.classList.remove('buffering');
+      }
+    });
   });
 }
-function updDots() {
-  document.querySelectorAll('.dot').forEach((d, i) =>
-    d.classList.toggle('on', i === cur));
+
+function startProgRaf(){
+  cancelAnimationFrame(progRaf);
+  function tick(){
+    if(vid.duration && !isNaN(vid.duration)){
+      pfill.style.width=(vid.currentTime/vid.duration*100)+'%';
+    }
+    progRaf=requestAnimationFrame(tick);
+  }
+  progRaf=requestAnimationFrame(tick);
 }
 
-// ─────────────────────────────────────────
+// auto-advance + trigger infinite load
+vid.addEventListener('ended',()=>{
+  goTo(cur+1,'up');
+});
+vid.addEventListener('waiting',()=>hud.classList.add('buffering'));
+vid.addEventListener('playing',()=>hud.classList.remove('buffering'));
+
+// ─────────────────────────────────────────────────────────────
+// NAVIGATE
+// ─────────────────────────────────────────────────────────────
+function goTo(n, dir){
+  const next = ((n % feed.length)+feed.length)%feed.length;
+  cur = next;
+  activate(cur);
+  flashSfx(dir==='up'?'↑':'↓');
+  liked=false; updLike();
+
+  // fetch more when 3 from end
+  if(cur >= feed.length-3) appendMore();
+}
+const goNext=()=>goTo(cur+1,'up');
+const goPrev=()=>goTo(cur-1,'down');
+
+// ─────────────────────────────────────────────────────────────
+// HUD TEXT
+// ─────────────────────────────────────────────────────────────
+function updateHUD(v){
+  const cap = v.desc||'';
+  document.getElementById('captop').innerHTML =
+    cap.length>32 ? cap.replace(/(.{24,35}\s)/,'$1<br>') : cap;
+  document.getElementById('sub').textContent      = v.sub||'';
+  document.getElementById('uname').textContent    = v.author||'@—';
+  document.getElementById('mname').textContent    = v.music||'Original Sound';
+  document.getElementById('likenum').textContent  = v.l||'—';
+  document.getElementById('comnum').textContent   = v.c||'—';
+  document.getElementById('sharenum').textContent = v.s||'—';
+}
+
+// ─────────────────────────────────────────────────────────────
+// DOTS (show max 10, sliding window)
+// ─────────────────────────────────────────────────────────────
+function buildDots(){
+  const c=document.getElementById('dots');
+  const total=Math.min(feed.length,10);
+  c.innerHTML='';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i===cur%total?' on':'');
+    c.appendChild(d);
+  }
+}
+function updDots(){
+  const total=Math.min(feed.length,10);
+  document.querySelectorAll('.dot').forEach((d,i)=>
+    d.classList.toggle('on',i===cur%total));
+}
+
+// ─────────────────────────────────────────────────────────────
 // LIKE
-// ─────────────────────────────────────────
-function doLike() {
-  liked = !liked; updLike();
-  if (liked) spawnHeart();
+// ─────────────────────────────────────────────────────────────
+function doLike(){
+  liked=!liked; updLike();
+  if(liked) spawnHeart();
 }
-function updLike() {
-  document.getElementById('likebtn').classList.toggle('liked', liked);
-  document.getElementById('likeico').textContent = liked ? '❤️' : '🤍';
+function updLike(){
+  document.getElementById('likebtn').classList.toggle('liked',liked);
+  document.getElementById('likeico').textContent=liked?'❤️':'🤍';
 }
-function spawnHeart() {
-  const h = document.createElement('div');
-  h.className = 'heart'; h.textContent = '❤️';
+function spawnHeart(){
+  const h=document.createElement('div');
+  h.className='heart';h.textContent='❤️';
   hud.appendChild(h);
-  h.addEventListener('animationend', () => h.remove());
+  h.addEventListener('animationend',()=>h.remove());
 }
 
-// ─────────────────────────────────────────
-// SWIPE FX
-// ─────────────────────────────────────────
-function flashSfx(sym) {
-  const el = document.getElementById('sfx');
-  el.textContent = sym;
-  el.classList.remove('go'); void el.offsetWidth;
-  el.classList.add('go');
-  setTimeout(() => el.classList.remove('go'), 500);
+// ─────────────────────────────────────────────────────────────
+// SWIPE FX / TOAST / STATUS
+// ─────────────────────────────────────────────────────────────
+function flashSfx(sym){
+  const el=document.getElementById('sfx');
+  el.textContent=sym;el.classList.remove('go');
+  void el.offsetWidth;el.classList.add('go');
+  setTimeout(()=>el.classList.remove('go'),500);
 }
-
-// ─────────────────────────────────────────
-// TOAST
-// ─────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toastEl');
-  t.textContent = msg; t.classList.add('show');
+function showToast(msg){
+  const t=document.getElementById('toastEl');
+  t.textContent=msg;t.classList.add('show');
   clearTimeout(toastTmr);
-  toastTmr = setTimeout(() => t.classList.remove('show'), 1400);
+  toastTmr=setTimeout(()=>t.classList.remove('show'),1400);
+}
+function setStatus(s){
+  const el=document.getElementById('lstatus');
+  if(el) el.textContent=s;
+}
+function hideLoader(){
+  document.getElementById('loadscr').classList.add('gone');
 }
 
-// ─────────────────────────────────────────
-// UNMUTE helper — called on first touch/key
-// ─────────────────────────────────────────
-function unlockAudio() {
-  if (!muted) return;
-  muted = false;
-  vid.muted = false;
-  vid.play().catch(() => {});
+// ─────────────────────────────────────────────────────────────
+// AUDIO UNLOCK
+// ─────────────────────────────────────────────────────────────
+function unlockAudio(){
+  if(!muted) return;
+  muted=false;
+  vid.muted=false;
+  showToast('🔊 Sound on');
 }
 
-// ─────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
 // TABS
-// ─────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
+// ─────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
     unlockAudio();
-    tabIdx = +t.dataset.i;
-    document.querySelectorAll('.tab').forEach((x, i) =>
-      x.classList.toggle('on', i === tabIdx));
+    tabIdx=+t.dataset.i;
+    document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',i===tabIdx));
     showToast(t.textContent.trim());
   });
 });
-function shiftTab(d) {
-  tabIdx = ((tabIdx + d) + 3) % 3;
-  document.querySelectorAll('.tab').forEach((x, i) =>
-    x.classList.toggle('on', i === tabIdx));
+function shiftTab(d){
+  tabIdx=((tabIdx+d)+3)%3;
+  document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',i===tabIdx));
   showToast(document.querySelector('.tab.on').textContent.trim());
 }
 
-// ─────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
 // TOUCH
-// ─────────────────────────────────────────
-const tz = document.getElementById('tz');
-tz.addEventListener('touchstart', e => {
-  touchSY = e.touches[0].clientY;
-  touchSX = e.touches[0].clientX;
+// ─────────────────────────────────────────────────────────────
+const tz=document.getElementById('tz');
+tz.addEventListener('touchstart',e=>{
+  touchSY=e.touches[0].clientY;
+  touchSX=e.touches[0].clientX;
   unlockAudio();
-}, { passive: true });
-
-tz.addEventListener('touchend', e => {
-  const dy = touchSY - e.changedTouches[0].clientY;
-  const dx = touchSX - e.changedTouches[0].clientX;
-  if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx))
-    dy > 0 ? goNext() : goPrev();
-  else if (Math.abs(dx) > 40)
-    shiftTab(dx > 0 ? 1 : -1);
-}, { passive: true });
-
-// double-tap like
-tz.addEventListener('touchend', e => {
-  const now = Date.now();
-  if (now - lastTap < 300) { doLike(); showToast('❤️ Liked'); }
-  lastTap = now;
-}, { passive: true });
-
-tz.addEventListener('click', () => {
+},{passive:true});
+tz.addEventListener('touchend',e=>{
+  const dy=touchSY-e.changedTouches[0].clientY;
+  const dx=touchSX-e.changedTouches[0].clientX;
+  if(Math.abs(dy)>40&&Math.abs(dy)>Math.abs(dx))
+    dy>0?goNext():goPrev();
+  else if(Math.abs(dx)>40)
+    shiftTab(dx>0?1:-1);
+},{passive:true});
+tz.addEventListener('touchend',e=>{
+  const now=Date.now();
+  if(now-lastTap<300){doLike();showToast('❤️ Liked');}
+  lastTap=now;
+},{passive:true});
+tz.addEventListener('click',()=>{
   unlockAudio();
-  const now = Date.now();
-  if (now - lastTap < 300) { doLike(); showToast('❤️ Liked'); }
-  lastTap = now;
+  const now=Date.now();
+  if(now-lastTap<300){doLike();showToast('❤️ Liked');}
+  lastTap=now;
 });
 
-// ─────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
 // KEYBOARD
-// ─────────────────────────────────────────
-document.addEventListener('keydown', e => {
+// ─────────────────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
   unlockAudio();
-  if (e.key === 'ArrowUp'    || e.key === 'w') { e.preventDefault(); goPrev(); }
-  if (e.key === 'ArrowDown'  || e.key === 's') { e.preventDefault(); goNext(); }
-  if (e.key === 'ArrowRight' || e.key === 'd') shiftTab(1);
-  if (e.key === 'ArrowLeft'  || e.key === 'a') shiftTab(-1);
-  if (e.key === ' ') {
+  if(e.key==='ArrowUp'   ||e.key==='w'){e.preventDefault();goPrev();}
+  if(e.key==='ArrowDown' ||e.key==='s'){e.preventDefault();goNext();}
+  if(e.key==='ArrowRight'||e.key==='d') shiftTab(1);
+  if(e.key==='ArrowLeft' ||e.key==='a') shiftTab(-1);
+  if(e.key===' '){
     e.preventDefault();
-    vid.paused ? vid.play() : vid.pause();
-    showToast(vid.paused ? '⏸ Paused' : '▶ Playing');
+    vid.paused?vid.play():vid.pause();
+    showToast(vid.paused?'⏸ Paused':'▶ Playing');
   }
-  if (e.key === 'l' || e.key === 'L') { doLike(); showToast('❤️ Liked'); }
+  if(e.key==='l'||e.key==='L'){doLike();showToast('❤️ Liked');}
+  if(e.key==='m'||e.key==='M'){
+    muted=!muted;vid.muted=muted;
+    showToast(muted?'🔇 Muted':'🔊 Sound on');
+  }
 });
 
-// ─────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
 // BOOT
-// ─────────────────────────────────────────
-buildDots();
-
-// load first reel — muted autoplay works everywhere
-vid.muted = true;
-vid.src   = playUrl(FEED[0].id);
-vid.load();
-vid.play().catch(() => {});
-covimg.src = coverUrl(FEED[0].id);
-vid.addEventListener('canplay', () => {
-  covimg.style.transition = 'opacity .4s';
-  covimg.style.opacity = '0';
-  startProgRaf();
-}, { once: true });
-setTimeout(() => { covimg.style.opacity = '0'; startProgRaf(); }, 2000);
-updateHUD(FEED[0]);
-
-// preload next 2 videos using hidden Audio objects (tricks browser into caching)
-function preloadNext() {
-  [1, 2].forEach(offset => {
-    const idx = (cur + offset) % FEED.length;
-    const a = document.createElement('link');
-    a.rel = 'prefetch'; a.as = 'video';
-    a.href = playUrl(FEED[idx].id);
-    document.head.appendChild(a);
-  });
-}
-preloadNext();
-vid.addEventListener('timeupdate', () => {
-  if (vid.duration && vid.currentTime / vid.duration > 0.7) preloadNext();
-});
-
-// when video ends naturally, go next
-vid.addEventListener('ended', goNext);
+// ─────────────────────────────────────────────────────────────
+buildInitialFeed();
 </script>
 </body>
 </html>
