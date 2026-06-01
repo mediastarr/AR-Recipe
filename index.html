@@ -86,7 +86,7 @@ const progf = document.getElementById('progf');
 
 function tiktokEmbed(url){
   const id = url.match(/video\/(\d+)/)?.[1];
-  return id? `https://www.tiktok.com/embed/v2/${id}?autoplay=1&loop=1` : '';
+  return id? `https://www.tiktok.com/embed/v2/${id}` : '';
 }
 
 async function load(i){
@@ -94,6 +94,7 @@ async function load(i){
     showToast('Loading...');
     try {
       const res = await fetch(`${API_URL}?offset=${feed.length}`);
+      if(!res.ok) throw new Error('HTTP ' + res.status);
       const newReels = await res.json();
       if(newReels.length) {
         feed=[...feed,...newReels];
@@ -102,7 +103,7 @@ async function load(i){
         return;
       }
     } catch(e) {
-      showToast('Failed to load');
+      showToast('Check backend');
       console.error(e);
       return;
     }
@@ -183,13 +184,15 @@ document.addEventListener('keydown',e=>{
   if(e.key==='l'||e.key==='L'){doLike();showToast('❤️ Liked');}
 });
 buildDots();
-// Boot: fetch first batch then load
-fetch(`${API_URL}?offset=0`).then(r=>r.json()).then(data=>{
+fetch(`${API_URL}?offset=0`).then(r=>{
+  if(!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}).then(data=>{
   feed = data;
   if(feed.length) load(0);
   else showToast('No videos');
 }).catch(e=>{
-  showToast('Backend not running');
+  showToast('Start backend first');
   console.error(e);
 });
 </script>
