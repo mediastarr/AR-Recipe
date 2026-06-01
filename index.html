@@ -102,28 +102,32 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-ap
 <div id="toast"></div>
 
 <script>
-// ── REAL VERTICAL YOUTUBE SHORTS / VIRAL VIDEOS ──────────────
-// YouTube iframes work from any origin — no CORS issues, no auth,
-// no referrer check. These are actual viral vertical format videos.
+// ── REAL YOUTUBE SHORTS — verified IDs from search results ──
 const FEED = [
-  {y:'dQw4w9WgXcQ', h:'@classictok',  d:'🎵 Never gonna give you up fr #fyp',           s:'This is genuinely a banger',                m:'Never Gonna Give You Up',  l:'142M',c:'1.2M',r:'8.4M'},
-  {y:'kJQP7kiw5Fk', h:'@latinvibes',  d:'🔥 Despacito hits different at 2am',            s:'Put this on and feel everything',           m:'Despacito – Luis Fonsi',   l:'51M', c:'420K',r:'3.1M'},
-  {y:'JGwWNGJdvx8', h:'@shapeoftok',  d:'💜 Shape of You got me moving 🎶',              s:'Ed knows what he is doing',                 m:'Shape of You – Ed Sheeran',l:'60M', c:'512K',r:'4.2M'},
-  {y:'RgKAFK5djSk', h:'@seeyouagain', d:'😭 See You Again still hits hard in 2025',      s:'This one always gets me no cap',            m:'See You Again – Wiz K',    l:'44M', c:'389K',r:'2.9M'},
-  {y:'OPf0YbXqDm0', h:'@uptown',      d:'🕺 Uptown Funk energy unlocked 💥',             s:'Bruno Mars is built different',             m:'Uptown Funk – Bruno Mars', l:'38M', c:'302K',r:'2.2M'},
-  {y:'hT_nvWreIhg', h:'@countingtok', d:'✨ Counting Stars got me in my feels',           s:'Some nights I stay up wishing I was okay',  m:'Counting Stars – OneRep',  l:'29M', c:'241K',r:'1.8M'},
-  {y:'YQHsXMglC9A', h:'@adeletok',    d:'💔 Hello from the other side 😢',               s:'Adele said what she said',                  m:'Hello – Adele',            l:'66M', c:'541K',r:'4.8M'},
-  {y:'bo_efYhYU2A', h:'@wakawakatok', d:'🌍 Waka Waka still a banger #worldcup',         s:'Shakira never misses ever',                 m:'Waka Waka – Shakira',      l:'18M', c:'148K',r:'990K'},
-  {y:'09R8_2nJtjg', h:'@sugaraij',    d:'🍭 Maroon 5 Sugar on repeat all day',           s:'This music video is too good',              m:'Sugar – Maroon 5',         l:'26M', c:'213K',r:'1.6M'},
-  {y:'fRh_vgS2dFE', h:'@sorrybieber', d:'💛 Sorry by Bieber is undefeated',              s:'We were all dancing to this in 2015',       m:'Sorry – Justin Bieber',    l:'32M', c:'278K',r:'2.1M'},
-  {y:'nfWlot6h_JM', h:'@shakeittok',  d:'✨ Shake It Off era activated 🫶',              s:'Taylor Swift said feel good and I felt it', m:'Shake It Off – T. Swift',  l:'47M', c:'391K',r:'3.3M'},
-  {y:'2Vv-BfVoq4g', h:'@perfectiontok',d:'🎹 Perfect – Ed Sheeran hits different live', s:'This man is too talented honestly',         m:'Perfect – Ed Sheeran',     l:'41M', c:'334K',r:'2.7M'},
-  {y:'CevxZvSJLk8', h:'@roartok',     d:'🦁 Katy Perry Roar energy all day',             s:'Felt the main character energy immediately',m:'Roar – Katy Perry',        l:'20M', c:'168K',r:'1.2M'},
-  {y:'SlPhMPnQ58k', h:'@blanktok',    d:'🌟 Blank Space but make it cinematic',          s:'Taylor really said chaos is an aesthetic',  m:'Blank Space – T. Swift',   l:'36M', c:'295K',r:'2.4M'},
-  {y:'pRpeEdMmmQ0', h:'@happytok',    d:'😊 Happy by Pharrell is genuinely healing',     s:'This song is clinically proven to fix mood', m:'Happy – Pharrell',        l:'24M', c:'198K',r:'1.5M'},
+  // Animals / Pets
+  {y:'QcBZq_wMzg8', h:'@dogtok',      d:'🐶 Dog doing the most 😭 #fyp #dogs',          s:'He really said not today hooman',           m:'Original Sound · dogtok',    l:'4.2M',c:'38K',r:'210K'},
+  {y:'EgVEZumHjMU', h:'@animaltok',   d:'😂 Funniest cats and dogs 2025 #animals',      s:'I cannot stop watching this on repeat',      m:'Funny Pets Mix',             l:'6.1M',c:'51K',r:'320K'},
+  {y:'sHPDToeXOyg', h:'@pettok',      d:'🐱 Cats being unhinged as usual #cats #fyp',   s:'Cats live rent free in their own world',     m:'Original Sound · pettok',    l:'3.8M',c:'29K',r:'155K'},
+  {y:'3JiwSNLQJFs', h:'@cutepets',    d:'🐾 POV: your pet owns you not the other way',  s:'Fully surrendered my life to this cat',      m:'Cats Rule Everything',       l:'5.5M',c:'44K',r:'280K'},
+  {y:'PERnl7OSRKo', h:'@thescoop',    d:'😹 Funniest cat videos of 2025 fr #cats',      s:'Cats are built different and I love it',     m:'Cat Mode Activated',         l:'7.2M',c:'63K',r:'401K'},
+  {y:'maspEWt7xog', h:'@rubysworld',  d:'🍗 Ruby\'s most traumatic moment of 2025 😂',   s:'She will never forgive me for this one',     m:'Dramatic Orchestra',         l:'2.9M',c:'22K',r:'118K'},
+  {y:'lOD78hPJvU8', h:'@funnypets',   d:'🐾 Animals being absolutely feral #funny',     s:'Nature is NOT healing and I love that',      m:'Original Audio',             l:'4.7M',c:'38K',r:'220K'},
+  // Food / ASMR
+  {y:'dm-n5jDq-xg', h:'@foodskills',  d:'😱 Most insane food skills you\'ve seen #food', s:'The helicopter eggs changed my life fr',     m:'Street Food ASMR',           l:'8.3M',c:'71K',r:'490K'},
+  {y:'qEjEM8I2m4U', h:'@asmrcooking', d:'🥩🔥 Beef chops by the lake ASMR #cooking',    s:'This is literally the most relaxing thing',  m:'Nature ASMR Cooking',        l:'3.4M',c:'26K',r:'140K'},
+  {y:'jVHRCwsj_M8', h:'@nycfood',     d:'🗽 I ate viral NYC street food #foodtok',      s:'Worth every single dollar and the wait',     m:'NYC Vibes',                  l:'5.1M',c:'42K',r:'261K'},
+  {y:'0uKXl2zx4f4', h:'@chefrush',    d:'🍜 Lunch time noodles 😤 #chef #noodles',      s:'Chef Rush said eat your food with respect',  m:'Kitchen Fire Beats',         l:'6.8M',c:'55K',r:'370K'},
+  {y:'wwPXku8Yz9Y', h:'@cookingfails', d:'🤣 Epic cooking fails you cannot miss #funny', s:'At least the smoke alarm works fine',        m:'Dramatic Fail Sound',        l:'9.4M',c:'84K',r:'580K'},
+  {y:'6iH72f1ipCk', h:'@henrykitchen', d:'😅 Cooking is like therapy they said #funny', s:'Therapy is expensive so I cook instead',     m:'Henry\'s Kitchen OST',       l:'4.2M',c:'35K',r:'198K'},
+  // Satisfying / Nature
+  {y:'wtjbJGsUXh8', h:'@satisfying',  d:'🌊💥 Rocks into water is oddly satisfying',    s:'Cannot explain why I watched this 40 times', m:'Splash ASMR',                l:'5.8M',c:'47K',r:'310K'},
+  {y:'gyQX_c7q0D8', h:'@poppingtok',  d:'🎈 Balloon popping ASMR is everything #asmr',  s:'My stress levels dropped immediately',       m:'Pop ASMR Mix',               l:'3.1M',c:'24K',r:'133K'},
+  {y:'piUo-_7DC_Y', h:'@catfaces',    d:'😸 Funniest cat faces and reactions 2025',     s:'Cats have zero chill and zero shame',        m:'Cat Reaction Compilation',   l:'7.6M',c:'67K',r:'430K'},
+  {y:'AUr56CD0_F8', h:'@tommywinkler', d:'🍽️ Eating my most viral food videos 2025',    s:'Came back to eat my own content literally',  m:'Food Content Era',           l:'2.8M',c:'21K',r:'107K'},
 ];
 
 function shuffle(a){return[...a].sort(()=>Math.random()-.5)}
+// Build big feed — 3 shuffled copies = 51 items, never runs dry
 let feed=[...shuffle(FEED),...shuffle(FEED),...shuffle(FEED)];
 
 let idx=0, liked=false, isMuted=true, tabIdx=1;
