@@ -223,8 +223,6 @@ const hud  = document.getElementById('hud');
 const progf = document.getElementById('progf');
 
 // ─── PLAY A REEL ─────────────────────────────────────────────
-// busy flag: once set, NO navigation can happen until canplay fires.
-// This is the key fix — it stops rapid-fire src changes.
 function playReel(i){
   if(busy) return;
   busy = true;
@@ -232,32 +230,23 @@ function playReel(i){
   cur = ((i % feed.length) + feed.length) % feed.length;
   const r = feed[cur];
 
-  // stop existing video completely
+  // 1. Hard-stop current playback
   vid.pause();
-  vid.removeAttribute('src');
-  vid.load(); // abort previous load
-
-  // stop progress
   clearInterval(progTimer);
   progf.style.width = '0%';
-
-  // update text immediately
-  updateUI(r);
-  updDots();
-
-  // grow feed if near end
-  if(cur >= feed.length - 6) grow();
-
   hud.classList.add('buf');
 
-  // set new src — NOT loop, NOT autoplay attr
-  vid.muted = isMuted;
-  vid.src   = r.src;
+  // 2. Update UI text right away
+  updateUI(r);
+  updDots();
+  if(cur >= feed.length - 6) grow();
 
-  // canplay fires when enough data is ready — only then do we play
-  // and only then do we clear busy
-  vid.oncanplay = () => {
-    vid.oncanplay = null; // fire once only
+  // 3. Remove any previous canplaythrough listener
+  vid.oncanplaythrough = null;
+
+  function onReady(){
+    vid.oncanplaythrough = null;
+    clearTimeout(safetyTimer);
     vid.play()
       .then(()=>{
         hud.classList.remove('buf');
@@ -265,20 +254,24 @@ function playReel(i){
         startProgress();
       })
       .catch(()=>{
-        // muted fallback
+        // Autoplay blocked — try muted
         vid.muted = true; isMuted = true;
         document.getElementById('muteico').textContent = '🔇';
-        vid.play().then(()=>{
-          hud.classList.remove('buf');
-          busy = false;
-          startProgress();
-        }).catch(()=>{ busy = false; hud.classList.remove('buf'); });
+        vid.play()
+          .then(()=>{ hud.classList.remove('buf'); busy = false; startProgress(); })
+          .catch(()=>{ hud.classList.remove('buf'); busy = false; });
       });
-  };
+  }
 
-  // safety: if canplay never fires in 6s, unblock
-  setTimeout(()=>{ if(busy){ busy=false; hud.classList.remove('buf'); } }, 6000);
+  // 4. Safety timeout — if canplaythrough never fires, try playing anyway
+  const safetyTimer = setTimeout(()=>{
+    if(busy){ onReady(); }
+  }, 4000);
 
+  // 5. Set src THEN assign listener THEN load — correct order
+  vid.muted = isMuted;
+  vid.src   = r.src;
+  vid.oncanplaythrough = onReady;
   vid.load();
 }
 
@@ -293,19 +286,25 @@ function startProgress(){
   }, 250);
 }
 
-// video events — NO auto-advance on ended, NO error advance
-// user must swipe manually. Period.
+// video events
 vid.addEventListener('waiting', ()=> hud.classList.add('buf'));
-vid.addEventListener('playing', ()=> hud.classList.remove('buf'));
-// when video ends naturally, just loop it manually
+vid.addEventListener('playing', ()=>{ hud.classList.remove('buf'); });
+
+// ended: replay current video (user swipes to advance)
 vid.addEventListener('ended', ()=>{
-  if(!busy){
-    vid.currentTime = 0;
-    vid.play().catch(()=>{});
-    progf.style.width = '0%';
-    clearInterval(progTimer);
-    startProgress();
-  }
+  if(busy) return;
+  vid.currentTime = 0;
+  vid.play().catch(()=>{});
+  progf.style.width = '0%';
+  clearInterval(progTimer);
+  startProgress();
+});
+
+// error: skip to next video silently
+vid.addEventListener('error', ()=>{
+  if(busy){ busy = false; hud.classList.remove('buf'); }
+  // skip after a short delay so we don't loop instantly on all-bad feed
+  setTimeout(()=>{ if(!busy) go(cur + 1, 'up'); }, 500);
 });
 
 // ─── NAVIGATE — only works when NOT busy ─────────────────────
