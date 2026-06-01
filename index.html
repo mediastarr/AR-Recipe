@@ -11,35 +11,44 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:#000}
 
-/* ── PAGE SHELL (desktop preview bg) ── */
+/* ── PAGE SHELL ── */
 body{display:flex;align-items:center;justify-content:center;background:#0a0305}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 120% 80% at 50% 0%,#3a0912 0%,#0a0305 60%);z-index:0}
 
 /* ── 600×600 RAY-BAN HUD ── */
+/* On desktop: exact 600×600 rounded rect (glasses display)   */
+/* On mobile:  fills viewport so you can actually use it       */
+:root{ --hud:600px; }
+@media(max-width:640px){ :root{ --hud:100vw; } }
+
 #hud{
   position:relative;z-index:1;
-  width:600px;height:600px;
+  width:var(--hud);height:var(--hud);
   border-radius:56px;overflow:hidden;
   background:#000;
   box-shadow:0 0 0 1.5px rgba(255,255,255,.08),0 0 80px rgba(200,10,40,.15),0 40px 100px rgba(0,0,0,.9);
 }
+@media(max-width:640px){
+  #hud{ border-radius:0; }
+  body{ align-items:flex-start; }
+}
 
 /* ── SNAP SCROLL FEED ── */
-/* CSS scroll-snap locks each reel to the 600px viewport */
 #feed{
   width:100%;height:100%;
   overflow-y:scroll;overflow-x:hidden;
-  scroll-snap-type:y mandatory;       /* KEY: locks each reel to view */
+  scroll-snap-type:y mandatory;
   -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
   scrollbar-width:none;
 }
 #feed::-webkit-scrollbar{display:none}
 
 /* ── REEL SLOT ── */
 .reel{
-  width:600px;height:600px;
-  scroll-snap-align:start;           /* snaps to top of each reel */
-  scroll-snap-stop:always;           /* prevents fast-scroll past */
+  width:var(--hud);height:var(--hud);
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
   position:relative;overflow:hidden;
   background:#000;flex-shrink:0;
 }
@@ -103,7 +112,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* ── LOADING SENTINEL ── */
 #sentinel{
-  width:600px;height:60px;
+  width:var(--hud);height:60px;
   display:flex;align-items:center;justify-content:center;
   scroll-snap-align:none;flex-shrink:0;
 }
@@ -111,8 +120,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── SPLASH SCREEN ── */
-#splash{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:rgba(0,0,0,.92);cursor:pointer;border-radius:56px}
-#splash.gone{display:none}
+#splash{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:rgba(0,0,0,.92);cursor:pointer;border-radius:inherit;touch-action:manipulation;}
+#splash.gone{display:none;pointer-events:none;}
 .pbtn{width:80px;height:80px;border-radius:50%;background:#fe2c55;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 40px rgba(254,44,85,.6);animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 #splash h2{color:#fff;font-size:26px;font-weight:700}
@@ -137,7 +146,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .sect{margin-top:10px;color:rgba(255,255,255,.5);font-size:9px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:4px;margin-bottom:4px}
 .note{margin-top:10px;color:rgba(255,255,255,.14);font-size:9px;line-height:1.9}
 @media(max-width:860px){.guide{display:none}}
-@media(max-width:640px){#hud{width:100vw;height:100vw;border-radius:0}#splash{border-radius:0}}
 </style>
 </head>
 <body>
@@ -333,9 +341,9 @@ const io = new IntersectionObserver((entries) => {
     const video = entry.target.querySelector('video');
     if(!video) return;
     
-    if(entry.isIntersecting && entry.intersectionRatio >= 0.8){
+    if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
       video.muted = isMuted;
-      video.play().catch(()=>{ video.muted=true; video.play().catch(()=>{}); });
+      video.play().catch(()=>{ video.muted=true; isMuted=true; video.play().catch(()=>{}); });
       
       // Record watch start time for activity tracking
       const reelEl = entry.target;
@@ -370,7 +378,7 @@ const io = new IntersectionObserver((entries) => {
   });
 }, {
   root: feed,
-  threshold: 0.8   // trigger when 80% of reel is visible
+  threshold: 0.5
 });
 
 // ── Sentinel observer: triggers next batch fetch ──────────────
