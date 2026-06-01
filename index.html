@@ -2,262 +2,148 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=600, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=600,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>TikTok · Ray-Ban Display</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{
-  width:100%;min-height:100vh;
-  background:#0e0507;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Inter',sans-serif;
-  overflow:hidden;
-}
-body::before{
-  content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse 100% 70% at 50% 10%,#3a0912 0%,#150508 55%,#080204 100%);
-  z-index:0;
-}
-.hud{
-  position:relative;z-index:1;
-  width:600px;height:600px;
-  background:#111;
-  border-radius:56px;
-  overflow:hidden;
-  box-shadow:0 0 0 1.5px rgba(255,255,255,.08),0 0 60px rgba(180,10,40,.2),0 30px 80px rgba(0,0,0,.85);
-}
-#mainvid{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  object-fit:cover;
-  background:#000;
-  z-index:1;
-  display:block;
-}
-#covimg{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  object-fit:cover;
-  z-index:2;
-  background:#111;
-  transition:opacity .35s;
-}
-#slideblack{
-  position:absolute;inset:0;z-index:3;
-  background:#000;opacity:0;pointer-events:none;
-}
-.vignette{
-  position:absolute;inset:0;z-index:5;pointer-events:none;
-  background:linear-gradient(to bottom,
-    rgba(0,0,0,.82) 0%,rgba(0,0,0,0) 22%,
-    rgba(0,0,0,0) 58%,rgba(0,0,0,.85) 100%);
-  border-radius:56px;
-}
-.tapzone{position:absolute;inset:0;z-index:8;cursor:pointer;border-radius:56px;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:#0a0305;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 120% 80% at 50% 0%,#3a0912 0%,#0a0305 60%);z-index:0}
+
+/* ── 600×600 HUD ── */
+#hud{position:relative;z-index:1;width:600px;height:600px;border-radius:56px;overflow:hidden;background:#000;
+  box-shadow:0 0 0 1.5px rgba(255,255,255,.08),0 0 80px rgba(200,10,40,.15),0 40px 100px rgba(0,0,0,.9)}
+
+/* video fills hud completely */
+#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;background:#000;display:block}
+
+/* dark gradient overlays */
+.shade{position:absolute;inset:0;z-index:4;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(0,0,0,.85) 0%,transparent 25%,transparent 55%,rgba(0,0,0,.9) 100%)}
+
+/* tap-to-start splash */
+#splash{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  background:rgba(0,0,0,.82);cursor:pointer;border-radius:56px}
+#splash h2{color:#fff;font-size:24px;font-weight:700;letter-spacing:-.5px}
+#splash p{color:rgba(255,255,255,.55);font-size:13px;text-align:center;line-height:1.6;padding:0 40px}
+.play-btn{width:72px;height:72px;border-radius:50%;background:#ff2d55;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 0 30px rgba(255,45,85,.5);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 30px rgba(255,45,85,.5)}50%{transform:scale(1.08);box-shadow:0 0 45px rgba(255,45,85,.7)}}
+#splash.gone{display:none}
 
 /* buffering spinner */
-.spin{
-  position:absolute;left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  width:36px;height:36px;
-  border:3px solid rgba(255,255,255,.18);
-  border-top-color:rgba(255,255,255,.75);
-  border-radius:50%;
-  animation:rotate .7s linear infinite;
-  z-index:6;display:none;
-}
-.buffering .spin{display:block;}
-@keyframes rotate{to{transform:translate(-50%,-50%) rotate(360deg)}}
+#spinner{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;display:none}
+#spinner svg{width:44px;height:44px;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.buffering #spinner{display:block}
 
 /* tabs */
-.tabs{
-  position:absolute;top:26px;left:0;right:0;
-  display:flex;justify-content:center;gap:28px;
-  z-index:10;pointer-events:all;
-}
-.tab{
-  font-size:14px;font-weight:600;
-  color:rgba(255,255,255,.32);
-  cursor:pointer;user-select:none;
-  padding-bottom:5px;border-bottom:2px solid transparent;
-  transition:color .2s,border-color .2s;
-}
-.tab.on{color:#fff;border-bottom-color:#fff;}
+#tabs{position:absolute;top:22px;left:0;right:0;display:flex;justify-content:center;gap:30px;z-index:10;pointer-events:all}
+.tab{font-size:14px;font-weight:600;color:rgba(255,255,255,.35);cursor:pointer;padding-bottom:5px;border-bottom:2.5px solid transparent;transition:color .2s,border-color .2s;user-select:none}
+.tab.on{color:#fff;border-bottom-color:#fff}
 
-/* caption top */
-.cap-top{
-  position:absolute;top:68px;left:0;right:0;
-  text-align:center;z-index:10;padding:0 54px;pointer-events:none;
-}
-.cap-top p{
-  font-size:17px;font-weight:500;
-  color:rgba(255,255,255,.93);line-height:1.45;
-  text-shadow:0 2px 16px rgba(0,0,0,1),0 0 30px rgba(0,0,0,.8);
-}
+/* caption above */
+#captop{position:absolute;top:66px;left:0;right:0;text-align:center;z-index:10;padding:0 56px;pointer-events:none}
+#captop p{font-size:17px;font-weight:600;color:#fff;line-height:1.45;text-shadow:0 2px 20px rgba(0,0,0,1)}
 
-/* right actions */
-.actions{
-  position:absolute;right:14px;bottom:108px;
-  z-index:10;display:flex;flex-direction:column;
-  align-items:center;gap:16px;pointer-events:all;
-}
-.abtn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;user-select:none;}
-.aico{
-  width:44px;height:44px;border-radius:50%;
-  border:2px solid rgba(255,255,255,.72);
-  background:rgba(0,0,0,.38);backdrop-filter:blur(8px);
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;
-  transition:transform .14s,background .14s;
-}
-.abtn:active .aico{transform:scale(.86);}
-.abtn.liked .aico{border-color:#ff2d55;background:rgba(255,45,85,.28);}
-.acnt{font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.9);}
+/* right action bar */
+#actions{position:absolute;right:16px;bottom:112px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:18px}
+.abtn{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;user-select:none}
+.ico{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.75);background:rgba(0,0,0,.4);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;font-size:20px;transition:transform .12s}
+.abtn:active .ico{transform:scale(.84)}
+.abtn.liked .ico{border-color:#ff2d55;background:rgba(255,45,85,.3)}
+.cnt{font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.9)}
 
 /* bottom bar */
-.botbar{
-  position:absolute;bottom:0;left:0;right:0;
-  z-index:10;padding:0 20px 18px;pointer-events:none;
-}
-.uname{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;text-shadow:0 1px 8px rgba(0,0,0,.9);}
-.subtitle{
-  font-size:15px;font-weight:600;font-style:italic;
-  color:#ffe566;line-height:1.35;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  text-shadow:0 1px 8px rgba(0,0,0,1);margin-bottom:8px;
-}
-.mrow{display:flex;align-items:center;gap:7px;margin-bottom:9px;}
-.disc{
-  width:22px;height:22px;border-radius:50%;
-  background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.32);
-  display:flex;align-items:center;justify-content:center;font-size:10px;
-  animation:rotate 3s linear infinite;flex-shrink:0;
-}
-.mname{font-size:12px;color:rgba(255,255,255,.58);text-shadow:0 1px 6px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:270px;}
-.prog{height:2px;background:rgba(255,255,255,.16);border-radius:2px;overflow:hidden;}
-.progf{height:100%;background:rgba(255,255,255,.78);border-radius:2px;width:0%;}
+#bot{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:0 20px 20px;pointer-events:none}
+#uname{font-size:15px;font-weight:700;color:#fff;margin-bottom:5px;text-shadow:0 1px 10px rgba(0,0,0,.9)}
+#subtext{font-size:14px;font-weight:600;font-style:italic;color:#ffe566;line-height:1.4;max-height:2.8em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-shadow:0 1px 10px rgba(0,0,0,1);margin-bottom:9px}
+.mrow{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.disc{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px;animation:spin 4s linear infinite;flex-shrink:0}
+#mname{font-size:12px;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+#prog{height:2px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+#progf{height:100%;background:rgba(255,255,255,.8);width:0%;border-radius:2px}
 
-/* dots */
-.dots{
-  position:absolute;bottom:10px;left:0;right:0;
-  display:flex;justify-content:center;gap:6px;z-index:10;pointer-events:none;
-  flex-wrap:wrap;max-width:200px;margin:0 auto;
-}
-.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .2s,transform .2s;}
-.dot.on{background:rgba(255,255,255,.82);transform:scale(1.5);}
+/* nav dots */
+#dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10;pointer-events:none}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.22);transition:all .2s}
+.dot.on{background:#fff;transform:scale(1.5)}
 
-/* heart */
-.heart{
-  position:absolute;left:50%;top:45%;
-  transform:translate(-50%,-50%) scale(0);
-  font-size:86px;pointer-events:none;z-index:50;
-  animation:hpop .65s cubic-bezier(.17,.89,.32,1.28) forwards;
-}
-@keyframes hpop{
-  0%{transform:translate(-50%,-55%) scale(0);opacity:1}
-  45%{transform:translate(-50%,-55%) scale(1.2);opacity:1}
-  100%{transform:translate(-50%,-72%) scale(.7);opacity:0}
-}
+/* heart pop */
+.heart{position:absolute;left:50%;top:44%;pointer-events:none;z-index:60;font-size:90px;transform:translate(-50%,-50%) scale(0);animation:hpop .7s cubic-bezier(.17,.89,.32,1.28) forwards}
+@keyframes hpop{0%{transform:translate(-50%,-55%) scale(0);opacity:1}50%{transform:translate(-50%,-55%) scale(1.2);opacity:1}100%{transform:translate(-50%,-70%) scale(.7);opacity:0}}
 
-/* swipe fx */
-.sfx{
-  position:absolute;left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  font-size:44px;color:rgba(255,255,255,0);pointer-events:none;z-index:20;
-}
-.sfx.go{animation:sfxani .45s forwards;}
-@keyframes sfxani{0%{color:rgba(255,255,255,0)}25%{color:rgba(255,255,255,.65)}100%{color:rgba(255,255,255,0)}}
+/* swipe flash */
+#sfx{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:50px;color:transparent;pointer-events:none;z-index:20}
+#sfx.go{animation:sfx .5s forwards}
+@keyframes sfx{20%{color:rgba(255,255,255,.7)}100%{color:transparent}}
 
-/* loading screen */
-.loadscr{
-  position:absolute;inset:0;background:rgba(0,0,0,.92);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:12px;z-index:40;border-radius:56px;transition:opacity .4s;
-}
-.loadscr.gone{opacity:0;pointer-events:none;}
-.lspin{width:38px;height:38px;border:3px solid rgba(255,255,255,.15);border-top-color:#fff;border-radius:50%;animation:rotate .75s linear infinite;}
-.ltxt{color:rgba(255,255,255,.45);font-size:11px;letter-spacing:.1em;text-transform:uppercase;}
-.lstatus{color:rgba(255,255,255,.28);font-size:10px;}
+/* tapzone */
+#tz{position:absolute;inset:0;z-index:8;cursor:pointer}
 
 /* toast */
-.toast{
-  position:fixed;bottom:36px;left:50%;transform:translateX(-50%);
-  background:rgba(8,8,8,.85);color:rgba(255,255,255,.88);
-  font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-  padding:8px 20px;border-radius:24px;border:1px solid rgba(255,255,255,.1);
-  pointer-events:none;z-index:999;opacity:0;transition:opacity .25s;white-space:nowrap;
-}
-.toast.show{opacity:1;}
+#toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:9px 22px;border-radius:24px;border:1px solid rgba(255,255,255,.12);pointer-events:none;z-index:999;opacity:0;transition:opacity .2s;white-space:nowrap}
+#toast.show{opacity:1}
+
+/* infinite-load indicator */
+#loading-more{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:10;pointer-events:none;color:rgba(255,255,255,.4);font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:0;transition:opacity .3s}
+#loading-more.show{opacity:1}
 
 /* desktop guide */
-.guide{
-  position:fixed;right:max(20px,calc(50% - 420px));top:50%;transform:translateY(-50%);
-  width:175px;color:rgba(255,255,255,.28);font-size:10px;line-height:1.9;z-index:2;
-}
-.guide h4{color:rgba(255,255,255,.52);font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
-.guide .r{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding:2px 0;}
-.guide .k{color:rgba(255,255,255,.68);}
-.note{margin-top:10px;color:rgba(255,255,255,.16);font-size:9px;line-height:1.7;}
-@media(max-width:860px){.guide{display:none;}}
-@media(max-width:620px){
-  .hud{width:100vw;height:100vw;border-radius:0;}
-  .vignette,.tapzone,.loadscr{border-radius:0;}
-}
+.guide{position:fixed;right:max(16px,calc(50% - 430px));top:50%;transform:translateY(-50%);width:170px;color:rgba(255,255,255,.28);font-size:10px;line-height:2;z-index:2}
+.guide h4{color:rgba(255,255,255,.5);font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.guide .r{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding:1px 0}
+.guide .k{color:rgba(255,255,255,.65)}
+.note{margin-top:10px;color:rgba(255,255,255,.15);font-size:9px;line-height:1.8}
+@media(max-width:860px){.guide{display:none}}
+@media(max-width:620px){#hud{width:100vw;height:100vw;border-radius:0}#splash{border-radius:0}}
 </style>
 </head>
 <body>
 
-<div class="hud" id="hud">
-  <video id="mainvid" playsinline muted autoplay loop></video>
-  <img   id="covimg" src="" alt="">
-  <div   id="slideblack"></div>
-  <div   class="spin" id="buffspin"></div>
+<div id="hud">
+  <video id="vid" playsinline loop preload="auto"></video>
+  <div class="shade"></div>
+  <div id="spinner">
+    <svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4"/><path d="M22 4 a18 18 0 0 1 18 18" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>
+  </div>
 
-  <div class="vignette"></div>
-  <div class="tapzone" id="tz"></div>
-  <div class="sfx" id="sfx">↑</div>
+  <!-- tap-to-start overlay — required for autoplay+sound on mobile -->
+  <div id="splash" onclick="startFeed()">
+    <div class="play-btn">▶</div>
+    <h2>TikTok Feed</h2>
+    <p>Tap to start playing<br>30+ reels · Infinite scroll<br>Ray-Ban Display · 600×600</p>
+  </div>
 
-  <div class="tabs">
-    <div class="tab"    data-i="0">Following</div>
+  <div id="tz"></div>
+  <div id="sfx">↑</div>
+
+  <div id="tabs">
+    <div class="tab" data-i="0">Following</div>
     <div class="tab on" data-i="1">For You</div>
-    <div class="tab"    data-i="2">LIVE</div>
+    <div class="tab" data-i="2">LIVE</div>
   </div>
 
-  <div class="cap-top"><p id="captop">Loading…</p></div>
+  <div id="captop"><p>—</p></div>
 
-  <div class="actions">
-    <div class="abtn" id="likebtn" onclick="doLike()">
-      <div class="aico" id="likeico">🤍</div>
-      <div class="acnt" id="likenum">—</div>
-    </div>
-    <div class="abtn" onclick="showToast('💬 Comments')">
-      <div class="aico">💬</div>
-      <div class="acnt" id="comnum">—</div>
-    </div>
-    <div class="abtn" onclick="showToast('↗ Shared!')">
-      <div class="aico">↗</div>
-      <div class="acnt" id="sharenum">—</div>
-    </div>
+  <div id="actions">
+    <div class="abtn" id="likebtn" onclick="doLike()"><div class="ico" id="likeico">🤍</div><div class="cnt" id="likenum">—</div></div>
+    <div class="abtn" onclick="showToast('💬 Comments')"><div class="ico">💬</div><div class="cnt" id="comnum">—</div></div>
+    <div class="abtn" onclick="showToast('↗ Shared!')"><div class="ico">↗</div><div class="cnt" id="sharenum">—</div></div>
+    <div class="abtn" onclick="toggleMute()"><div class="ico" id="muteico">🔊</div><div class="cnt">Sound</div></div>
   </div>
 
-  <div class="botbar">
-    <div class="uname"    id="uname">@—</div>
-    <div class="subtitle" id="sub">—</div>
-    <div class="mrow"><div class="disc">♪</div><div class="mname" id="mname">—</div></div>
-    <div class="prog"><div class="progf" id="pf"></div></div>
+  <div id="bot">
+    <div id="uname">@—</div>
+    <div id="subtext">—</div>
+    <div class="mrow"><div class="disc">♪</div><div id="mname">—</div></div>
+    <div id="prog"><div id="progf"></div></div>
   </div>
 
-  <div class="dots" id="dots"></div>
-
-  <div class="loadscr" id="loadscr">
-    <div class="lspin"></div>
-    <div class="ltxt">Loading feed…</div>
-    <div class="lstatus" id="lstatus">Fetching videos</div>
-  </div>
+  <div id="dots"></div>
+  <div id="loading-more">Loading more reels…</div>
 </div>
 
-<div class="toast" id="toastEl"></div>
+<div id="toast"></div>
 
 <div class="guide">
   <h4>Controls</h4>
@@ -267,278 +153,173 @@ body::before{
   <div class="r"><span class="k">Space</span><span>Pause</span></div>
   <div class="r"><span class="k">L</span><span>Like ❤️</span></div>
   <div class="r"><span class="k">M</span><span>Mute</span></div>
-  <div class="r"><span class="k">Dbl-tap</span><span>Like ❤️</span></div>
-  <div class="note">Meta Ray-Ban Display<br>600×600 · 20° FOV<br>#000 = transparent on lens<br>Infinite scroll enabled</div>
+  <div class="r"><span class="k">Dbl-tap</span><span>Like</span></div>
+  <div class="note">600×600 Ray-Ban HUD<br>20° FOV · Neural Band<br>#000 = lens transparent<br>Infinite reels scroll</div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────
-// FREE public vertical short videos — no CORS, no auth needed.
-// Sources: Pexels free video CDN (cdn.pexels.com) +
-//          Pixabay CDN — all publicly embeddable MP4s
-// ─────────────────────────────────────────────────────────────
-
-// Pool of 40 real free-to-embed vertical videos
-// Pexels CDN urls are stable, open, CORS-friendly
-const VIDEO_POOL = [
-  // lifestyle / people
-  { src:'https://videos.pexels.com/video-files/3195394/3195394-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3195394/free-video-3195394.jpg',  author:'@vibes',       desc:'Living that sunset life 🌅 #fyp',                     sub:'Golden hour never misses',          music:'Golden Hour – JVKE',     l:'2.3M', c:'18K', s:'94K' },
-  { src:'https://videos.pexels.com/video-files/4763824/4763824-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4763824/free-video-4763824.jpg',  author:'@dailymood',   desc:'Morning routine that changed my life ✨',              sub:'Coffee first, always',              music:'Morning Vibes',          l:'1.1M', c:'9.2K', s:'41K' },
-  { src:'https://videos.pexels.com/video-files/3205189/3205189-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3205189/free-video-3205189.jpg',  author:'@aesthetic',   desc:'This view hits different every time 🏔️',               sub:'Nature is the best filter',         music:'Dreamy – Lo-fi',         l:'4.8M', c:'31K', s:'201K'},
-  { src:'https://videos.pexels.com/video-files/3018224/3018224-uhd_2160_4096_24fps.mp4',  cover:'https://images.pexels.com/videos/3018224/free-video-3018224.jpg',  author:'@naturetok',   desc:'Ocean therapy 🌊 #nature #relax',                     sub:'The waves know your name',          music:'Ocean Eyes – Billie',    l:'3.4M', c:'22K', s:'130K'},
-  { src:'https://videos.pexels.com/video-files/2795405/2795405-hd_1080_1920_25fps.mp4',   cover:'https://images.pexels.com/videos/2795405/free-video-2795405.jpg',  author:'@citywalk',    desc:'NYC at night hits different 🌃',                      sub:'The city never sleeps fr',          music:'City of Stars',          l:'892K', c:'7.4K', s:'38K' },
-  { src:'https://videos.pexels.com/video-files/3571264/3571264-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3571264/free-video-3571264.jpg',  author:'@winterlife',  desc:'First snow of the season ❄️ #winter',                 sub:'Everything is peaceful rn',         music:'Winter – Vivaldi remix', l:'1.6M', c:'12K', s:'67K' },
-  { src:'https://videos.pexels.com/video-files/4629776/4629776-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4629776/free-video-4629776.jpg',  author:'@sunsetclub',  desc:'Sunsets always make me emotional 😭🧡',               sub:'Nobody told me sunsets hit this hard',music:'Sunset Lover',          l:'5.1M', c:'44K', s:'280K'},
-  { src:'https://videos.pexels.com/video-files/3738869/3738869-hd_1080_1920_30fps.mp4',   cover:'https://images.pexels.com/videos/3738869/free-video-3738869.jpg',  author:'@foodie',      desc:'This ramen changed my life 🍜 #foodtok',              sub:'14 hours of broth btw',             music:'Itadakimasu',            l:'2.7M', c:'19K', s:'98K' },
-  { src:'https://videos.pexels.com/video-files/6394025/6394025-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/6394025/free-video-6394025.jpg',  author:'@dancetok',    desc:'POV: the song dropped 🎵 #dance',                     sub:'My body just moved on its own',     music:'Flowers – Miley',        l:'8.2M', c:'73K', s:'512K'},
-  { src:'https://videos.pexels.com/video-files/7565440/7565440-uhd_2160_4096_25fps.mp4',  cover:'https://images.pexels.com/videos/7565440/free-video-7565440.jpg',  author:'@glow',        desc:'Glow up season is here 💅 #selfcare',                 sub:'Treat yourself like the main character',music:'Levitating – Dua',     l:'3.9M', c:'28K', s:'155K'},
-  // nature / animals
-  { src:'https://videos.pexels.com/video-files/1437396/1437396-hd_1080_1920_25fps.mp4',   cover:'https://images.pexels.com/videos/1437396/free-video-1437396.jpg',  author:'@forestwalk',  desc:'Forest ASMR to calm your anxiety 🌿',                sub:'The trees are talking to you',      music:'Forest ASMR',            l:'1.2M', c:'8.1K', s:'44K' },
-  { src:'https://videos.pexels.com/video-files/3576378/3576378-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3576378/free-video-3576378.jpg',  author:'@stormchaser', desc:'Storm rolling in and I\'m not moving 🌩️',            sub:'The sky is putting on a show',      music:'Thunder – Imagine Dragons',l:'6.3M', c:'51K', s:'321K'},
-  { src:'https://videos.pexels.com/video-files/4254180/4254180-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4254180/free-video-4254180.jpg',  author:'@clouds',      desc:'This cloud formation is insane ☁️ #sky',             sub:'I stood there for 20 minutes',      music:'Clouds – NF',            l:'2.1M', c:'15K', s:'78K' },
-  { src:'https://videos.pexels.com/video-files/4116978/4116978-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4116978/free-video-4116978.jpg',  author:'@flowertok',   desc:'Slow motion flowers will fix you 🌸',                sub:'Therapy is expensive. This is free.',music:'Bloom – slowthai',       l:'4.4M', c:'33K', s:'188K'},
-  { src:'https://videos.pexels.com/video-files/3769116/3769116-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3769116/free-video-3769116.jpg',  author:'@raindrop',    desc:'Rainy days and lo-fi hits 🌧️ #aesthetic',            sub:'This is my reset button',           music:'Rain – lo-fi beats',     l:'3.2M', c:'24K', s:'112K'},
-  // sport / action
-  { src:'https://videos.pexels.com/video-files/3765114/3765114-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3765114/free-video-3765114.jpg',  author:'@fitcheck',    desc:'5am workout hits different 💪 #gym',                 sub:'No excuses. Just reps.',            music:'Eye of the Tiger',       l:'5.5M', c:'41K', s:'267K'},
-  { src:'https://videos.pexels.com/video-files/3564402/3564402-hd_1080_1920_25fps.mp4',   cover:'https://images.pexels.com/videos/3564402/free-video-3564402.jpg',  author:'@skatetok',    desc:'This trick took 3 months 🛹 #skate',                 sub:'Every fall was worth it',           music:'Go! – Jack Black',       l:'7.1M', c:'62K', s:'394K'},
-  { src:'https://videos.pexels.com/video-files/3571540/3571540-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3571540/free-video-3571540.jpg',  author:'@yogalife',    desc:'Morning yoga in the snow ❄️🧘 #yoga',               sub:'Cold never bothered me anyway',     music:'Peaceful Warrior',       l:'1.8M', c:'13K', s:'59K' },
-  { src:'https://videos.pexels.com/video-files/4761270/4761270-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4761270/free-video-4761270.jpg',  author:'@runtok',      desc:'Marathon training montage 🏃 #running',              sub:'26.2 miles. One goal.',             music:'Running Up That Hill',   l:'2.6M', c:'20K', s:'95K' },
-  { src:'https://videos.pexels.com/video-files/5198543/5198543-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/5198543/free-video-5198543.jpg',  author:'@surftok',     desc:'Caught the best wave of my life 🏄 #surf',           sub:'The ocean gave today fr',           music:'Good as Hell – Lizzo',   l:'9.3M', c:'84K', s:'541K'},
-  // travel
-  { src:'https://videos.pexels.com/video-files/3571268/3571268-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/3571268/free-video-3571268.jpg',  author:'@wanderlust',  desc:'Bali at sunrise 🌅 #travel #bali',                   sub:'I\'m never leaving tbh',            music:'Bali – Thomas Jack',     l:'4.2M', c:'35K', s:'197K'},
-  { src:'https://videos.pexels.com/video-files/4629774/4629774-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4629774/free-video-4629774.jpg',  author:'@tokyotok',    desc:'Tokyo 3am is a different world 🗾',                  sub:'Neon signs and ramen at midnight',  music:'Tokyo Drift – Teriyaki', l:'6.7M', c:'58K', s:'378K'},
-  { src:'https://videos.pexels.com/video-files/3763820/3763820-hd_1080_1920_25fps.mp4',   cover:'https://images.pexels.com/videos/3763820/free-video-3763820.jpg',  author:'@parisian',    desc:'Paris in the rain is actually peak 🗼',              sub:'Forget sunshine, give me drizzle',  music:'La Vie en Rose',         l:'3.8M', c:'29K', s:'148K'},
-  { src:'https://videos.pexels.com/video-files/4125017/4125017-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/4125017/free-video-4125017.jpg',  author:'@mountaineer', desc:'Hiking at 4000m with no plan 🏔️',                   sub:'Got lost. Found myself.',           music:'Higher Ground',          l:'2.9M', c:'21K', s:'101K'},
-  // funny/viral style
-  { src:'https://videos.pexels.com/video-files/5198544/5198544-uhd_1440_2560_25fps.mp4',  cover:'https://images.pexels.com/videos/5198544/free-video-5198544.jpg',  author:'@funnytok',    desc:'My dog vs. the mailman 😭 #dogs #fyp',              sub:'He takes his job very seriously',   music:'Mission Impossible',     l:'11M',  c:'102K',s:'721K'},
-  { src:'https://videos.pexels.com/video-files/3763824/3763824-hd_1080_1920_25fps.mp4',   cover:'https://images.pexels.com/videos/3763824/free-video-3763824.jpg',  author:'@comedytok',   desc:'POV: your wifi dies during the good part 😤',       sub:'I had to stand up. From my couch.',  music:'Dramatic Music',         l:'14M',  c:'134K',s:'901K'},
+// ── 30 verified Mixkit CDN vertical MP4s ──────────────────────
+// assets.mixkit.co is CORS-open, no auth, no sign-up needed.
+// Pattern: https://assets.mixkit.co/videos/preview/{filename}
+const CDN = 'https://assets.mixkit.co/videos/preview/';
+const POOL = [
+  ['mixkit-girl-in-neon-sign-1232-large.mp4',                             '@nightcity',    'Neon dreams hit different 🌃 #aesthetic',       'The city lights never lie',              'Neon Nights',         '2.3M','18K','94K'],
+  ['mixkit-waves-in-the-water-1164-large.mp4',                            '@oceanvibes',   'Ocean therapy 🌊 lets go #relax',               'The waves literally healed me',          'Ocean Eyes',          '4.8M','31K','201K'],
+  ['mixkit-stars-in-space-background-1610-large.mp4',                     '@cosmos',       'We are made of star stuff ✨🌌',                  'Look up. You are tiny. Be free.',        'Space Oddity',        '5.1M','44K','280K'],
+  ['mixkit-spinning-around-a-bonfire-at-night-22531-large.mp4',           '@campfire',     'Bonfire nights are unmatched 🔥',               'No phones. Just vibes and fire.',        'Campfire Songs',      '892K','7.4K','38K'],
+  ['mixkit-coffee-being-poured-into-a-cup-with-milk-22344-large.mp4',     '@coffeetok',    'Morning ritual unlocked ☕ #coffee',             'Do not talk to me before this',          'Coffee Shop Jazz',    '2.7M','19K','98K'],
+  ['mixkit-forest-stream-in-the-sunlight-529-large.mp4',                  '@forestasmr',   'Forest ASMR for your anxiety 🌿',               'The trees are literally healing you',    'Forest Sounds',       '1.2M','8.1K','44K'],
+  ['mixkit-rain-falling-on-the-windshield-of-a-car-1219-large.mp4',       '@rainytok',     'Rainy day reset 🌧️ #cozy vibes',                'This is my reset button no cap',         'Rain – lo-fi',        '3.2M','24K','112K'],
+  ['mixkit-white-sand-beach-and-palm-trees-1564-large.mp4',               '@beachlife',    'Found paradise 🏝️ #travel goals',               'Booked a one-way ticket. Bye.',          'Island Vibes',        '4.4M','33K','188K'],
+  ['mixkit-clouds-and-blue-sky-2408-large.mp4',                           '@skytok',       'Cloud watching is underrated ☁️',               'Touched grass AND looked up today',      'Cloud Nine',          '2.1M','15K','78K'],
+  ['mixkit-tropical-fish-swimming-in-an-aquarium-4700-large.mp4',         '@aquatok',      'Aquarium ASMR 🐠 #relax #fish',                 'These fish live better than me',         'Underwater World',    '1.4M','10K','52K'],
+  ['mixkit-puppy-running-in-the-grass-1545-large.mp4',                    '@dogtok',       'My puppy discovering grass 🐶😭',               'He has never been this happy fr',        'Best Friend',         '11M', '102K','721K'],
+  ['mixkit-going-down-a-curved-highway-down-a-mountain-41576-large.mp4',  '@roadtrip',     'Best drive of my life 🚗 #roadtrip',            'Windows down music up no destination',   'On The Road Again',   '3.4M','22K','130K'],
+  ['mixkit-aerial-shot-of-a-snowy-mountain-range-39877-large.mp4',        '@mountaineer',  '4am summit was worth every step 🏔️',            'Every cold step was worth it',           'Higher Ground',       '2.9M','21K','101K'],
+  ['mixkit-flowers-in-a-field-during-sunset-43331-large.mp4',             '@goldenhour',   'Golden hour never misses 🌅',                   'Pulled over just for this view',         'Golden – Harry',      '5.5M','41K','267K'],
+  ['mixkit-hot-air-balloons-flying-over-a-valley-4756-large.mp4',         '@balloontok',   'Cappadocia at sunrise changed me 🎈',           'Bucket list item: completed ✅',          'Up & Away',           '6.1M','52K','330K'],
+  ['mixkit-fireworks-in-the-night-sky-4757-large.mp4',                    '@celebrations', 'This NYE was unreal 🎆 #newyear',               'New year same chaotic me honestly',      'Celebration',         '7.9M','71K','455K'],
+  ['mixkit-tree-with-yellow-flowers-1173-large.mp4',                      '@naturetok',    'Spring said hello 🌼 #spring',                  'Pollen season but make it gorgeous',     'Here Comes The Sun',  '1.1M','9.2K','41K'],
+  ['mixkit-set-of-plants-on-a-table-with-natural-light-4807-large.mp4',   '@planttok',     'Plant collection out of control 🪴',            'I have a problem and I love it',         'Lush Life',           '1.6M','12K','67K'],
+  ['mixkit-young-woman-dancing-happily-in-the-living-room-43215-large.mp4','@dancetok',    'When the song hits just right 🎵',              'My body literally moved on its own',     'Flowers – Miley',     '8.2M','73K','512K'],
+  ['mixkit-portrait-of-a-fashion-woman-with-neon-makeup-1198-large.mp4',  '@glowup',       'Glow up season is here 💅 #beauty',             'Main character energy fully activated',  'Levitating – Dua',    '3.9M','28K','155K'],
+  ['mixkit-walking-through-a-field-of-lavender-43329-large.mp4',          '@lavender',     'Lavender fields forever 💜 #france',            'Smells as good as it looks I promise',   'Purple Rain',         '4.2M','35K','197K'],
+  ['mixkit-girl-jogging-in-the-park-in-the-morning-32812-large.mp4',      '@runtok',       '5am run club hits different 🏃',                'Nobody is coming to save you. Run.',     'Running Up That Hill','2.6M','20K','95K'],
+  ['mixkit-skateboarder-doing-tricks-in-an-empty-pool-34543-large.mp4',   '@skatetok',     'This trick took 3 months 🛹 #skate',            'Every single fall was worth this',       'Go – Jack Black',     '7.1M','62K','394K'],
+  ['mixkit-snowboarder-doing-tricks-on-a-snowy-mountain-40125-large.mp4', '@snowtok',      'Powder day called in sick 🏂 #snow',            'No regrets whatsoever',                  'Winter Sports Remix', '5.8M','48K','310K'],
+  ['mixkit-a-woman-doing-yoga-on-the-beach-at-sunset-39754-large.mp4',    '@yogalife',     'Sunset yoga is a whole religion 🧘',            'Find peace wherever you can',            'Peaceful Warrior',    '1.8M','13K','59K'],
+  ['mixkit-young-woman-singing-in-the-car-43254-large.mp4',               '@cartok',       'Car concert for one only 🎤 #sing',             'I sound INCREDIBLE when alone',          "Driver's License",    '9.3M','84K','541K'],
+  ['mixkit-cat-playing-with-a-ball-of-yarn-43367-large.mp4',              '@cattok',       'Chaos in 4K 🐱 #cats #catsoftiktok',           'This cost me a whole sweater btw',       'Funny Cat Remix',     '14M', '134K','901K'],
+  ['mixkit-cocktail-being-prepared-in-a-bar-43271-large.mp4',             '@mixology',     'Bartender skills unlocked 🍹 #cocktail',        'Shaken AND stirred, fight me',           'Lounge Beats',        '3.6M','27K','140K'],
+  ['mixkit-hands-of-a-chef-cutting-a-tomato-43395-large.mp4',             '@cheftok',      'Knife skills took 10 years 🔪 #cooking',        'Practice. Practice. Practice.',          'Kitchen Vibes',       '2.1M','15K','78K'],
+  ['mixkit-tokyo-japan-busy-pedestrian-crossing-4569-large.mp4',          '@tokyotok',     'Tokyo 3am is a different world 🗾',             'Neon signs and ramen at midnight',       'Tokyo Drift Remix',   '6.7M','58K','378K'],
 ];
 
-// ─────────────────────────────────────────────────────────────
-// INFINITE FEED ENGINE
-// Shuffles + cycles pool endlessly, uses Claude API to generate
-// fresh captions/subtitles for each new batch of 10
-// ─────────────────────────────────────────────────────────────
-let feed      = [];
-let cur       = 0;
-let liked     = false;
-let muted     = true;
-let tabIdx    = 1;
-let lastTap   = 0;
-let touchSY   = 0, touchSX = 0;
-let toastTmr;
-let progRaf;
-let busy      = false;
-let fetchingMore = false;
+// ── Build infinite feed by repeating/shuffling pool ───────────
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function makeBatch(){
+  return shuffle(POOL).map(r=>({
+    src:  CDN+r[0],
+    user: r[1], desc: r[2], sub: r[3],
+    music:r[4], l:r[5], c:r[6], s:r[7]
+  }));
+}
+let feed = [...makeBatch(),...makeBatch()]; // start with 60 items
+let cur=0, liked=false, muted=false, tabIdx=1;
+let lastTap=0, touchSY=0, touchSX=0, toastTmr, progRaf, started=false;
 
-const vid      = document.getElementById('mainvid');
-const covimg   = document.getElementById('covimg');
-const slideblk = document.getElementById('slideblack');
-const hud      = document.getElementById('hud');
-const pfill    = document.getElementById('pf');
+const vid    = document.getElementById('vid');
+const hud    = document.getElementById('hud');
+const progf  = document.getElementById('progf');
 
-// shuffle helper
-function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
-
-// Build initial feed from pool
-function buildInitialFeed(){
-  feed = shuffle(VIDEO_POOL).map((v,i)=>({...v, _idx:i}));
-  setStatus('Ready!');
-  buildDots();
-  activate(0);
-  setTimeout(hideLoader, 600);
+// ── Grow feed when near end ───────────────────────────────────
+function maybeLoadMore(){
+  if(cur < feed.length-8) return;
+  const lm = document.getElementById('loading-more');
+  lm.classList.add('show');
+  setTimeout(()=>{
+    feed=[...feed,...makeBatch()];
+    buildDots();
+    lm.classList.remove('show');
+  }, 600);
 }
 
-// Append more items (infinite scroll)
-async function appendMore(){
-  if(fetchingMore) return;
-  fetchingMore = true;
-  setStatus('Loading more…');
+// ── CORE: play a reel by index ─────────────────────────────────
+// We use ONE <video> element and swap src each time.
+// This is the only reliable cross-browser approach.
+function playReel(i){
+  cur = ((i % feed.length)+feed.length) % feed.length;
+  const r = feed[cur];
 
-  // Use Claude to generate fresh captions for next batch
-  let extras;
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system:'You generate TikTok-style short video metadata. Return ONLY a raw JSON array, no markdown, no explanation.',
-        messages:[{role:'user',content:`Generate 10 TikTok reel objects with these fields:
-author (@ handle), desc (caption ≤55 chars with emoji), sub (italic subtitle ≤50 chars),
-music (song name), l (like count like "2.3M"), c (comment count like "18K"), s (share count like "94K").
-Make them feel like real viral TikToks: funny, relatable, travel, food, dance, nature themes.
-Return raw JSON array only.`}]
-      })
-    });
-    const data = await res.json();
-    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    const match = text.match(/\[[\s\S]*\]/);
-    if(match) extras = JSON.parse(match[0]);
-  } catch(e){ extras = null; }
-
-  // Merge Claude captions with shuffled videos from pool
-  const vids = shuffle(VIDEO_POOL);
-  const newItems = vids.map((v,i)=>{
-    const meta = extras && extras[i] ? extras[i] : null;
-    return {
-      src:   v.src,
-      cover: v.cover,
-      author: meta ? meta.author : v.author,
-      desc:   meta ? meta.desc   : v.desc,
-      sub:    meta ? meta.sub    : v.sub,
-      music:  meta ? meta.music  : v.music,
-      l:      meta ? meta.l      : v.l,
-      c:      meta ? meta.c      : v.c,
-      s:      meta ? meta.s      : v.s,
-    };
-  });
-
-  feed = [...feed, ...newItems];
-  buildDots();
-  fetchingMore = false;
-  setStatus('More loaded!');
-}
-
-// ─────────────────────────────────────────────────────────────
-// PLAYBACK — single <video> src-swap, guaranteed play
-// ─────────────────────────────────────────────────────────────
-function activate(index){
-  if(busy) return;
-  busy = true;
-
-  const v = feed[index];
-  if(!v){ busy=false; return; }
-
-  // show cover instantly
-  covimg.src = v.cover || '';
-  covimg.style.opacity = '1';
-  covimg.style.transition = 'none';
-
-  // black flash
-  slideblk.style.transition='none';
-  slideblk.style.opacity='1';
-  hud.classList.add('buffering');
-
-  requestAnimationFrame(()=>{
-    requestAnimationFrame(()=>{
-      // swap video src
-      vid.pause();
-      vid.src = v.src;
-      vid.muted = muted;
-      vid.currentTime = 0;
-
-      // fade out black
-      slideblk.style.transition='opacity .15s';
-      slideblk.style.opacity='0';
-
-      updateHUD(v);
-      updDots();
-      pfill.style.width='0%';
-      cancelAnimationFrame(progRaf);
-
-      vid.load();
-      const playPromise = vid.play();
-      if(playPromise){
-        playPromise.then(()=>{
-          hud.classList.remove('buffering');
-          busy=false;
-          startProgRaf();
-          // fade cover out once video playing
-          setTimeout(()=>{
-            covimg.style.transition='opacity .4s';
-            covimg.style.opacity='0';
-          },200);
-        }).catch(()=>{
-          // blocked — keep cover, show play button hint
-          hud.classList.remove('buffering');
-          busy=false;
-          showToast('Tap to play ▶');
-        });
-      } else {
-        busy=false;
-        hud.classList.remove('buffering');
-      }
-    });
-  });
-}
-
-function startProgRaf(){
+  // stop + reset progress
+  vid.pause();
   cancelAnimationFrame(progRaf);
-  function tick(){
-    if(vid.duration && !isNaN(vid.duration)){
-      pfill.style.width=(vid.currentTime/vid.duration*100)+'%';
-    }
-    progRaf=requestAnimationFrame(tick);
-  }
-  progRaf=requestAnimationFrame(tick);
+  progf.style.width = '0%';
+
+  // set new source
+  vid.src   = r.src;
+  vid.muted = muted;
+  vid.currentTime = 0;
+
+  // play — must be called from user gesture chain or after splash
+  vid.load();
+  vid.play()
+    .then(()=>{ hud.classList.remove('buffering'); tickProgress(); })
+    .catch(err=>{
+      console.warn('play failed',err);
+      // last resort: try muted
+      vid.muted=true; muted=true;
+      document.getElementById('muteico').textContent='🔇';
+      vid.play().then(()=>{ hud.classList.remove('buffering'); tickProgress(); });
+    });
+
+  updateUI(r);
+  updDots();
+  maybeLoadMore();
 }
 
-// auto-advance + trigger infinite load
-vid.addEventListener('ended',()=>{
-  goTo(cur+1,'up');
-});
-vid.addEventListener('waiting',()=>hud.classList.add('buffering'));
-vid.addEventListener('playing',()=>hud.classList.remove('buffering'));
+function tickProgress(){
+  cancelAnimationFrame(progRaf);
+  function step(){
+    if(vid.duration && !isNaN(vid.duration))
+      progf.style.width = (vid.currentTime/vid.duration*100)+'%';
+    progRaf = requestAnimationFrame(step);
+  }
+  progRaf = requestAnimationFrame(step);
+}
 
-// ─────────────────────────────────────────────────────────────
-// NAVIGATE
-// ─────────────────────────────────────────────────────────────
-function goTo(n, dir){
-  const next = ((n % feed.length)+feed.length)%feed.length;
-  cur = next;
-  activate(cur);
+// auto-advance
+vid.addEventListener('ended', ()=>{ flashSfx('↑'); goTo(cur+1); });
+vid.addEventListener('waiting', ()=>hud.classList.add('buffering'));
+vid.addEventListener('playing',  ()=>hud.classList.remove('buffering'));
+vid.addEventListener('error',    ()=>goTo(cur+1)); // skip bad video
+
+// ── Navigation ────────────────────────────────────────────────
+function goTo(n, dir='up'){
+  playReel(n);
   flashSfx(dir==='up'?'↑':'↓');
   liked=false; updLike();
-
-  // fetch more when 3 from end
-  if(cur >= feed.length-3) appendMore();
 }
 const goNext=()=>goTo(cur+1,'up');
 const goPrev=()=>goTo(cur-1,'down');
 
-// ─────────────────────────────────────────────────────────────
-// HUD TEXT
-// ─────────────────────────────────────────────────────────────
-function updateHUD(v){
-  const cap = v.desc||'';
-  document.getElementById('captop').innerHTML =
-    cap.length>32 ? cap.replace(/(.{24,35}\s)/,'$1<br>') : cap;
-  document.getElementById('sub').textContent      = v.sub||'';
-  document.getElementById('uname').textContent    = v.author||'@—';
-  document.getElementById('mname').textContent    = v.music||'Original Sound';
-  document.getElementById('likenum').textContent  = v.l||'—';
-  document.getElementById('comnum').textContent   = v.c||'—';
-  document.getElementById('sharenum').textContent = v.s||'—';
+// ── Start (called on splash tap — gives gesture unlock for audio)
+function startFeed(){
+  document.getElementById('splash').classList.add('gone');
+  started=true;
+  playReel(0);
 }
 
-// ─────────────────────────────────────────────────────────────
-// DOTS (show max 10, sliding window)
-// ─────────────────────────────────────────────────────────────
+// ── UI update ─────────────────────────────────────────────────
+function updateUI(r){
+  const c=r.desc||'';
+  document.getElementById('captop').innerHTML=
+    '<p>'+(c.length>34?c.replace(/(.{26,36})\s/,'$1<br>'):c)+'</p>';
+  document.getElementById('subtext').textContent = r.sub||'';
+  document.getElementById('uname').textContent   = r.user||'@—';
+  document.getElementById('mname').textContent   = r.music||'Original Sound';
+  document.getElementById('likenum').textContent = r.l||'—';
+  document.getElementById('comnum').textContent  = r.c||'—';
+  document.getElementById('sharenum').textContent= r.s||'—';
+}
+
+// ── Dots (sliding 10-window) ──────────────────────────────────
 function buildDots(){
   const c=document.getElementById('dots');
-  const total=Math.min(feed.length,10);
-  c.innerHTML='';
-  for(let i=0;i<total;i++){
+  const n=Math.min(feed.length,10); c.innerHTML='';
+  for(let i=0;i<n;i++){
     const d=document.createElement('div');
-    d.className='dot'+(i===cur%total?' on':'');
+    d.className='dot'+(i===cur%n?' on':'');
     c.appendChild(d);
   }
 }
 function updDots(){
-  const total=Math.min(feed.length,10);
-  document.querySelectorAll('.dot').forEach((d,i)=>
-    d.classList.toggle('on',i===cur%total));
+  const n=Math.min(feed.length,10);
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur%n));
 }
 
-// ─────────────────────────────────────────────────────────────
-// LIKE
-// ─────────────────────────────────────────────────────────────
-function doLike(){
-  liked=!liked; updLike();
-  if(liked) spawnHeart();
-}
+// ── Like ──────────────────────────────────────────────────────
+function doLike(){liked=!liked;updLike();if(liked)spawnHeart();}
 function updLike(){
   document.getElementById('likebtn').classList.toggle('liked',liked);
   document.getElementById('likeico').textContent=liked?'❤️':'🤍';
@@ -550,110 +331,87 @@ function spawnHeart(){
   h.addEventListener('animationend',()=>h.remove());
 }
 
-// ─────────────────────────────────────────────────────────────
-// SWIPE FX / TOAST / STATUS
-// ─────────────────────────────────────────────────────────────
-function flashSfx(sym){
+// ── Mute ──────────────────────────────────────────────────────
+function toggleMute(){
+  muted=!muted; vid.muted=muted;
+  document.getElementById('muteico').textContent=muted?'🔇':'🔊';
+  showToast(muted?'🔇 Muted':'🔊 Sound on');
+}
+
+// ── SFX / Toast ───────────────────────────────────────────────
+function flashSfx(s){
   const el=document.getElementById('sfx');
-  el.textContent=sym;el.classList.remove('go');
-  void el.offsetWidth;el.classList.add('go');
+  el.textContent=s; el.classList.remove('go');
+  void el.offsetWidth; el.classList.add('go');
   setTimeout(()=>el.classList.remove('go'),500);
 }
-function showToast(msg){
-  const t=document.getElementById('toastEl');
-  t.textContent=msg;t.classList.add('show');
+function showToast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m; t.classList.add('show');
   clearTimeout(toastTmr);
-  toastTmr=setTimeout(()=>t.classList.remove('show'),1400);
-}
-function setStatus(s){
-  const el=document.getElementById('lstatus');
-  if(el) el.textContent=s;
-}
-function hideLoader(){
-  document.getElementById('loadscr').classList.add('gone');
+  toastTmr=setTimeout(()=>t.classList.remove('show'),1500);
 }
 
-// ─────────────────────────────────────────────────────────────
-// AUDIO UNLOCK
-// ─────────────────────────────────────────────────────────────
-function unlockAudio(){
-  if(!muted) return;
-  muted=false;
-  vid.muted=false;
-  showToast('🔊 Sound on');
-}
-
-// ─────────────────────────────────────────────────────────────
-// TABS
-// ─────────────────────────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    unlockAudio();
-    tabIdx=+t.dataset.i;
-    document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',i===tabIdx));
-    showToast(t.textContent.trim());
-  });
-});
+// ── Tabs ──────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  if(!started)startFeed();
+  tabIdx=+t.dataset.i;
+  document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',i===tabIdx));
+  showToast(t.textContent.trim());
+}));
 function shiftTab(d){
   tabIdx=((tabIdx+d)+3)%3;
   document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',i===tabIdx));
   showToast(document.querySelector('.tab.on').textContent.trim());
 }
 
-// ─────────────────────────────────────────────────────────────
-// TOUCH
-// ─────────────────────────────────────────────────────────────
+// ── Touch / Swipe ─────────────────────────────────────────────
 const tz=document.getElementById('tz');
 tz.addEventListener('touchstart',e=>{
-  touchSY=e.touches[0].clientY;
-  touchSX=e.touches[0].clientX;
-  unlockAudio();
+  if(!started){startFeed();return;}
+  touchSY=e.touches[0].clientY; touchSX=e.touches[0].clientX;
 },{passive:true});
 tz.addEventListener('touchend',e=>{
+  if(!started)return;
   const dy=touchSY-e.changedTouches[0].clientY;
   const dx=touchSX-e.changedTouches[0].clientX;
-  if(Math.abs(dy)>40&&Math.abs(dy)>Math.abs(dx))
-    dy>0?goNext():goPrev();
-  else if(Math.abs(dx)>40)
-    shiftTab(dx>0?1:-1);
+  if(Math.abs(dy)>40&&Math.abs(dy)>Math.abs(dx)) dy>0?goNext():goPrev();
+  else if(Math.abs(dx)>40) shiftTab(dx>0?1:-1);
 },{passive:true});
-tz.addEventListener('touchend',e=>{
-  const now=Date.now();
-  if(now-lastTap<300){doLike();showToast('❤️ Liked');}
-  lastTap=now;
-},{passive:true});
+
+// double-tap like
+let lt=0;
 tz.addEventListener('click',()=>{
-  unlockAudio();
+  if(!started){startFeed();return;}
   const now=Date.now();
-  if(now-lastTap<300){doLike();showToast('❤️ Liked');}
-  lastTap=now;
+  if(now-lt<300){doLike();showToast('❤️ Liked');}
+  lt=now;
 });
 
-// ─────────────────────────────────────────────────────────────
-// KEYBOARD
-// ─────────────────────────────────────────────────────────────
+// ── Keyboard ──────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
-  unlockAudio();
+  if(!started){startFeed();return;}
   if(e.key==='ArrowUp'   ||e.key==='w'){e.preventDefault();goPrev();}
   if(e.key==='ArrowDown' ||e.key==='s'){e.preventDefault();goNext();}
   if(e.key==='ArrowRight'||e.key==='d') shiftTab(1);
   if(e.key==='ArrowLeft' ||e.key==='a') shiftTab(-1);
-  if(e.key===' '){
-    e.preventDefault();
-    vid.paused?vid.play():vid.pause();
-    showToast(vid.paused?'⏸ Paused':'▶ Playing');
-  }
+  if(e.key===' '){e.preventDefault();vid.paused?vid.play():vid.pause();showToast(vid.paused?'⏸':'▶');}
   if(e.key==='l'||e.key==='L'){doLike();showToast('❤️ Liked');}
-  if(e.key==='m'||e.key==='M'){
-    muted=!muted;vid.muted=muted;
-    showToast(muted?'🔇 Muted':'🔊 Sound on');
-  }
+  if(e.key==='m'||e.key==='M') toggleMute();
 });
 
-// ─────────────────────────────────────────────────────────────
-// BOOT
-// ─────────────────────────────────────────────────────────────
-buildInitialFeed();
+// ── Neural Band ───────────────────────────────────────────────
+window.addEventListener('meta-neural-gesture',e=>{
+  const g=e.detail?.gesture;
+  if(g==='pinch')      vid.paused?vid.play():vid.pause();
+  if(g==='swipe-up')   goNext();
+  if(g==='swipe-down') goPrev();
+  if(g==='double-pinch')doLike();
+});
+
+// ── Init ──────────────────────────────────────────────────────
+buildDots();
+updateUI(feed[0]);
 </script>
 </body>
 </html>
