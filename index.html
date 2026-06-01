@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=600, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="meta-display" content="width=600,height=600,fov=20deg">
+<title>TikTok · Ray-Ban Display</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  width:100%; min-height:100%;
+  background: #1a0a0e;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Inter', sans-serif;
+  overflow-x:hidden;
+  padding: 30px 16px;
+}
+
+/* ── outer page bg ── */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background: radial-gradient(ellipse 80% 60% at 50% 20%, #3d0a14 0%, #1a0a0e 60%, #0d0508 100%);
+  z-index:-1;
+}
+
+/* ── phone shell ── */
+.phone {
+  width: 340px;
+  background: #1e0b10;
+  border-radius: 36px;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.6),
+    0 40px 80px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 24px;
+}
+
+/* top pill */
+.phone::before {
+  content:'';
+  display:block;
+  width:10px; height:10px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.15);
+  margin: 14px auto 0;
+}
+
+/* ── caption above video ── */
+.caption-above {
+  padding: 18px 28px 14px;
+  text-align: center;
+}
+.caption-above p {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+/* ── video container ── */
+.video-wrap {
+  position: relative;
+  margin: 0 14px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 9/16;
+  max-height: 420px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+/* watermark */
+.watermark {
+  position:absolute; top:10px; right:10px;
+  font-size:11px; color:rgba(255,255,255,0.65);
+  font-weight:600; letter-spacing:.02em;
+  z-index:10; text-shadow:0 1px 4px rgba(0,0,0,0.8);
+  pointer-events:none;
+}
+
+/* iframe fills the box */
+.video-wrap iframe {
+  width:100%; height:100%;
+  border:none; display:block;
+  pointer-events:none;
+}
+
+/* subtitle bar at bottom of video */
+.subtitle-bar {
+  position:absolute; bottom:0; left:0; right:0;
+  padding: 32px 14px 14px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.75));
+  z-index:5; pointer-events:none;
+}
+.subtitle-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ffe566;
+  text-align: center;
+  line-height: 1.4;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6);
+  font-style: italic;
+}
+
+/* tap area (invisible, for double-tap like) */
+.tap-zone {
+  position:absolute; inset:0; z-index:6;
+  cursor:pointer;
+}
+
+/* heart pop */
+.heart-pop {
+  position:absolute; left:50%; top:45%;
+  transform:translate(-50%,-50%) scale(0);
+  font-size:72px; pointer-events:none; z-index:50;
+  animation:heartpop .65s cubic-bezier(.17,.89,.32,1.28) forwards;
+}
+@keyframes heartpop {
+  0%   { transform:translate(-50%,-55%) scale(0); opacity:1; }
+  50%  { transform:translate(-50%,-55%) scale(1.15); opacity:1; }
+  100% { transform:translate(-50%,-70%) scale(.7); opacity:0; }
+}
+
+/* swipe overlay hint */
+.swipe-hint {
+  position:absolute; left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  font-size:38px; color:rgba(255,255,255,0);
+  pointer-events:none; z-index:20;
+  transition:none;
+}
+.swipe-hint.show { animation:swipeFlash .5s forwards; }
+@keyframes swipeFlash {
+  0%  {color:rgba(255,255,255,0)}
+  20% {color:rgba(255,255,255,0.7)}
+  80% {color:rgba(255,255,255,0.5)}
+  100%{color:rgba(255,255,255,0)}
+}
+
+/* ── progress bar ── */
+.progress-wrap {
+  margin: 10px 14px 0;
+  height: 2px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+  overflow:hidden;
+}
+.progress-fill {
+  height:100%;
+  background: rgba(255,255,255,0.7);
+  border-radius:2px;
+  transition: width .5s linear;
+  width:0%;
+}
+
+/* ── bottom nav row ── */
+.bottom-nav {
+  display:flex; align-items:center; justify-content:center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 0 20px;
+}
+.nav-dot {
+  width:5px; height:5px; border-radius:50%;
+  background:rgba(255,255,255,0.2);
+  transition:background .2s, transform .2s;
+  flex-shrink:0;
+}
+.nav-dot.active {
+  background:rgba(255,255,255,0.75);
+  transform:scale(1.5);
+}
+
+/* ── tab row ── */
+.tab-row {
+  display:flex; justify-content:center; gap:24px;
+  margin: 16px 0 4px;
+  padding: 0 20px;
+}
+.tab {
+  font-size:13px; font-weight:600;
+  color:rgba(255,255,255,0.3);
+  cursor:pointer; user-select:none;
+  padding-bottom:4px;
+  border-bottom:2px solid transparent;
+  transition:color .2s, border-color .2s;
+  letter-spacing:.01em;
+}
+.tab.active {
+  color:rgba(255,255,255,0.9);
+  border-color:rgba(255,255,255,0.8);
+}
+
+/* ── gesture toast ── */
+.toast {
+  position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.7); color:rgba(255,255,255,0.85);
+  font-size:12px; font-weight:600; letter-spacing:.05em;
+  padding:7px 18px; border-radius:20px;
+  border:1px solid rgba(255,255,255,0.12);
+  pointer-events:none; z-index:999;
+  opacity:0; transition:opacity .25s;
+  white-space:nowrap;
+}
+.toast.show { opacity:1; }
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone">
+
+  <!-- tab row -->
+  <div class="tab-row" id="tabRow">
+    <div class="tab" data-i="0">Following</div>
+    <div class="tab active" data-i="1">For You</div>
+    <div class="tab" data-i="2">LIVE</div>
+  </div>
+
+  <!-- caption above -->
+  <div class="caption-above">
+    <p id="captionAbove">Loading…</p>
+  </div>
+
+  <!-- video -->
+  <div class="video-wrap" id="videoWrap">
+    <div class="watermark" id="watermark">@clips</div>
+    <iframe id="videoFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div class="subtitle-bar">
+      <div class="subtitle-text" id="subtitleText"></div>
+    </div>
+    <div class="tap-zone" id="tapZone"></div>
+    <div class="swipe-hint" id="swipeHint">↑</div>
+  </div>
+
+  <!-- progress -->
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- dots -->
+  <div class="bottom-nav" id="navDots"></div>
+
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── feed data ──────────────────────────────────────────────────────────
+const FEED = [
+  {
+    id:'7380830474457984298',
+    caption:'How the girl from church\ngot my bro acting',
+    subtitle:'I used to sit over there with my boyfriend Tyrone',
+    handle:'@clips'
+  },
+  {
+    id:'7371002345678901234',
+    caption:'POV: you finally texted\nyour situationship back',
+    subtitle:'Why are you acting like I did something wrong',
+    handle:'@dramatics'
+  },
+  {
+    id:'7362938271234567890',
+    caption:'Me explaining why I\'m late\nto my own birthday party',
+    subtitle:'Traffic was crazy bro I swear',
+    handle:'@storytime'
+  },
+  {
+    id:'7358201934567890123',
+    caption:'The audacity of this man\nat Thanksgiving dinner 💀',
+    subtitle:'Can you pass me the remote',
+    handle:'@clips'
+  },
+  {
+    id:'7351829304567891234',
+    caption:'When she says "I\'m not\nmad" but she\'s clearly mad',
+    subtitle:'I\'m fine. Everything is fine.',
+    handle:'@relatable'
+  },
+  {
+    id:'7342019283746501234',
+    caption:'My bestie when she sees\nher ex at the mall',
+    subtitle:'Oh wow I look amazing today wow',
+    handle:'@bestiesbelike'
+  },
+  {
+    id:'7338201047382910234',
+    caption:'Corporate America got\nme acting different fr',
+    subtitle:'Per my last email',
+    handle:'@officetok'
+  },
+  {
+    id:'7321038201947382910',
+    caption:'When your mom calls\nduring a meeting 📵',
+    subtitle:'Just give me five minutes Ma',
+    handle:'@momtok'
+  },
+  {
+    id:'7315029384756102930',
+    caption:'That one cousin who thinks\nthey run the cookout',
+    subtitle:'Nobody told you to season it like that',
+    handle:'@familyreunion'
+  },
+  {
+    id:'7308192038475610293',
+    caption:'Me after spending 3 hours\nonline shopping for nothing',
+    subtitle:'Add to cart. Remove from cart.',
+    handle:'@shoppingtok'
+  },
+];
+
+let current = 0;
+let progressVal = 0;
+let progressTimer = null;
+let tabIndex = 1;
+let lastTap = 0;
+let lastClick = 0;
+let touchStartY = 0, touchStartX = 0;
+
+// ── build dots ─────────────────────────────────────────────────────────
+function buildDots() {
+  const c = document.getElementById('navDots');
+  c.innerHTML = '';
+  FEED.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === current ? ' active' : '');
+    c.appendChild(d);
+  });
+}
+function updateDots() {
+  document.querySelectorAll('.nav-dot').forEach((d,i) =>
+    d.classList.toggle('active', i === current));
+}
+
+// ── update UI ──────────────────────────────────────────────────────────
+function updateUI() {
+  const v = FEED[current];
+  // caption above (preserve line breaks)
+  document.getElementById('captionAbove').innerHTML =
+    v.caption.replace('\n','<br>');
+  // subtitle
+  document.getElementById('subtitleText').textContent = v.subtitle;
+  // watermark handle
+  document.getElementById('watermark').textContent = v.handle;
+  // video
+  document.getElementById('videoFrame').src =
+    `https://www.tiktok.com/embed/v2/${v.id}?autoplay=1&mute=0&controls=0&loop=1`;
+  updateDots();
+}
+
+// ── progress ───────────────────────────────────────────────────────────
+function startProgress() {
+  clearInterval(progressTimer);
+  progressVal = 0;
+  document.getElementById('progressFill').style.width = '0%';
+  progressTimer = setInterval(() => {
+    progressVal += 100 / 450; // ~45s
+    if (progressVal >= 100) { progressVal = 0; goNext(); return; }
+    document.getElementById('progressFill').style.width = progressVal + '%';
+  }, 100);
+}
+
+// ── navigate ───────────────────────────────────────────────────────────
+function goTo(n, dir) {
+  if (n < 0) n = FEED.length - 1;
+  if (n >= FEED.length) n = 0;
+  current = n;
+  updateUI();
+  startProgress();
+  flashHint(dir === 'up' ? '↑' : '↓');
+}
+function goNext() { goTo(current + 1, 'up'); }
+function goPrev() { goTo(current - 1, 'down'); }
+
+// ── swipe hint ─────────────────────────────────────────────────────────
+function flashHint(sym) {
+  const el = document.getElementById('swipeHint');
+  el.textContent = sym;
+  el.classList.remove('show'); void el.offsetWidth;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 600);
+}
+
+// ── toast ──────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1400);
+}
+
+// ── heart pop ──────────────────────────────────────────────────────────
+function spawnHeart() {
+  const wrap = document.getElementById('videoWrap');
+  const h = document.createElement('div');
+  h.className = 'heart-pop'; h.textContent = '❤️';
+  wrap.appendChild(h);
+  h.addEventListener('animationend', () => h.remove());
+}
+
+// ── tabs ───────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    tabIndex = +t.dataset.i;
+    document.querySelectorAll('.tab').forEach((x,i) =>
+      x.classList.toggle('active', i === tabIndex));
+    showToast(t.textContent.trim());
+  });
+});
+
+// ── touch ──────────────────────────────────────────────────────────────
+const wrap = document.getElementById('videoWrap');
+wrap.addEventListener('touchstart', e => {
+  touchStartY = e.touches[0].clientY;
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+wrap.addEventListener('touchend', e => {
+  const dy = touchStartY - e.changedTouches[0].clientY;
+  const dx = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(dy) > 35 && Math.abs(dy) > Math.abs(dx)) {
+    dy > 0 ? goNext() : goPrev();
+  }
+}, { passive: true });
+
+// double tap
+document.getElementById('tapZone').addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - lastTap < 300) { spawnHeart(); showToast('❤️ Liked'); }
+  lastTap = now;
+}, { passive: true });
+document.getElementById('tapZone').addEventListener('click', e => {
+  const now = Date.now();
+  if (now - lastClick < 300) { spawnHeart(); showToast('❤️ Liked'); }
+  lastClick = now;
+});
+
+// ── keyboard ───────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowUp'   || e.key === 'w') goPrev();
+  if (e.key === 'ArrowDown' || e.key === 's') goNext();
+  if (e.key === 'ArrowRight'|| e.key === 'd') {
+    tabIndex = (tabIndex+1)%3;
+    document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('active',i===tabIndex));
+    showToast(document.querySelector('.tab.active').textContent.trim());
+  }
+  if (e.key === 'ArrowLeft' || e.key === 'a') {
+    tabIndex = (tabIndex+2)%3;
+    document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('active',i===tabIndex));
+    showToast(document.querySelector('.tab.active').textContent.trim());
+  }
+  if (e.key === 'l' || e.key === 'L') { spawnHeart(); showToast('❤️ Liked'); }
+  if (e.key === ' ') { e.preventDefault(); showToast('⏸ Paused'); }
+});
+
+// ── init ───────────────────────────────────────────────────────────────
+buildDots();
+updateUI();
+startProgress();
+</script>
+</body>
+</html>
