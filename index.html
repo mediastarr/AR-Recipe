@@ -166,8 +166,11 @@ function onPlayerReady(event) {
 
 // ── LOAD ──────────────────────────────────────────────────
 function load(i){
-  idx=((i%feed.length)+feed.length)%feed.length;
-  if(idx>feed.length-5) feed=[...feed,...shuffle(FEED)];
+  // If we've reached the end, extend feed with fresh shuffled reels
+  if(i >= feed.length){
+    feed=[...feed,...shuffle(FEED)];
+  }
+  idx = i;
 
   const r=feed[idx];
   clearInterval(progIv);
