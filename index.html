@@ -1,201 +1,488 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>TikTok · Ray-Ban Display</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;touch-action:none}
-#vidwrap{position:fixed;inset:0;background:#000;z-index:1}
-#vidwrap iframe{width:100%;height:100%;border:none;display:block}
-#topshade{position:fixed;top:0;left:0;right:0;height:200px;background:linear-gradient(to bottom,rgba(0,0,0,.85),transparent);z-index:5;pointer-events:none}
-#botshade{position:fixed;bottom:0;left:0;right:0;height:260px;background:linear-gradient(to top,rgba(0,0,0,.88),transparent);z-index:5;pointer-events:none}
-#tabs{position:fixed;top:0;left:0;right:0;display:flex;justify-content:center;gap:28px;padding:16px 0 10px;z-index:10}
-.tab{font-size:15px;font-weight:600;color:rgba(255,255,255,.38);padding-bottom:4px;border-bottom:2px solid transparent;cursor:pointer;transition:color.2s,border-color.2s}
-.tab.on{color:#fff;border-color:#fff}
-#captop{position:fixed;top:60px;left:0;right:0;text-align:center;padding:0 64px;z-index:10;pointer-events:none}
-#captop p{font-size:16px;font-weight:600;color:#fff;line-height:1.45;text-shadow:0 2px 14px #000}
-#actions{position:fixed;right:14px;bottom:130px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:18px}
-.abtn{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
-.ico{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.72);background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;font-size:20px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.abtn.liked.ico{border-color:#fe2c55;background:rgba(254,44,85,.28)}
-.cnt{font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 6px #000}
-#bot{position:fixed;bottom:0;left:0;right:0;z-index:10;padding:0 18px 28px;pointer-events:none}
-#uname{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;text-shadow:0 1px 10px #000}
-#sub{font-size:14px;font-weight:600;font-style:italic;color:#ffe566;line-height:1.4;text-shadow:0 1px 10px #000;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-#mrow{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-#disc{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.32);display:flex;align-items:center;justify-content:center;font-size:10px;animation:spin 3s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-#mname{font-size:12px;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
-#prog{height:2px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden}
-#progf{height:100%;background:#fff;width:0%;border-radius:2px;transition:width.4s linear}
-.heart{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%) scale(0);font-size:88px;pointer-events:none;z-index:60;animation:hpop.65s cubic-bezier(.17,.89,.32,1.28) forwards}
-@keyframes hpop{0%{transform:translate(-50%,-55%) scale(0);opacity:1}50%{transform:translate(-50%,-55%) scale(1.2);opacity:1}100%{transform:translate(-50%,-70%) scale(.7);opacity:0}}
-#sfx{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font-size:52px;color:transparent;pointer-events:none;z-index:20}
-#sfx.go{animation:sfxa.4s forwards}
-@keyframes sfxa{25%{color:rgba(255,255,255,.7)}100%{color:transparent}}
-#toast{position:fixed;bottom:42px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:8px 20px;border-radius:20px;pointer-events:none;z-index:99;opacity:0;transition:opacity.2s;white-space:nowrap}
-#toast.show{opacity:1}
-#dots{position:fixed;right:6px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:5px;z-index:10;pointer-events:none}
-.dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.22);transition:all.2s}
-.dot.on{background:#fff;transform:scaleY(2)}
-#tz{position:fixed;inset:0;z-index:8;cursor:pointer}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
 </head>
 <body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #050505; }
+    * { box-sizing: border-box; }
+    ::selection { background: rgba(255,255,255,0.3); }
+    @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+  </style>
+  <script component-from-global-scope="image-slot" src="./image-slot.js"></script>
+</helmet>
 
-<div id="vidwrap"><iframe id="vframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
-<div id="topshade"></div>
-<div id="botshade"></div>
-<div id="sfx"></div>
-<div id="tz"></div>
+<div style="position:relative; width:100vw; height:100vh; overflow:hidden; background:#0a0a0a; font-family:'Manrope',sans-serif;">
 
-<div id="tabs">
-  <div class="tab" data-i="0">Following</div>
-  <div class="tab on" data-i="1">For You</div>
-  <div class="tab" data-i="2">LIVE</div>
+  <div style="position:absolute; inset:0; z-index:0;">
+    <image-slot id="ar-bg-scene" shape="rect" fit="cover" placeholder="Real-world camera view — drop a kitchen counter photo"></image-slot>
+  </div>
+
+  <div style="position:absolute; inset:0; z-index:1; pointer-events:none; background:linear-gradient(180deg, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0.02) 22%, rgba(0,0,0,0.02) 70%, rgba(0,0,0,0.35) 100%);"></div>
+
+  <div style="position:absolute; top:22px; left:50%; transform:translateX(-50%); z-index:2; display:flex; align-items:center; gap:8px; color:rgba(255,255,255,0.9); font-size:13px; font-weight:600; letter-spacing:0.02em; text-shadow:0 1px 4px rgba(0,0,0,0.6);">
+    <span style="width:6px; height:6px; border-radius:50%; background:{{ accentHex }}; animation:pulseDot 2.2s ease-in-out infinite; display:inline-block;"></span>
+    <span>ON · 12:41</span>
+  </div>
+
+  <div style="position:absolute; top:9%; right:6%; width:400px; max-width:86vw; z-index:3; border-radius:30px; padding:22px; display:flex; flex-direction:column; gap:14px; color:#fff; animation:fadeSlide 0.4s ease; background:{{ glassBg }}; border:1px solid {{ glassBorder }}; backdrop-filter:blur({{ glassBlur }}) saturate(140%); -webkit-backdrop-filter:blur({{ glassBlur }}) saturate(140%); box-shadow:0 20px 60px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);">
+
+    <sc-if value="{{ isBrowseView }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div>
+          <div style="font-size:21px; font-weight:800; letter-spacing:-0.01em; text-shadow:0 1px 6px rgba(0,0,0,0.5);">Recipes</div>
+          <div style="font-size:12.5px; opacity:0.72; margin-top:2px;">What should we cook today?</div>
+        </div>
+
+        <div class="no-scrollbar" style="display:flex; gap:7px; overflow-x:auto; padding-bottom:2px;">
+          <sc-for list="{{ categoriesView }}" as="cat" hint-placeholder-count="4">
+            <button onClick="{{ cat.onSelect }}" style="flex:0 0 auto; border:none; cursor:pointer; padding:7px 13px; border-radius:999px; font-family:'Manrope',sans-serif; font-size:12.5px; font-weight:700; white-space:nowrap; background:{{ cat.bg }}; color:{{ cat.color }}; box-shadow:{{ cat.shadow }};">{{ cat.label }}</button>
+          </sc-for>
+        </div>
+
+        <div style="position:relative; height:275px;">
+          <sc-for list="{{ stackCards }}" as="card" hint-placeholder-count="2">
+            <div onPointerDown="{{ card.onDown }}" onPointerMove="{{ card.onMove }}" onPointerUp="{{ card.onUp }}" onPointerLeave="{{ card.onUp }}" onClick="{{ card.onClick }}"
+                 style="position:absolute; inset:0; border-radius:22px; overflow:hidden; cursor:grab; background:rgba(16,16,16,0.96); border:1px solid rgba(255,255,255,0.28); display:flex; flex-direction:column; touch-action:none; transform:{{ card.transformStr }}; opacity:{{ card.opacityStr }}; z-index:{{ card.zIndexStr }}; transition:{{ card.transitionStr }};">
+              <div style="height:60%; position:relative;">
+                <image-slot id="{{ card.thumbId }}" shape="rect" fit="cover" placeholder="{{ card.placeholderText }}"></image-slot>
+              </div>
+              <div style="padding:12px 14px; display:flex; flex-direction:column; gap:6px;">
+                <div style="font-size:15.5px; font-weight:700; text-shadow:0 1px 4px rgba(0,0,0,0.5);">{{ card.title }}</div>
+                <div style="display:flex; gap:6px; font-size:11px; opacity:0.8;">
+                  <span>{{ card.time }}</span>
+                  <span>·</span>
+                  <span>{{ card.kcal }}</span>
+                  <span>·</span>
+                  <span>{{ card.difficulty }}</span>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:center; gap:18px;">
+          <button onClick="{{ prevCard }}" aria-label="Previous" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.08); color:#fff; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center;">‹</button>
+          <div style="display:flex; gap:5px;">
+            <sc-for list="{{ stackDots }}" as="dot" hint-placeholder-count="2">
+              <span style="width:5px; height:5px; border-radius:50%; background:{{ dot.bg }}; display:inline-block;"></span>
+            </sc-for>
+          </div>
+          <button onClick="{{ nextCard }}" aria-label="Next" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.08); color:#fff; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center;">›</button>
+        </div>
+
+        <sc-if value="{{ showGestureHints }}" hint-placeholder-val="{{ true }}">
+          <div style="text-align:center; font-size:11px; opacity:0.55; letter-spacing:0.01em;">‹ › swipe to browse &nbsp;·&nbsp; tap to select</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isDetailView }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button onClick="{{ closeRecipe }}" aria-label="Back" style="width:30px; height:30px; border-radius:50%; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.08); color:#fff; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center;">‹</button>
+          <div style="font-size:16.5px; font-weight:800; text-shadow:0 1px 6px rgba(0,0,0,0.5); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ selectedRecipe.title }}</div>
+        </div>
+
+        <div style="height:120px; border-radius:18px; overflow:hidden;">
+          <image-slot id="{{ selectedRecipe.thumbId }}" shape="rect" fit="cover" placeholder="{{ selectedRecipe.placeholderText }}"></image-slot>
+        </div>
+
+        <div style="display:flex; gap:6px; font-size:11px; opacity:0.85;">
+          <span style="background:rgba(255,255,255,0.1); padding:4px 9px; border-radius:999px;">{{ selectedRecipe.time }}</span>
+          <span style="background:rgba(255,255,255,0.1); padding:4px 9px; border-radius:999px;">{{ selectedRecipe.kcal }}</span>
+          <span style="background:rgba(255,255,255,0.1); padding:4px 9px; border-radius:999px;">{{ selectedRecipe.difficulty }}</span>
+        </div>
+
+        <div style="font-size:11.5px; font-weight:700; opacity:0.6; letter-spacing:0.03em;">STEP {{ stepNumber }} / {{ stepTotal }}</div>
+        <div style="font-size:16px; line-height:1.42; min-height:64px; text-shadow:0 1px 5px rgba(0,0,0,0.45);">{{ currentStepText }}</div>
+
+        <sc-if value="{{ hasIngredients }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <sc-for list="{{ ingredientChips }}" as="ing" hint-placeholder-count="5">
+              <span style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); padding:5px 10px; border-radius:999px; font-size:11.5px;">{{ ing.label }}</span>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasTimer }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; align-items:center; justify-content:center; padding:8px 0;">
+            <button onClick="{{ toggleTimer }}" style="position:relative; width:96px; height:96px; border-radius:50%; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+              <svg width="96" height="96" style="position:absolute; top:0; left:0; transform:rotate(-90deg);">
+                <circle cx="48" cy="48" r="42" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="6"></circle>
+                <circle cx="48" cy="48" r="42" fill="none" stroke="{{ accentHex }}" stroke-width="6" stroke-linecap="round" style="stroke-dasharray:{{ ringDashArray }}; stroke-dashoffset:{{ ringDashOffset }}; transition:stroke-dashoffset 0.3s linear;"></circle>
+              </svg>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; z-index:1;">
+                <span style="font-family:'Space Grotesk',monospace; font-size:19px; font-weight:700;">{{ timerLabel }}</span>
+                <span style="font-size:9.5px; opacity:0.65; letter-spacing:0.05em;">{{ timerActionLabel }}</span>
+              </div>
+            </button>
+          </div>
+        </sc-if>
+
+        <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:2px;">
+          <button onClick="{{ prevStep }}" aria-label="Previous step" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.08); color:#fff; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center;">‹</button>
+          <div style="display:flex; gap:5px;">
+            <sc-for list="{{ stepDots }}" as="dot" hint-placeholder-count="5">
+              <span style="width:5px; height:5px; border-radius:50%; background:{{ dot.bg }}; display:inline-block;"></span>
+            </sc-for>
+          </div>
+          <button onClick="{{ nextStep }}" aria-label="Next step" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.08); color:#fff; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center;">›</button>
+        </div>
+
+        <sc-if value="{{ showGestureHints }}" hint-placeholder-val="{{ true }}">
+          <div style="text-align:center; font-size:11px; opacity:0.55;">‹ › step &nbsp;·&nbsp; pinch to start timer</div>
+        </sc-if>
+      </div>
+    </sc-if>
+  </div>
+
 </div>
 
-<div id="captop"><p id="captxt">Loading…</p></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#34D399&quot;,&quot;options&quot;:[&quot;#FF7A50&quot;,&quot;#34D399&quot;,&quot;#38BDF8&quot;,&quot;#F5C453&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;HUD&quot;},&quot;glassStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;clear&quot;,&quot;options&quot;:[&quot;clear&quot;,&quot;frosted&quot;,&quot;dark&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;HUD&quot;},&quot;showGestureHints&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;HUD&quot;}}">
+const CATEGORIES = [
+  { id: 'dessert', label: 'Dessert' },
+  { id: 'healthy', label: 'Healthy Food' },
+  { id: 'drinks', label: 'Healthy Drinks' },
+  { id: 'diet', label: 'Diet Food' },
+];
 
-<div id="actions">
-  <div class="abtn" id="likebtn" onclick="doLike()"><div class="ico" id="likeico">🤍</div><div class="cnt" id="lnum">—</div></div>
-  <div class="abtn" onclick="showToast('💬 Comments')"><div class="ico">💬</div><div class="cnt" id="cnum">—</div></div>
-  <div class="abtn" onclick="showToast('↗ Shared!')"><div class="ico">↗</div><div class="cnt" id="snum">—</div></div>
-</div>
+const RECIPES = [
+  {
+    id: 'molten-cake', category: 'dessert', title: 'Molten Chocolate Cake',
+    time: '25 min', kcal: '410 kcal', difficulty: 'Medium',
+    steps: [
+      { text: 'Gather your ingredients.', ingredients: ['Dark chocolate', 'Butter', 'Eggs', 'Sugar', 'Flour', 'Pinch of salt'] },
+      { text: 'Melt the chocolate and butter together until smooth.', duration: 120 },
+      { text: 'Whisk eggs and sugar until pale, then fold into the chocolate mix.' },
+      { text: 'Fold in flour and pour into ramekins.' },
+      { text: 'Bake until the edges are set but the center stays soft.', duration: 540 },
+    ],
+  },
+  {
+    id: 'berry-parfait', category: 'dessert', title: 'Berry Yogurt Parfait',
+    time: '8 min', kcal: '220 kcal', difficulty: 'Easy',
+    steps: [
+      { text: 'Gather your ingredients.', ingredients: ['Greek yogurt', 'Mixed berries', 'Granola', 'Honey'] },
+      { text: 'Spoon a layer of yogurt into a glass.' },
+      { text: 'Add a layer of berries, then granola.' },
+      { text: 'Repeat the layers, finishing with a honey drizzle.' },
+      { text: 'Chill for a few minutes before serving.', duration: 180 },
+    ],
+  },
+  {
+    id: 'buddha-bowl', category: 'healthy', title: 'Quinoa Buddha Bowl',
+    time: '20 min', kcal: '380 kcal', difficulty: 'Easy',
+    steps: [
+      { text: 'Gather your ingredients.', ingredients: ['Quinoa', 'Chickpeas', 'Avocado', 'Kale', 'Lemon', 'Tahini'] },
+      { text: 'Rinse and simmer the quinoa until fluffy.', duration: 720 },
+      { text: 'Roast the chickpeas until golden and crisp.', duration: 600 },
+      { text: 'Massage the kale with lemon juice.' },
+      { text: 'Assemble the bowl and drizzle with tahini.' },
+    ],
+  },
+  {
+    id: 'salmon-greens', category: 'healthy', title: 'Grilled Salmon & Greens',
+    time: '22 min', kcal: '410 kcal', difficulty: 'Medium',
+    steps: [
+      { text: 'Gather your ingredients.', ingredients: ['Salmon fillet', 'Olive oil', 'Asparagus', 'Garlic', 'Lemon'] },
+      { text: 'Season the salmon and let it rest.' },
+      { text: 'Grill the salmon skin-side down.', duration: 360 },
+      { text: 'Sauté the greens with garlic and olive oil.', duration: 240 },
+      { text: 'Plate together and finish with lemon.' },
+    ],
+  },
+  {
+    id: 'green-smoothie', category: 'drinks', title: 'Green Detox Smoothie',
+    time: '5 min', kcal: '140 kcal', difficulty: 'Easy',
+    steps: [
+      { text: 'Gather your ingredients.', ingredients: ['Spinach', 'Banana', 'Green apple', 'Ginger', 'Water'] },
+      { text: 'Add all ingredients to the blender.' },
+      { text: 'Blend until smooth.', duration: 45 },
+      { text: 'Pour over ice and serve.' },
+    ],
+  },
+  {
+    id: 'matcha-latte', category: 'drinks', title: 'Iced Matcha Latte',
+    time: '6 min', kcal: '90 kcal', difficulty: 'Easy',
+    steps: [
+      { text: 'Gather your ingredients.', ingredients: ['Matcha powder', 'Hot water', 'Milk of choice', 'Ice'] },
+      { text: 'Whisk matcha with hot water until frothy.', duration: 60 },
+      { text: 'Fill a glass with ice and milk.' },
+      { text: 'Pour the matcha over the top and stir.' },
+    ],
+  },
+  {
+    id: 'zucchini-stirfry', category: 'diet', title: 'Zucchini Noodle Stir-fry',
+    time: '15 min', kcal: '260 kcal', difficulty: 'Easy',
+    steps: [
+      { text: 'Gather your ingredients.', ingredients: ['Zucchini', 'Bell pepper', 'Soy sauce', 'Garlic', 'Sesame oil'] },
+      { text: 'Spiralize the zucchini into noodles.' },
+      { text: 'Stir-fry the garlic and pepper until fragrant.', duration: 150 },
+      { text: 'Add the zucchini noodles and toss briefly.', duration: 90 },
+      { text: 'Finish with soy sauce and sesame oil.' },
+    ],
+  },
+  {
+    id: 'cauliflower-rice', category: 'diet', title: 'Cauliflower Fried Rice',
+    time: '18 min', kcal: '240 kcal', difficulty: 'Easy',
+    steps: [
+      { text: 'Gather your ingredients.', ingredients: ['Cauliflower rice', 'Egg', 'Peas & carrots', 'Soy sauce', 'Scallion'] },
+      { text: 'Scramble the egg and set aside.', duration: 90 },
+      { text: 'Sauté the vegetables until tender.', duration: 240 },
+      { text: 'Add cauliflower rice and stir-fry.', duration: 180 },
+      { text: 'Fold the egg back in and finish with soy sauce.' },
+    ],
+  },
+];
 
-<div id="bot">
-  <div id="uname">@—</div>
-  <div id="sub">—</div>
-  <div id="mrow"><div id="disc">♪</div><div id="mname">—</div></div>
-  <div id="prog"><div id="progf"></div></div>
-</div>
-<div id="dots"></div>
-<div id="toast"></div>
+const GLASS_STYLES = {
+  clear: { bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.35)', blur: '8px' },
+  frosted: { bg: 'rgba(255,255,255,0.16)', border: 'rgba(255,255,255,0.28)', blur: '22px' },
+  dark: { bg: 'rgba(0,0,0,0.4)', border: 'rgba(255,255,255,0.16)', blur: '16px' },
+};
 
-<script>
-const API_URL = '/api/latest-tiktoks';
-
-let feed=[];
-let idx=0, liked=false, tabIdx=1;
-let tY=0,tX=0,lastTap=0,toastTmr,progIv;
-
-const frame = document.getElementById('vframe');
-const progf = document.getElementById('progf');
-
-function tiktokEmbed(url){
-  const id = url.match(/video\/(\d+)/)?.[1];
-  return id? `https://www.tiktok.com/embed/v2/${id}` : '';
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return m + ':' + String(s).padStart(2, '0');
 }
 
-async function load(i){
-  if(i >= feed.length){
-    showToast('Loading...');
-    try {
-      const res = await fetch(`${API_URL}`);
-      const data = await res.json();
-      feed.push({
-        url: data.url,
-        user: '@' + data.author_name,
-        desc: data.title,
-        thumb: data.thumbnail_url
-      });
-      showToast('');
-    } catch(e) {
-      showToast('Check backend');
+class Component extends DCLogic {
+  state = {
+    activeCategory: 'dessert',
+    view: 'browse',
+    stackIndexByCategory: {},
+    selectedRecipeId: null,
+    currentStep: 0,
+    dragging: false,
+    dragStartX: 0,
+    dragX: 0,
+    timerRemaining: 0,
+    timerTotal: 0,
+    timerRunning: false,
+  };
+
+  componentWillUnmount() {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+  }
+
+  selectCategory = (id) => {
+    this.setState({ activeCategory: id });
+  };
+
+  getFiltered(category) {
+    return RECIPES.filter((r) => r.category === category);
+  }
+
+  advance = (dir) => {
+    const list = this.getFiltered(this.state.activeCategory);
+    const len = list.length;
+    if (len === 0) return;
+    const cur = this.state.stackIndexByCategory[this.state.activeCategory] || 0;
+    const next = ((cur + dir) % len + len) % len;
+    this.setState({
+      stackIndexByCategory: { ...this.state.stackIndexByCategory, [this.state.activeCategory]: next },
+    });
+  };
+
+  handlePointerDown = (e, depth) => {
+    if (depth !== 0) return;
+    this.setState({ dragging: true, dragStartX: e.clientX, dragX: 0 });
+  };
+
+  handlePointerMove = (e, depth) => {
+    if (depth !== 0 || !this.state.dragging) return;
+    this.setState({ dragX: e.clientX - this.state.dragStartX });
+  };
+
+  handlePointerUp = (depth) => {
+    if (depth !== 0 || !this.state.dragging) return;
+    const dx = this.state.dragX;
+    this.setState({ dragging: false, dragX: 0 });
+    if (Math.abs(dx) > 70) {
+      this.advance(dx < 0 ? 1 : -1);
+    } else if (Math.abs(dx) < 6) {
+      const list = this.getFiltered(this.state.activeCategory);
+      const cur = this.state.stackIndexByCategory[this.state.activeCategory] || 0;
+      const top = list[cur % list.length];
+      if (top) this.openRecipe(top.id);
+    }
+  };
+
+  openRecipe = (id) => {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.setState({
+      view: 'detail', selectedRecipeId: id, currentStep: 0,
+      timerRemaining: 0, timerTotal: 0, timerRunning: false,
+    });
+  };
+
+  closeRecipe = () => {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.setState({ view: 'browse', timerRunning: false });
+  };
+
+  goStep = (dir) => {
+    const recipe = RECIPES.find((r) => r.id === this.state.selectedRecipeId);
+    if (!recipe) return;
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    const total = recipe.steps.length;
+    const next = ((this.state.currentStep + dir) % total + total) % total;
+    this.setState({ currentStep: next, timerRemaining: 0, timerTotal: 0, timerRunning: false });
+  };
+
+  toggleTimer = () => {
+    const recipe = RECIPES.find((r) => r.id === this.state.selectedRecipeId);
+    if (!recipe) return;
+    const step = recipe.steps[this.state.currentStep];
+    if (!step || !step.duration) return;
+
+    if (this.state.timerRunning) {
+      clearInterval(this.timerInterval);
+      this.setState({ timerRunning: false });
       return;
     }
+
+    let remaining = this.state.timerRemaining > 0 ? this.state.timerRemaining : step.duration;
+    this.setState({ timerRunning: true, timerRemaining: remaining, timerTotal: step.duration });
+    this.timerInterval = setInterval(() => {
+      remaining -= 1;
+      if (remaining <= 0) {
+        clearInterval(this.timerInterval);
+        this.setState({ timerRemaining: 0, timerRunning: false });
+      } else {
+        this.setState({ timerRemaining: remaining });
+      }
+    }, 1000);
+  };
+
+  renderVals() {
+    const accentHex = this.props.accentColor ?? '#FF7A50';
+    const glassStyleKey = this.props.glassStyle ?? 'clear';
+    const glass = GLASS_STYLES[glassStyleKey] || GLASS_STYLES.clear;
+    const showGestureHints = this.props.showGestureHints ?? true;
+
+    const categoriesView = CATEGORIES.map((c) => {
+      const active = c.id === this.state.activeCategory;
+      return {
+        ...c,
+        onSelect: () => this.selectCategory(c.id),
+        bg: active ? accentHex : 'rgba(255,255,255,0.1)',
+        color: active ? '#1a1206' : 'rgba(255,255,255,0.9)',
+        shadow: active ? '0 4px 14px rgba(0,0,0,0.25)' : 'none',
+      };
+    });
+
+    const filtered = this.getFiltered(this.state.activeCategory);
+    const len = filtered.length;
+    const curIdx = this.state.stackIndexByCategory[this.state.activeCategory] || 0;
+
+    const stackCards = filtered.map((recipe, idx) => {
+      const depth = ((idx - curIdx) % len + len) % len;
+      let transformStr, opacityStr, zIndexStr, transitionStr;
+      if (depth > 2) {
+        transformStr = 'translateY(60px) scale(0.8)';
+        opacityStr = '0';
+        zIndexStr = '0';
+        transitionStr = 'transform 0.3s ease, opacity 0.3s ease';
+      } else if (depth === 0) {
+        transformStr = this.state.dragging
+          ? `translate(${this.state.dragX}px, 0) rotate(${this.state.dragX / 20}deg)`
+          : 'translate(0,0) rotate(0deg)';
+        opacityStr = '1';
+        zIndexStr = '10';
+        transitionStr = this.state.dragging ? 'none' : 'transform 0.4s cubic-bezier(.2,.8,.2,1), opacity 0.3s ease';
+      } else {
+        transformStr = `translateY(${depth * 14}px) scale(${1 - depth * 0.06})`;
+        opacityStr = depth === 1 ? '0.85' : '0.6';
+        zIndexStr = String(10 - depth);
+        transitionStr = 'transform 0.4s cubic-bezier(.2,.8,.2,1), opacity 0.3s ease';
+      }
+      return {
+        thumbId: 'thumb-' + recipe.id,
+        placeholderText: recipe.title + ' photo',
+        title: recipe.title,
+        time: recipe.time,
+        kcal: recipe.kcal,
+        difficulty: recipe.difficulty,
+        transformStr, opacityStr, zIndexStr, transitionStr,
+        onDown: (e) => this.handlePointerDown(e, depth),
+        onMove: (e) => this.handlePointerMove(e, depth),
+        onUp: () => this.handlePointerUp(depth),
+        onClick: () => { if (depth === 0 && !this.state.dragging) this.openRecipe(recipe.id); },
+      };
+    });
+
+    const stackDots = filtered.map((_, idx) => ({
+      bg: idx === curIdx ? accentHex : 'rgba(255,255,255,0.3)',
+    }));
+
+    const selectedRecipeRaw = RECIPES.find((r) => r.id === this.state.selectedRecipeId) || RECIPES[0];
+    const selectedRecipe = {
+      ...selectedRecipeRaw,
+      thumbId: 'thumb-' + selectedRecipeRaw.id,
+      placeholderText: selectedRecipeRaw.title + ' photo',
+    };
+    const stepObj = selectedRecipeRaw.steps[this.state.currentStep] || selectedRecipeRaw.steps[0];
+    const stepDots = selectedRecipeRaw.steps.map((_, idx) => ({
+      bg: idx === this.state.currentStep ? accentHex : 'rgba(255,255,255,0.3)',
+    }));
+    const ingredientChips = (stepObj.ingredients || []).map((label) => ({ label }));
+
+    const hasTimer = !!stepObj.duration;
+    const timerTotal = this.state.timerTotal || stepObj.duration || 0;
+    const timerRemaining = this.state.timerRunning || this.state.timerRemaining > 0 ? this.state.timerRemaining : (stepObj.duration || 0);
+    const r = 42;
+    const circumference = 2 * Math.PI * r;
+    const frac = timerTotal > 0 ? timerRemaining / timerTotal : 1;
+
+    return {
+      accentHex,
+      glassBg: glass.bg,
+      glassBorder: glass.border,
+      glassBlur: glass.blur,
+      showGestureHints,
+      isBrowseView: this.state.view === 'browse',
+      isDetailView: this.state.view === 'detail',
+      categoriesView,
+      stackCards,
+      stackDots,
+      prevCard: () => this.advance(-1),
+      nextCard: () => this.advance(1),
+      selectedRecipe,
+      closeRecipe: this.closeRecipe,
+      stepNumber: this.state.currentStep + 1,
+      stepTotal: selectedRecipeRaw.steps.length,
+      currentStepText: stepObj.text,
+      hasIngredients: !!(stepObj.ingredients && stepObj.ingredients.length),
+      ingredientChips,
+      hasTimer,
+      ringDashArray: `${circumference}`,
+      ringDashOffset: `${circumference * (1 - frac)}`,
+      timerLabel: fmtTime(hasTimer ? timerRemaining : 0),
+      timerActionLabel: this.state.timerRunning ? 'PAUSE' : (timerRemaining < (stepObj.duration || 0) ? 'RESUME' : 'START'),
+      toggleTimer: this.toggleTimer,
+      stepDots,
+      prevStep: () => this.goStep(-1),
+      nextStep: () => this.goStep(1),
+    };
   }
-  // rest of your load code...
-}
-  idx = i;
-
-  const r=feed[idx];
-  clearInterval(progIv);
-  progf.style.width='0%';
-  frame.src = tiktokEmbed(r.t);
-
-  setHUD(r);
-  updDots();
-  liked=false; updLike();
-
-  let p=0;
-  progIv=setInterval(()=>{
-    p+=0.5;
-    if(p>=100){ p=0; }
-    progf.style.width=p+'%';
-  },1000);
 }
 
-function goNext(){ flash('↑'); load(idx+1); }
-function goPrev(){ flash('↓'); load(idx-1); }
-function setHUD(r){
-  const c=r.d||'';
-  document.getElementById('captxt').innerHTML=c.length>36?c.replace(/(.{24,38})\s/,'$1<br>'):c;
-  document.getElementById('sub').textContent =r.s||'';
-  document.getElementById('uname').textContent=r.h||'@—';
-  document.getElementById('mname').textContent=r.m||'Original Sound';
-  document.getElementById('lnum').textContent =r.l||'—';
-  document.getElementById('cnum').textContent =r.c||'—';
-  document.getElementById('snum').textContent =r.r||'—';
-}
-function buildDots(){
-  const c=document.getElementById('dots');
-  c.innerHTML='';
-  for(let i=0;i<8;i++){const d=document.createElement('div');d.className='dot'+(i===0?' on':'');c.appendChild(d);}
-}
-function updDots(){document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===idx%8));}
-function doLike(){liked=!liked;updLike();if(liked)spawnHeart();}
-function updLike(){
-  document.getElementById('likebtn').classList.toggle('liked',liked);
-  document.getElementById('likeico').textContent=liked?'❤️':'🤍';
-}
-function spawnHeart(){
-  const h=document.createElement('div');h.className='heart';h.textContent='❤️';
-  document.body.appendChild(h);h.addEventListener('animationend',()=>h.remove());
-}
-function flash(s){
-  const e=document.getElementById('sfx');
-  e.textContent=s;e.classList.remove('go');void e.offsetWidth;e.classList.add('go');
-  setTimeout(()=>e.classList.remove('go'),500);
-}
-function showToast(m){
-  const t=document.getElementById('toast');
-  t.textContent=m;t.classList.add('show');clearTimeout(toastTmr);
-  toastTmr=setTimeout(()=>t.classList.remove('show'),1500);
-}
-document.querySelectorAll('.tab').forEach(tb=>tb.addEventListener('click',()=>{
-  tabIdx=+tb.dataset.i;
-  document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',i===tabIdx));
-  showToast(tb.textContent.trim());
-}));
-const tz=document.getElementById('tz');
-tz.addEventListener('touchstart',e=>{tY=e.touches[0].clientY;tX=e.touches[0].clientX;},{passive:true});
-tz.addEventListener('touchend',e=>{
-  const dy=tY-e.changedTouches[0].clientY, dx=tX-e.changedTouches[0].clientX;
-  if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.5){dy>0?goNext():goPrev();return;}
-  const now=Date.now();
-  if(now-lastTap<300&&Math.abs(dy)<10){doLike();showToast('❤️ Liked');}
-  lastTap=now;
-},{passive:true});
-document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowDown'||e.key==='s'){e.preventDefault();goNext();}
-  if(e.key==='ArrowUp' ||e.key==='w'){e.preventDefault();goPrev();}
-  if(e.key==='l'||e.key==='L'){doLike();showToast('❤️ Liked');}
-});
-buildDots();
-fetch(`${API_URL}?offset=0`).then(r=>{
-  if(!r.ok) throw new Error('HTTP ' + r.status);
-  return r.json();
-}).then(data=>{
-  feed = data;
-  if(feed.length) load(0);
-  else showToast('No videos');
-}).catch(e=>{
-  showToast('Start backend first');
-  console.error(e);
-});
 </script>
 </body>
 </html>
